@@ -1,5 +1,5 @@
 // 🔥 每次你修改了 index.html 或圖片，請務必把這裡的 v1 改成 v2, v3...
-const CACHE_NAME = 'mahjong-brain-v1'; 
+const CACHE_NAME = 'mahjong-brain-v1.1'; 
 
 const urlsToCache = [
     './',
