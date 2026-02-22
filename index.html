@@ -215,8 +215,29 @@
         }
     }
 
+// ==== 🔥 終極版：Service Worker 自動更新與快取替換引擎 ====
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => {}); });
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                // 每次載入時，主動向伺服器檢查 sw.js 有沒有更新
+                reg.update();
+
+                // 偵測到有新版本的 Service Worker 正在安裝
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        // 當新版本安裝完畢，且舊版本還在控制頁面時
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('發現新版本，正在自動刷新...');
+                            // 強制重新整理頁面，載入全新的 HTML/CSS/JS！
+                            window.location.reload();
+                        }
+                    });
+                });
+            }).catch(err => {
+                console.log('SW 註冊失敗: ', err);
+            });
+        });
     }
 
     let deferredPrompt;
