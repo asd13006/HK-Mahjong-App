@@ -47,7 +47,8 @@
         @keyframes liquidFlow { 0% { transform: translate3d(0%, 0%, 0) scale(1); } 100% { transform: translate3d(5%, 5%, 0) scale(1.05); } }
         body.limit-mode .bg-base { opacity: 0; } body.limit-mode .bg-limit { opacity: 1; } body.failure-mode .bg-base { opacity: 0; }
 
-        .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; padding-bottom: 20px; }
+        /* 🔥 加入 flex: 1 讓容器能撐滿螢幕，是底部磁吸的關鍵 */
+        .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; padding-bottom: 20px; flex: 1; }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px) contrast(110%); -webkit-backdrop-filter: blur(8px) contrast(110%);
@@ -84,23 +85,15 @@
         .hand-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; opacity: 0.8; margin-bottom: 12px; font-weight: 500; color: rgba(255,255,255,0.9); }
         .tiles-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 
-        /* ==== 🔥 佈局定海神針：強制撐開第三行，讓選牌區絕對不位移 ==== */
-        .tiles-grid::after {
-            content: "";
-            grid-column: 1;
-            grid-row: 3;
-            aspect-ratio: 3/4;
-            pointer-events: none;
-            visibility: hidden;
-        }
-
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.6) translate3d(0, 20px, 0); } 100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } }
         .enter-anim { animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
         @keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
         .empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
         @keyframes popOut { 0% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } 100% { opacity: 0; transform: scale(0.6) translate3d(0, 20px, 0); } }
 
-        .keyboard { display: flex; flex-direction: column; gap: 8px; }
+        /* 🔥 鍵盤磁吸底部的魔法：加入 margin-top: auto; */
+        .keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+        
         .suit-row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
 
         .tile {
@@ -186,7 +179,7 @@
 
 <script>
     // ==== 🔥 版本號更新 ====
-    const APP_VERSION = "v1.4.0 (Pro Layout Edition)";
+    const APP_VERSION = "v1.4.1 (Sticky Keyboard Edition)";
 
     function attachFastClick(el, action, tapClass = '') {
         if (el._hasFastClick) { el._action = action; return; }
