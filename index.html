@@ -23,7 +23,8 @@
             color: #ffffff; display: flex; justify-content: center; min-height: 100vh; position: relative;
             padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px;
             padding-bottom: max(30px, env(safe-area-inset-bottom) + 10px); padding-left: 15px;
-            touch-action: pan-x pan-y;
+            /* 允許上下滑動，但禁止雙指縮放 */
+            touch-action: pan-y;
             -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; 
             -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
         }
@@ -100,7 +101,7 @@
             will-change: transform;
         }
         
-        /* 🔥 新增：電競級零延遲視覺回饋類別，超越原生系統的 active 速度 */
+        /* 🔥 新增：電競級零延遲視覺回饋類別 */
         .is-tapped { transform: translate3d(0, 3px, 0) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.15) !important; transition: none !important; }
         .tile.empty { background-image: none !important; background-color: rgba(0,0,0,0.15); box-shadow: inset 0 2px 6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); cursor: default; }
 
@@ -169,111 +170,100 @@
 </div>
 
 <script>
-    // ==== 🔥 新增：電競級零延遲觸控引擎 (Zero-Latency FastClick) ====
-    // 徹底拋棄傳統 click 帶來的 300ms 黏滯感，達成 0ms 觸發
+    // ==== 🔥 升級版：智慧型零延遲觸控引擎 (完美相容上下滑動) ====
     function attachFastClick(el, action, isTile = false) {
-        el._action = action; // 將行為綁定在 DOM 上，避免重複監聽
+        if (el._hasFastClick) {
+            el._action = action; // 如果 DOM 元素重複使用，只需更新綁定的行為
+            return;
+        }
         
-        if (!el._hasFastClick) {
-            el._hasFastClick = true;
-            let touchHandled = false;
-            
-            // 手動觸發瞬間的物理視覺回饋 (取代系統遲鈍的 :active)
-            const triggerVisualFeedback = () => {
+        el._action = action; 
+        el._hasFastClick = true;
+        let touchHandled = false;
+        let isScrolling = false;
+        let startX = 0; let startY = 0;
+
+        // 1. 手指碰到的瞬間 (0ms 觸發視覺回饋)
+        el.addEventListener('touchstart', (e) => {
+            touchHandled = true;
+            isScrolling = false;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            if(isTile) el.classList.add('is-tapped');
+        }, { passive: true }); // passive: true 確保不會干擾瀏覽器滑動
+        
+        // 2. 滑動判定 (如果手指移動超過 10px，就當作在滑網頁，取消點擊)
+        el.addEventListener('touchmove', (e) => {
+            if(!touchHandled) return;
+            let moveX = Math.abs(e.touches[0].clientX - startX);
+            let moveY = Math.abs(e.touches[0].clientY - startY);
+            if (moveX > 10 || moveY > 10) {
+                isScrolling = true;
+                if(isTile) el.classList.remove('is-tapped'); // 復原按鈕凹陷
+            }
+        }, { passive: true });
+
+        // 3. 手指離開的瞬間 (極速執行行為)
+        el.addEventListener('touchend', (e) => {
+            if(isTile) el.classList.remove('is-tapped');
+            if (touchHandled && !isScrolling) {
+                if (el._action) el._action(e);
+            }
+            // 400ms 內忽略原生的 click，防禦幽靈雙擊
+            setTimeout(() => { touchHandled = false; }, 400);
+        });
+        
+        // 4. 相容電腦滑鼠點擊
+        el.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return; // 只允許左鍵
+            if (!touchHandled) {
                 if(isTile) {
                     el.classList.add('is-tapped');
                     setTimeout(() => el.classList.remove('is-tapped'), 80);
                 }
-            };
-
-            // 1. 手指碰到的瞬間 (0ms 觸發)
-            el.addEventListener('touchstart', (e) => {
-                touchHandled = true;
-                triggerVisualFeedback();
                 if (el._action) el._action(e);
-                // 400ms 內忽略滑鼠點擊，防禦幽靈雙擊
-                setTimeout(() => { touchHandled = false; }, 400);
-            }, { passive: true }); // passive: true 保留了網頁上下滑動的功能
-            
-            // 2. 電腦滑鼠點擊
-            el.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return; // 只允許左鍵
-                if (!touchHandled) {
-                    triggerVisualFeedback();
-                    if (el._action) el._action(e);
-                }
-            });
-            
-            // 3. 封殺系統預設的遲鈍 click
-            el.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
+            }
+        });
+        
+        // 5. 封殺系統預設的遲鈍 click
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
     }
 
     // ==== 輕量級動態高度動畫 ====
     function smoothHeightUpdate(elementId, updateDOM) {
         const el = document.getElementById(elementId);
         if (!el) { updateDOM(); return; }
-        
-        const oldHeight = el.offsetHeight;
-        updateDOM();
-        
-        el.style.height = 'auto';
-        const newHeight = el.offsetHeight;
-        
+        const oldHeight = el.offsetHeight; updateDOM(); el.style.height = 'auto'; const newHeight = el.offsetHeight;
         if (oldHeight !== newHeight && oldHeight > 0) {
-            el.style.height = oldHeight + 'px';
-            const oldOverflow = el.style.overflow;
-            el.style.overflow = 'hidden'; 
-            el.style.willChange = 'height';
-            el.offsetHeight; 
-            
-            el.style.transition = 'height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            el.style.height = oldHeight + 'px'; const oldOverflow = el.style.overflow; el.style.overflow = 'hidden'; 
+            el.style.willChange = 'height'; el.offsetHeight; el.style.transition = 'height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
             el.style.height = newHeight + 'px';
-            
-            setTimeout(() => {
-                el.style.height = 'auto';
-                el.style.transition = ''; 
-                el.style.overflow = oldOverflow;
-                el.style.willChange = 'auto';
-            }, 300);
+            setTimeout(() => { el.style.height = 'auto'; el.style.transition = ''; el.style.overflow = oldOverflow; el.style.willChange = 'auto'; }, 300);
         }
     }
 
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => {}); });
-    }
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => {}); }); }
 
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
+    let deferredPrompt; const installBtn = document.getElementById('installBtn');
     const isIOS = /ipad|iphone|ipod/.test(navigator.userAgent.toLowerCase());
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
     if (isStandalone) installBtn.style.display = 'none';
     else {
         if (isIOS) {
-            installBtn.style.display = 'block';
-            attachFastClick(installBtn, () => alert('🍎 iOS 安裝提示：\n\n請點擊 Safari 底部的「分享」圖示 📤，然後往下滑選擇「加入主畫面 ＋」，就能將 App 永久安裝到桌面囉！'));
+            installBtn.style.display = 'block'; attachFastClick(installBtn, () => alert('🍎 iOS 安裝提示：\n\n請點擊 Safari 底部的「分享」圖示 📤，然後往下滑選擇「加入主畫面 ＋」，就能將 App 永久安裝到桌面囉！'));
         } else {
             window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
-            attachFastClick(installBtn, async () => {
-                if (deferredPrompt) {
-                    installBtn.style.display = 'none'; deferredPrompt.prompt(); 
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome !== 'accepted') installBtn.style.display = 'block'; 
-                    deferredPrompt = null;
-                }
-            });
+            attachFastClick(installBtn, async () => { if (deferredPrompt) { installBtn.style.display = 'none'; deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome !== 'accepted') installBtn.style.display = 'block'; deferredPrompt = null; } });
         }
     }
     window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; });
 
     const TILE_DEFS = [
-        { type: 'w', label: '萬', count: 9, startId: 0 },
-        { type: 't', label: '筒', count: 9, startId: 9 },
-        { type: 's', label: '索', count: 9, startId: 18 },
-        { type: 'z', names: ['東','南','西','北','中','發','白'], startId: 27 }
+        { type: 'w', label: '萬', count: 9, startId: 0 }, { type: 't', label: '筒', count: 9, startId: 9 },
+        { type: 's', label: '索', count: 9, startId: 18 }, { type: 'z', names: ['東','南','西','北','中','發','白'], startId: 27 }
     ];
 
     const CONDITIONS = [
@@ -287,48 +277,32 @@
         { id: 'p1', name: '梅', group: 'plant', wind: 0 }, { id: 'p2', name: '蘭', group: 'plant', wind: 1 }, { id: 'p3', name: '菊', group: 'plant', wind: 2 }, { id: 'p4', name: '竹', group: 'plant', wind: 3 }
     ];
 
-    let hand = []; 
-    let activeConditions = new Set();
-    let roundWind = 0; let seatWind = 0;  
-    let activeFlowers = new Set();
+    let hand = []; let activeConditions = new Set(); let roundWind = 0; let seatWind = 0; let activeFlowers = new Set();
     let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastTagsHtml = ''; 
 
-    // 初始化與綁定所有靜態按鈕的 FastClick
     function init() { 
         renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
-        
-        // 綁定風位按鈕
         document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i)));
         document.querySelectorAll('#seatWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setSeatWind(i)));
-        
-        // 綁定清除按鈕
         attachFastClick(document.getElementById('clearBtnId'), clearHand);
     }
 
     function animateValue(obj, start, end, duration) {
         let startTimestamp = null;
         const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeOutProgress = 1 - Math.pow(1 - progress, 4);
-            const currentVal = Math.floor(start + (end - start) * easeOutProgress);
-            obj.innerText = currentVal;
-            if (progress < 1) scoreAnimationId = window.requestAnimationFrame(step);
-            else obj.innerText = end; 
+            if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeOutProgress = 1 - Math.pow(1 - progress, 4); const currentVal = Math.floor(start + (end - start) * easeOutProgress);
+            obj.innerText = currentVal; if (progress < 1) scoreAnimationId = window.requestAnimationFrame(step); else obj.innerText = end; 
         };
-        if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId);
-        scoreAnimationId = window.requestAnimationFrame(step);
+        if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); scoreAnimationId = window.requestAnimationFrame(step);
     }
 
     function findAllMelds(counts, index, currentMelds, allValidMelds) {
         if (currentMelds.length === 4) {
-            let isValid = true;
-            for (let i = 0; i < 34; i++) { if (counts[i] !== 0) { isValid = false; break; } }
-            if (isValid) allValidMelds.push([...currentMelds]);
-            return;
+            let isValid = true; for (let i = 0; i < 34; i++) { if (counts[i] !== 0) { isValid = false; break; } }
+            if (isValid) allValidMelds.push([...currentMelds]); return;
         }
-        while (index < 34 && counts[index] === 0) index++;
-        if (index === 34) return;
+        while (index < 34 && counts[index] === 0) index++; if (index === 34) return;
         if (counts[index] >= 4) { counts[index] -= 4; currentMelds.push({ type: 'kong', val: index }); findAllMelds(counts, index, currentMelds, allValidMelds); currentMelds.pop(); counts[index] += 4; }
         if (counts[index] >= 3) { counts[index] -= 3; currentMelds.push({ type: 'pong', val: index }); findAllMelds(counts, index, currentMelds, allValidMelds); currentMelds.pop(); counts[index] += 3; }
         if (index < 27 && index % 9 <= 6) {
@@ -340,8 +314,7 @@
     }
 
     function getCurrentMax() {
-        let counts = new Array(34).fill(0);
-        hand.forEach(item => counts[item.id]++);
+        let counts = new Array(34).fill(0); hand.forEach(item => counts[item.id]++);
         let kongs = 0; counts.forEach(c => { if (c === 4) kongs++; }); let max = 14 + kongs;
         if (hand.length >= 14) { let tempCounts = [...counts]; if (checkWinCondition(tempCounts)) return hand.length; }
         return max;
@@ -351,10 +324,7 @@
         if (isThirteenOrphans(counts) || isNineGates(counts)) return true;
         if (activeConditions.has('heaven') || activeConditions.has('earth')) return true; 
         for (let i = 0; i < 34; i++) {
-            if (counts[i] >= 2) {
-                let tempCounts = [...counts]; tempCounts[i] -= 2; let allValidMelds = [];
-                findAllMelds(tempCounts, 0, [], allValidMelds); if (allValidMelds.length > 0) return true;
-            }
+            if (counts[i] >= 2) { let tempCounts = [...counts]; tempCounts[i] -= 2; let allValidMelds = []; findAllMelds(tempCounts, 0, [], allValidMelds); if (allValidMelds.length > 0) return true; }
         }
         return false;
     }
@@ -376,8 +346,7 @@
         if (hand.length === 0 && activeConditions.size === 0 && activeFlowers.size === 0 && roundWind === 0 && seatWind === 0) return;
         window.isClearing = true; if (navigator.vibrate) navigator.vibrate([15]);
 
-        const currentTiles = document.querySelectorAll('#handGrid .tile:not(.empty)');
-        const oldMax = getCurrentMax(); 
+        const currentTiles = document.querySelectorAll('#handGrid .tile:not(.empty)'); const oldMax = getCurrentMax(); 
 
         currentTiles.forEach((el, index) => {
             const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim');
@@ -405,40 +374,25 @@
     function renderConditions() {
         const bar = document.getElementById('conditionsBar'); bar.innerHTML = ''; 
         CONDITIONS.forEach(cond => {
-            const chip = document.createElement('div'); chip.className = 'condition-chip';
-            if (activeConditions.has(cond.id)) chip.classList.add('active');
-            chip.innerText = cond.label;
-            // 🔥 套用 FastClick
+            const chip = document.createElement('div'); chip.className = 'condition-chip'; if (activeConditions.has(cond.id)) chip.classList.add('active'); chip.innerText = cond.label;
             attachFastClick(chip, () => {
-                if (activeConditions.has(cond.id)) {
-                    activeConditions.delete(cond.id);
-                    if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); }
-                } else {
-                    activeConditions.add(cond.id);
-                    if (cond.id === 'kongSelfDrawn') { activeConditions.delete('doubleKongSelfDrawn'); activeConditions.add('selfDrawn'); } 
-                    else if (cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.add('selfDrawn'); }
-                }
+                if (activeConditions.has(cond.id)) { activeConditions.delete(cond.id); if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); } } 
+                else { activeConditions.add(cond.id); if (cond.id === 'kongSelfDrawn') { activeConditions.delete('doubleKongSelfDrawn'); activeConditions.add('selfDrawn'); } else if (cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.add('selfDrawn'); } }
                 renderConditions(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
             });
             bar.appendChild(chip);
         });
     }
 
-    function setRoundWind(index) { roundWind = index; document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); }
-    function setSeatWind(index) { seatWind = index; document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); }
-
     function renderFlowers() {
         const grid = document.getElementById('flowerGrid'); grid.innerHTML = '';
         FLOWERS.forEach((f, index) => {
-            const btn = document.createElement('div'); btn.className = 'flower-tile';
-            if (activeFlowers.has(f.id)) btn.classList.add('active');
-            btn.style.backgroundImage = `url('tiles/f${index + 1}.svg')`;
-            // 🔥 套用 FastClick
+            const btn = document.createElement('div'); btn.className = 'flower-tile'; if (activeFlowers.has(f.id)) btn.classList.add('active'); btn.style.backgroundImage = `url('tiles/f${index + 1}.svg')`;
             attachFastClick(btn, () => {
                 if (activeFlowers.has(f.id)) activeFlowers.delete(f.id); else activeFlowers.add(f.id);
                 btn.classList.toggle('active'); document.getElementById('flowerCount').innerText = `已選 ${activeFlowers.size} 隻`;
                 if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
-            }, true); // 標記為 Tile，加入按壓動畫
+            }, true);
             grid.appendChild(btn);
         });
     }
@@ -446,40 +400,27 @@
     function renderKeyboard() {
         const kb = document.getElementById('keyboard'); kb.innerHTML = '';
         TILE_DEFS.forEach(def => {
-            const row = document.createElement('div'); row.className = 'suit-row';
-            const limit = def.names ? def.names.length : def.count;
+            const row = document.createElement('div'); row.className = 'suit-row'; const limit = def.names ? def.names.length : def.count;
             for (let i = 0; i < limit; i++) {
-                const id = def.startId + i;
-                const btn = document.createElement('div');
-                btn.className = `tile ${def.type}`; btn.style.backgroundImage = `url('tiles/${def.type}${i + 1}.svg')`;
-                // 🔥 套用極速打字 FastClick
-                attachFastClick(btn, () => addTile(id), true);
-                row.appendChild(btn);
+                const id = def.startId + i; const btn = document.createElement('div'); btn.className = `tile ${def.type}`; btn.style.backgroundImage = `url('tiles/${def.type}${i + 1}.svg')`;
+                attachFastClick(btn, () => addTile(id), true); row.appendChild(btn);
             }
             kb.appendChild(row);
         });
     }
 
     function getTileInfo(id) {
-        if (id < 9) return { type: 'w', num: id + 1, suit: '萬' };
-        if (id < 18) return { type: 't', num: id - 8, suit: '筒' };
-        if (id < 27) return { type: 's', num: id - 17, suit: '索' };
+        if (id < 9) return { type: 'w', num: id + 1, suit: '萬' }; if (id < 18) return { type: 't', num: id - 8, suit: '筒' }; if (id < 27) return { type: 's', num: id - 17, suit: '索' };
         const zNames = ['東','南','西','北','中','發','白']; return { type: 'z', num: zNames[id - 27], suit: '' };
     }
 
     function addTile(id) {
         let count = hand.filter(t => t.id === id).length; if (count >= 4) return; 
-        hand.push({ id: id, key: tileKeyCounter++ });
-        let projectedMax = getCurrentMax();
-        if (hand.length > projectedMax) { hand.pop(); tileKeyCounter--; return; }
-        hand.sort((a, b) => a.id - b.id);
-        if (navigator.vibrate) navigator.vibrate([8]); renderHand();
+        hand.push({ id: id, key: tileKeyCounter++ }); let projectedMax = getCurrentMax(); if (hand.length > projectedMax) { hand.pop(); tileKeyCounter--; return; }
+        hand.sort((a, b) => a.id - b.id); if (navigator.vibrate) navigator.vibrate([8]); renderHand();
     }
 
-    function removeTile(index) {
-        hand.splice(index, 1);
-        if (navigator.vibrate) navigator.vibrate([8]); renderHand();
-    }
+    function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 
     function resetUI() {
         document.body.className = ''; const card = document.getElementById('statusCard');
@@ -492,8 +433,7 @@
         grid.querySelectorAll('.tile[data-key]').forEach(el => { oldPos[el.dataset.key] = el.getBoundingClientRect(); });
 
         const updateGridDOM = () => {
-            const existingTiles = new Map();
-            grid.querySelectorAll('.tile[data-key]').forEach(el => { existingTiles.set(el.dataset.key, el); });
+            const existingTiles = new Map(); grid.querySelectorAll('.tile[data-key]').forEach(el => { existingTiles.set(el.dataset.key, el); });
             grid.querySelectorAll('.tile.empty').forEach(el => el.remove());
 
             hand.forEach((item) => {
@@ -503,13 +443,7 @@
                     let imgNum = info.num; if (info.type === 'z') { const zNames = ['東','南','西','北','中','發','白']; imgNum = zNames.indexOf(info.num) + 1; }
                     el.style.backgroundImage = `url('tiles/${info.type}${imgNum}.svg')`;
                 }
-                
-                // 🔥 套用 FastClick 刪除功能
-                attachFastClick(el, () => {
-                    const currentIdx = hand.findIndex(t => t.key === item.key);
-                    if (currentIdx > -1) removeTile(currentIdx);
-                }, true);
-                
+                attachFastClick(el, () => { const currentIdx = hand.findIndex(t => t.key === item.key); if (currentIdx > -1) removeTile(currentIdx); }, true);
                 grid.appendChild(el); 
             });
             
@@ -529,7 +463,6 @@
                 el.classList.remove('enter-anim'); 
                 const newRect = el.getBoundingClientRect(); const oldRect = oldPos[key];
                 const dx = oldRect.left - newRect.left; const dy = oldRect.top - newRect.top;
-                
                 if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
                     el.style.transition = 'none'; el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`; el.offsetHeight; 
                     el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'; el.style.transform = 'translate3d(0,0,0)'; 
@@ -537,7 +470,6 @@
                 } else { el.style.transition = ''; el.style.transform = ''; }
             }
         });
-        
         lastMax = currentMax; checkAndRunEngine();
     }
 
@@ -566,11 +498,7 @@
         let sum = 0; for(let i=0; i<34; i++) sum += counts[i]; if (sum !== 14) return false;
         for (let s = 0; s < 3; s++) {
             let start = s * 9; let suitSum = 0; for (let i=0; i<9; i++) suitSum += counts[start+i];
-            if (suitSum === 14) {
-                let base = [3,1,1,1,1,1,1,1,3]; let isValid = true;
-                for(let i=0; i<9; i++) if (counts[start+i] < base[i]) isValid = false;
-                if (isValid) return true;
-            }
+            if (suitSum === 14) { let base = [3,1,1,1,1,1,1,1,3]; let isValid = true; for(let i=0; i<9; i++) if (counts[start+i] < base[i]) isValid = false; if (isValid) return true; }
         }
         return false;
     }
@@ -593,7 +521,6 @@
             else if (isThirteenOrphans(counts)) { specialFaan = 13; specialTags.push({ text: "十三么 (13番)", isHigh: true }); isSpecial = true; }
             else if (isNineGates(counts)) { specialFaan = 13; specialTags.push({ text: "九子連環 (13番)", isHigh: true }); isSpecial = true; }
         }
-
         if (isSpecial) return displayResult(specialFaan, specialTags, true, specialFaan >= 10);
 
         let validBreakdowns = [];
@@ -605,7 +532,6 @@
                 }
             }
         }
-
         if (validBreakdowns.length === 0) {
             if (fCount === 7) return displayResult(3, [{ text: "花糊 (3番)", isFlower: true }], true, false);
             if (hand.length < currentMax) return; 
@@ -618,10 +544,8 @@
     }
 
     function evaluateStandardPatterns(breakdown, counts) {
-        let faan = 0; let tags = []; let isExceptional = false; 
-        let kongsCount = 0; for (let i = 0; i < 34; i++) { if (counts[i] === 4) kongsCount++; }
-        let suits = new Set(); let hasZ = false;
-        for (let i = 0; i < 34; i++) { if (counts[i] > 0) { if (i < 9) suits.add('w'); else if (i < 18) suits.add('t'); else if (i < 27) suits.add('s'); else hasZ = true; } }
+        let faan = 0; let tags = []; let isExceptional = false; let kongsCount = 0; for (let i = 0; i < 34; i++) { if (counts[i] === 4) kongsCount++; }
+        let suits = new Set(); let hasZ = false; for (let i = 0; i < 34; i++) { if (counts[i] > 0) { if (i < 9) suits.add('w'); else if (i < 18) suits.add('t'); else if (i < 27) suits.add('s'); else hasZ = true; } }
 
         if (suits.size === 0 && hasZ) { faan += 10; tags.push({ text: "字一色 (10番)", isHigh: true }); isExceptional = true; } 
         else if (suits.size === 1) { if (kongsCount < 4) { if (!hasZ) { faan += 7; tags.push({ text: "清一色 (7番)", isHigh: true }); } else { faan += 3; tags.push({ text: "混一色 (3番)", isHigh: false }); } } }
@@ -669,8 +593,13 @@
         } else { document.body.classList.add('failure-mode'); card.style.background = 'rgba(239, 68, 68, 0.15)'; card.style.borderColor = 'rgba(239, 68, 68, 0.4)'; card.style.boxShadow = '0 20px 40px rgba(239, 68, 68, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1)'; }
     }
 
-    // 防縮放與防誤觸
-    document.addEventListener('touchmove', function(event) { if (event.touches.length > 1 || event.scale !== 1) { event.preventDefault(); } }, { passive: false });
+    // ==== 🔥 修復單指滑動：只針對雙指(多點觸控)防縮放 ====
+    document.addEventListener('touchmove', function(event) { 
+        if (event.touches.length > 1) { 
+            event.preventDefault(); 
+        } 
+    }, { passive: false });
+    
     document.addEventListener('gesturestart', function(event) { event.preventDefault(); });
     document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
     document.addEventListener('gestureend', function(event) { event.preventDefault(); });
