@@ -830,13 +830,36 @@
         }
     }
 
-    document.addEventListener('touchmove', function(event) { if (event.touches.length > 1 || event.scale !== 1) { event.preventDefault(); } }, { passive: false });
+        // ==== 🔥 終極防縮放引擎 (完美修復單指捲動失效問題) ====
+    document.addEventListener('touchmove', function(event) {
+        // 1. 絕對阻擋：兩根手指以上的觸控 (捏合)
+        if (event.touches.length > 1) { 
+            event.preventDefault(); 
+        }
+        // 2. iOS 專屬防護：如果有 scale 屬性，且不是 1 (代表正在縮放)，才阻擋
+        if (event.scale !== undefined && event.scale !== 1) { 
+            event.preventDefault(); 
+        }
+    }, { passive: false }); // passive: false 才能有效攔截預設行為
+
+    // 攔截 iOS 的特殊手勢事件
     document.addEventListener('gesturestart', function(event) { event.preventDefault(); });
     document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
     document.addEventListener('gestureend', function(event) { event.preventDefault(); });
-    let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
+
+    // 攔截雙擊放大 (Double Tap to Zoom)，但保留正常點擊速度
+    let lastTouchEnd = 0; 
+    document.addEventListener('touchend', function(event) { 
+        const now = (new Date()).getTime(); 
+        // 縮短判定時間至 250ms，避免你連續快速選牌時被誤判為雙擊而阻擋
+        if (now - lastTouchEnd <= 250) { 
+            event.preventDefault(); 
+        } 
+        lastTouchEnd = now; 
+    }, { passive: false });
 
     init();
 </script>
 </body>
+
 </html>
