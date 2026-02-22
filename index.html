@@ -48,7 +48,7 @@
         @keyframes liquidFlow { 0% { transform: translate3d(0%, 0%, 0) scale(1); } 100% { transform: translate3d(5%, 5%, 0) scale(1.05); } }
         body.limit-mode .bg-base { opacity: 0; } body.limit-mode .bg-limit { opacity: 1; } body.failure-mode .bg-base { opacity: 0; }
 
-        .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
+        .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; padding-bottom: 20px; }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px) contrast(110%); -webkit-backdrop-filter: blur(8px) contrast(110%);
@@ -101,14 +101,21 @@
             will-change: transform;
         }
         
-        /* 🔥 新增：電競級零延遲視覺回饋類別 */
         .is-tapped { transform: translate3d(0, 3px, 0) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.15) !important; transition: none !important; }
         .tile.empty { background-image: none !important; background-color: rgba(0,0,0,0.15); box-shadow: inset 0 2px 6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); cursor: default; }
 
         .clear-btn { background: rgba(255, 255, 255, 0.15) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; border-radius: 20px !important; color: white !important; padding: 5px 12px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 500 !important; cursor: pointer; transition: all 0.2s ease; transform: translateZ(0); }
         
         .install-btn { background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8)); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4); margin: 10px auto 0 auto; backdrop-filter: blur(10px); transition: transform 0.2s ease; }
-        .footer-credit { text-align: center; font-size: 11px; font-weight: 300; color: rgba(255, 255, 255, 0.4); letter-spacing: 1.5px; margin-top: 15px; margin-bottom: 5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        
+        /* 🔥 修改 footer 樣式：縮小字距並垂直排列 */
+        .footer-credit {
+            text-align: center; font-size: 11px; font-weight: 300; color: rgba(255, 255, 255, 0.4); 
+            letter-spacing: 0.5px; /* 縮小字距 (原 1.5px) */
+            margin-top: 15px; margin-bottom: 5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; gap: 4px; /* 垂直排列並增加間距 */
+        }
+        .version-num { font-size: 10px; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -166,73 +173,28 @@
     <div class="glass-card keyboard" id="keyboard"></div>
 
     <button id="installBtn" class="install-btn">⬇️ 安裝 App 到桌面</button>
-    <div class="footer-credit">Developed by Leo Lai</div>
+    
+    <div class="footer-credit">
+        <span>Developed by Leo Lai</span>
+        <span class="version-num" id="appVersion"></span>
+    </div>
 </div>
 
 <script>
-    // ==== 🔥 升級版：智慧型零延遲觸控引擎 (完美相容上下滑動) ====
+    // ==== 🔥 在這裡定義你的版本號，以後改這裡就好 ====
+    const APP_VERSION = "v1.2.5 (Beta)";
+
+    // ==== 智慧型零延遲觸控引擎 ====
     function attachFastClick(el, action, isTile = false) {
-        if (el._hasFastClick) {
-            el._action = action; // 如果 DOM 元素重複使用，只需更新綁定的行為
-            return;
-        }
-        
-        el._action = action; 
-        el._hasFastClick = true;
-        let touchHandled = false;
-        let isScrolling = false;
-        let startX = 0; let startY = 0;
-
-        // 1. 手指碰到的瞬間 (0ms 觸發視覺回饋)
-        el.addEventListener('touchstart', (e) => {
-            touchHandled = true;
-            isScrolling = false;
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            if(isTile) el.classList.add('is-tapped');
-        }, { passive: true }); // passive: true 確保不會干擾瀏覽器滑動
-        
-        // 2. 滑動判定 (如果手指移動超過 10px，就當作在滑網頁，取消點擊)
-        el.addEventListener('touchmove', (e) => {
-            if(!touchHandled) return;
-            let moveX = Math.abs(e.touches[0].clientX - startX);
-            let moveY = Math.abs(e.touches[0].clientY - startY);
-            if (moveX > 10 || moveY > 10) {
-                isScrolling = true;
-                if(isTile) el.classList.remove('is-tapped'); // 復原按鈕凹陷
-            }
-        }, { passive: true });
-
-        // 3. 手指離開的瞬間 (極速執行行為)
-        el.addEventListener('touchend', (e) => {
-            if(isTile) el.classList.remove('is-tapped');
-            if (touchHandled && !isScrolling) {
-                if (el._action) el._action(e);
-            }
-            // 400ms 內忽略原生的 click，防禦幽靈雙擊
-            setTimeout(() => { touchHandled = false; }, 400);
-        });
-        
-        // 4. 相容電腦滑鼠點擊
-        el.addEventListener('mousedown', (e) => {
-            if (e.button !== 0) return; // 只允許左鍵
-            if (!touchHandled) {
-                if(isTile) {
-                    el.classList.add('is-tapped');
-                    setTimeout(() => el.classList.remove('is-tapped'), 80);
-                }
-                if (el._action) el._action(e);
-            }
-        });
-        
-        // 5. 封殺系統預設的遲鈍 click
-        el.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
+        if (el._hasFastClick) { el._action = action; return; }
+        el._action = action; el._hasFastClick = true; let touchHandled = false; let isScrolling = false; let startX = 0; let startY = 0;
+        el.addEventListener('touchstart', (e) => { touchHandled = true; isScrolling = false; startX = e.touches[0].clientX; startY = e.touches[0].clientY; if(isTile) el.classList.add('is-tapped'); }, { passive: true });
+        el.addEventListener('touchmove', (e) => { if(!touchHandled) return; let moveX = Math.abs(e.touches[0].clientX - startX); let moveY = Math.abs(e.touches[0].clientY - startY); if (moveX > 10 || moveY > 10) { isScrolling = true; if(isTile) el.classList.remove('is-tapped'); } }, { passive: true });
+        el.addEventListener('touchend', (e) => { if(isTile) el.classList.remove('is-tapped'); if (touchHandled && !isScrolling) { if (el._action) el._action(e); } setTimeout(() => { touchHandled = false; }, 400); });
+        el.addEventListener('mousedown', (e) => { if (e.button !== 0) return; if (!touchHandled) { if(isTile) { el.classList.add('is-tapped'); setTimeout(() => el.classList.remove('is-tapped'), 80); } if (el._action) el._action(e); } });
+        el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); });
     }
 
-    // ==== 輕量級動態高度動畫 ====
     function smoothHeightUpdate(elementId, updateDOM) {
         const el = document.getElementById(elementId);
         if (!el) { updateDOM(); return; }
@@ -252,12 +214,8 @@
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
     if (isStandalone) installBtn.style.display = 'none';
     else {
-        if (isIOS) {
-            installBtn.style.display = 'block'; attachFastClick(installBtn, () => alert('🍎 iOS 安裝提示：\n\n請點擊 Safari 底部的「分享」圖示 📤，然後往下滑選擇「加入主畫面 ＋」，就能將 App 永久安裝到桌面囉！'));
-        } else {
-            window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
-            attachFastClick(installBtn, async () => { if (deferredPrompt) { installBtn.style.display = 'none'; deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome !== 'accepted') installBtn.style.display = 'block'; deferredPrompt = null; } });
-        }
+        if (isIOS) { installBtn.style.display = 'block'; attachFastClick(installBtn, () => alert('🍎 iOS 安裝提示：\n\n請點擊 Safari 底部的「分享」圖示 📤，然後往下滑選擇「加入主畫面 ＋」，就能將 App 永久安裝到桌面囉！')); } 
+        else { window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; }); attachFastClick(installBtn, async () => { if (deferredPrompt) { installBtn.style.display = 'none'; deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome !== 'accepted') installBtn.style.display = 'block'; deferredPrompt = null; } }); }
     }
     window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; });
 
@@ -285,6 +243,9 @@
         document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i)));
         document.querySelectorAll('#seatWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setSeatWind(i)));
         attachFastClick(document.getElementById('clearBtnId'), clearHand);
+
+        // 🔥 在初始化時填入版本號
+        document.getElementById('appVersion').innerText = APP_VERSION;
     }
 
     function animateValue(obj, start, end, duration) {
@@ -594,12 +555,7 @@
     }
 
     // ==== 🔥 修復單指滑動：只針對雙指(多點觸控)防縮放 ====
-    document.addEventListener('touchmove', function(event) { 
-        if (event.touches.length > 1) { 
-            event.preventDefault(); 
-        } 
-    }, { passive: false });
-    
+    document.addEventListener('touchmove', function(event) { if (event.touches.length > 1) { event.preventDefault(); } }, { passive: false });
     document.addEventListener('gesturestart', function(event) { event.preventDefault(); });
     document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
     document.addEventListener('gestureend', function(event) { event.preventDefault(); });
