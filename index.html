@@ -13,28 +13,19 @@
     <style>
         /* ==== 核心環境 ==== */
         * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
+            box-sizing: border-box; margin: 0; padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             touch-action: manipulation; 
         }
         
         body {
-            background-color: #334155; 
-            transition: background-color 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #ffffff; 
-            display: flex; justify-content: center; 
-            min-height: 100vh; 
-            position: relative;
-            padding-top: max(30px, env(safe-area-inset-top) + 10px); 
-            padding-right: 15px;
-            padding-bottom: max(30px, env(safe-area-inset-bottom) + 10px); 
-            padding-left: 15px;
+            background-color: #334155; transition: background-color 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #ffffff; display: flex; justify-content: center; min-height: 100vh; position: relative;
+            padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px;
+            padding-bottom: max(30px, env(safe-area-inset-bottom) + 10px); padding-left: 15px;
             touch-action: pan-x pan-y;
             -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; 
-            -webkit-touch-callout: none; 
-            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
         }
         
         body.success-mode { background-color: #1e3a8a; }
@@ -42,9 +33,8 @@
         body.failure-mode { background-color: #7f1d1d; }
 
         .bg-layer {
-            position: fixed; top: -20vh; left: -20vw; width: 140vw; height: 140vh;
-            z-index: 0; pointer-events: none; transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform; transform: translateZ(0);
+            position: fixed; top: -20vh; left: -20vw; width: 140vw; height: 140vh; z-index: 0; pointer-events: none; 
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0);
         }
         .bg-base {
             background-image: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.5) 0%, transparent 60%), radial-gradient(circle at 80% 70%, rgba(20, 184, 166, 0.4) 0%, transparent 60%), radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.3) 0%, transparent 60%);
@@ -60,9 +50,7 @@
         .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.12); 
-            backdrop-filter: blur(8px) contrast(110%); 
-            -webkit-backdrop-filter: blur(8px) contrast(110%);
+            background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px) contrast(110%); -webkit-backdrop-filter: blur(8px) contrast(110%);
             border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.15); border-top: 1px solid rgba(255, 255, 255, 0.3); border-left: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1); 
             padding: 20px; transition: background-color 0.6s, border-color 0.6s, box-shadow 0.6s; transform: translateZ(0); 
@@ -97,11 +85,9 @@
         .tiles-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.6) translate3d(0, 20px, 0); } 100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } }
-        .enter-anim { animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
-        
+        .enter-anim { animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
         @keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
         .empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
-        
         @keyframes popOut { 0% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } 100% { opacity: 0; transform: scale(0.6) translate3d(0, 20px, 0); } }
 
         .keyboard { display: flex; flex-direction: column; gap: 8px; }
@@ -110,19 +96,17 @@
         .tile {
             aspect-ratio: 3/4; background-color: #fdfdfd; border-radius: 6px; cursor: pointer; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.8); 
-            transition: transform 0.05s; width: 100%; height: auto; background-size: 85%; background-position: center; background-repeat: no-repeat;
+            transition: transform 0.05s, box-shadow 0.05s; width: 100%; height: auto; background-size: 85%; background-position: center; background-repeat: no-repeat;
             will-change: transform;
         }
-        .tile:active { transform: translate3d(0, 3px, 0); box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.15); }
-        .tile .num, .tile .suit { display: none; } 
+        
+        /* 🔥 新增：電競級零延遲視覺回饋類別，超越原生系統的 active 速度 */
+        .is-tapped { transform: translate3d(0, 3px, 0) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.15) !important; transition: none !important; }
         .tile.empty { background-image: none !important; background-color: rgba(0,0,0,0.15); box-shadow: inset 0 2px 6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); cursor: default; }
 
         .clear-btn { background: rgba(255, 255, 255, 0.15) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; border-radius: 20px !important; color: white !important; padding: 5px 12px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 500 !important; cursor: pointer; transition: all 0.2s ease; transform: translateZ(0); }
-        .clear-btn:active { background: rgba(255, 255, 255, 0.25) !important; }
-
+        
         .install-btn { background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8)); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4); margin: 10px auto 0 auto; backdrop-filter: blur(10px); transition: transform 0.2s ease; }
-        .install-btn:active { transform: scale(0.95); }
-
         .footer-credit { text-align: center; font-size: 11px; font-weight: 300; color: rgba(255, 255, 255, 0.4); letter-spacing: 1.5px; margin-top: 15px; margin-bottom: 5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
     </style>
 </head>
@@ -147,19 +131,19 @@
             <div class="wind-group">
                 <div class="section-header"><span>圈風</span></div>
                 <div class="wind-selector" id="roundWindSelector">
-                    <div class="wind-btn active" onclick="setRoundWind(0)">東</div>
-                    <div class="wind-btn" onclick="setRoundWind(1)">南</div>
-                    <div class="wind-btn" onclick="setRoundWind(2)">西</div>
-                    <div class="wind-btn" onclick="setRoundWind(3)">北</div>
+                    <div class="wind-btn active">東</div>
+                    <div class="wind-btn">南</div>
+                    <div class="wind-btn">西</div>
+                    <div class="wind-btn">北</div>
                 </div>
             </div>
             <div class="wind-group">
                 <div class="section-header"><span>門風 (定正花)</span></div>
                 <div class="wind-selector" id="seatWindSelector">
-                    <div class="wind-btn active" onclick="setSeatWind(0)">東</div>
-                    <div class="wind-btn" onclick="setSeatWind(1)">南</div>
-                    <div class="wind-btn" onclick="setSeatWind(2)">西</div>
-                    <div class="wind-btn" onclick="setSeatWind(3)">北</div>
+                    <div class="wind-btn active">東</div>
+                    <div class="wind-btn">南</div>
+                    <div class="wind-btn">西</div>
+                    <div class="wind-btn">北</div>
                 </div>
             </div>
         </div>
@@ -173,7 +157,7 @@
     <div class="glass-card hand-container" id="handCard">
         <div class="hand-header">
             <span id="tileCount">暗牌已選 0 / 14</span>
-            <button class="clear-btn" onclick="clearHand()">清除重選</button>
+            <button class="clear-btn" id="clearBtnId">清除重選</button>
         </div>
         <div class="tiles-grid" id="handGrid"></div>
     </div>
@@ -185,6 +169,50 @@
 </div>
 
 <script>
+    // ==== 🔥 新增：電競級零延遲觸控引擎 (Zero-Latency FastClick) ====
+    // 徹底拋棄傳統 click 帶來的 300ms 黏滯感，達成 0ms 觸發
+    function attachFastClick(el, action, isTile = false) {
+        el._action = action; // 將行為綁定在 DOM 上，避免重複監聽
+        
+        if (!el._hasFastClick) {
+            el._hasFastClick = true;
+            let touchHandled = false;
+            
+            // 手動觸發瞬間的物理視覺回饋 (取代系統遲鈍的 :active)
+            const triggerVisualFeedback = () => {
+                if(isTile) {
+                    el.classList.add('is-tapped');
+                    setTimeout(() => el.classList.remove('is-tapped'), 80);
+                }
+            };
+
+            // 1. 手指碰到的瞬間 (0ms 觸發)
+            el.addEventListener('touchstart', (e) => {
+                touchHandled = true;
+                triggerVisualFeedback();
+                if (el._action) el._action(e);
+                // 400ms 內忽略滑鼠點擊，防禦幽靈雙擊
+                setTimeout(() => { touchHandled = false; }, 400);
+            }, { passive: true }); // passive: true 保留了網頁上下滑動的功能
+            
+            // 2. 電腦滑鼠點擊
+            el.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return; // 只允許左鍵
+                if (!touchHandled) {
+                    triggerVisualFeedback();
+                    if (el._action) el._action(e);
+                }
+            });
+            
+            // 3. 封殺系統預設的遲鈍 click
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+    }
+
+    // ==== 輕量級動態高度動畫 ====
     function smoothHeightUpdate(elementId, updateDOM) {
         const el = document.getElementById(elementId);
         if (!el) { updateDOM(); return; }
@@ -199,7 +227,6 @@
             el.style.height = oldHeight + 'px';
             const oldOverflow = el.style.overflow;
             el.style.overflow = 'hidden'; 
-            
             el.style.willChange = 'height';
             el.offsetHeight; 
             
@@ -215,49 +242,22 @@
         }
     }
 
-// ==== 🔥 終極版：Service Worker 自動更新與快取替換引擎 ====
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                // 每次載入時，主動向伺服器檢查 sw.js 有沒有更新
-                reg.update();
-
-                // 偵測到有新版本的 Service Worker 正在安裝
-                reg.addEventListener('updatefound', () => {
-                    const newWorker = reg.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        // 當新版本安裝完畢，且舊版本還在控制頁面時
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('發現新版本，正在自動刷新...');
-                            // 強制重新整理頁面，載入全新的 HTML/CSS/JS！
-                            window.location.reload();
-                        }
-                    });
-                });
-            }).catch(err => {
-                console.log('SW 註冊失敗: ', err);
-            });
-        });
+        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => {}); });
     }
 
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     const isIOS = /ipad|iphone|ipod/.test(navigator.userAgent.toLowerCase());
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-
-    if (isStandalone) {
-        installBtn.style.display = 'none';
-    } else {
+    if (isStandalone) installBtn.style.display = 'none';
+    else {
         if (isIOS) {
             installBtn.style.display = 'block';
-            installBtn.addEventListener('click', () => {
-                alert('🍎 iOS 安裝提示：\n\n請點擊 Safari 底部的「分享」圖示 📤，然後往下滑選擇「加入主畫面 ＋」，就能將 App 永久安裝到桌面囉！');
-            });
+            attachFastClick(installBtn, () => alert('🍎 iOS 安裝提示：\n\n請點擊 Safari 底部的「分享」圖示 📤，然後往下滑選擇「加入主畫面 ＋」，就能將 App 永久安裝到桌面囉！'));
         } else {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
-            });
-            installBtn.addEventListener('click', async () => {
+            window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
+            attachFastClick(installBtn, async () => {
                 if (deferredPrompt) {
                     installBtn.style.display = 'none'; deferredPrompt.prompt(); 
                     const { outcome } = await deferredPrompt.userChoice;
@@ -277,34 +277,33 @@
     ];
 
     const CONDITIONS = [
-        { id: 'selfDrawn', label: '自摸 (1番)', faan: 1 },
-        { id: 'concealed', label: '門前清 (1番)', faan: 1 },
-        { id: 'lastTile', label: '海底撈月 (1番)', faan: 1 },
-        { id: 'kongSelfDrawn', label: '槓上自摸 (2番)', faan: 2 },
-        { id: 'doubleKongSelfDrawn', label: '槓上槓自摸 (8番)', faan: 8 },
-        { id: 'robKong', label: '搶槓 (1番)', faan: 1 },
-        { id: 'heaven', label: '天糊 (13番)' }, 
-        { id: 'earth', label: '地糊 (13番)' }
+        { id: 'selfDrawn', label: '自摸 (1番)', faan: 1 }, { id: 'concealed', label: '門前清 (1番)', faan: 1 }, { id: 'lastTile', label: '海底撈月 (1番)', faan: 1 },
+        { id: 'kongSelfDrawn', label: '槓上自摸 (2番)', faan: 2 }, { id: 'doubleKongSelfDrawn', label: '槓上槓自摸 (8番)', faan: 8 }, { id: 'robKong', label: '搶槓 (1番)', faan: 1 },
+        { id: 'heaven', label: '天糊 (13番)' }, { id: 'earth', label: '地糊 (13番)' }
     ];
 
     const FLOWERS = [
-        { id: 's1', name: '春', group: 'season', wind: 0 }, { id: 's2', name: '夏', group: 'season', wind: 1 },
-        { id: 's3', name: '秋', group: 'season', wind: 2 }, { id: 's4', name: '冬', group: 'season', wind: 3 },
-        { id: 'p1', name: '梅', group: 'plant', wind: 0 }, { id: 'p2', name: '蘭', group: 'plant', wind: 1 },
-        { id: 'p3', name: '菊', group: 'plant', wind: 2 }, { id: 'p4', name: '竹', group: 'plant', wind: 3 }
+        { id: 's1', name: '春', group: 'season', wind: 0 }, { id: 's2', name: '夏', group: 'season', wind: 1 }, { id: 's3', name: '秋', group: 'season', wind: 2 }, { id: 's4', name: '冬', group: 'season', wind: 3 },
+        { id: 'p1', name: '梅', group: 'plant', wind: 0 }, { id: 'p2', name: '蘭', group: 'plant', wind: 1 }, { id: 'p3', name: '菊', group: 'plant', wind: 2 }, { id: 'p4', name: '竹', group: 'plant', wind: 3 }
     ];
 
     let hand = []; 
     let activeConditions = new Set();
-    let roundWind = 0; 
-    let seatWind = 0;  
+    let roundWind = 0; let seatWind = 0;  
     let activeFlowers = new Set();
-    let scoreAnimationId = null; 
-    let tileKeyCounter = 0; 
-    let lastMax = 14; 
-    let lastTagsHtml = ''; 
+    let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastTagsHtml = ''; 
 
-    function init() { renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); }
+    // 初始化與綁定所有靜態按鈕的 FastClick
+    function init() { 
+        renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
+        
+        // 綁定風位按鈕
+        document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i)));
+        document.querySelectorAll('#seatWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setSeatWind(i)));
+        
+        // 綁定清除按鈕
+        attachFastClick(document.getElementById('clearBtnId'), clearHand);
+    }
 
     function animateValue(obj, start, end, duration) {
         let startTimestamp = null;
@@ -330,23 +329,12 @@
         }
         while (index < 34 && counts[index] === 0) index++;
         if (index === 34) return;
-        if (counts[index] >= 4) {
-            counts[index] -= 4; currentMelds.push({ type: 'kong', val: index });
-            findAllMelds(counts, index, currentMelds, allValidMelds);
-            currentMelds.pop(); counts[index] += 4;
-        }
-        if (counts[index] >= 3) {
-            counts[index] -= 3; currentMelds.push({ type: 'pong', val: index });
-            findAllMelds(counts, index, currentMelds, allValidMelds);
-            currentMelds.pop(); counts[index] += 3;
-        }
+        if (counts[index] >= 4) { counts[index] -= 4; currentMelds.push({ type: 'kong', val: index }); findAllMelds(counts, index, currentMelds, allValidMelds); currentMelds.pop(); counts[index] += 4; }
+        if (counts[index] >= 3) { counts[index] -= 3; currentMelds.push({ type: 'pong', val: index }); findAllMelds(counts, index, currentMelds, allValidMelds); currentMelds.pop(); counts[index] += 3; }
         if (index < 27 && index % 9 <= 6) {
             if (counts[index] > 0 && counts[index+1] > 0 && counts[index+2] > 0) {
-                counts[index]--; counts[index+1]--; counts[index+2]--;
-                currentMelds.push({ type: 'chow', start: index });
-                findAllMelds(counts, index, currentMelds, allValidMelds);
-                counts[index]++; counts[index+1]++; counts[index+2]++;
-                currentMelds.pop();
+                counts[index]--; counts[index+1]--; counts[index+2]--; currentMelds.push({ type: 'chow', start: index });
+                findAllMelds(counts, index, currentMelds, allValidMelds); counts[index]++; counts[index+1]++; counts[index+2]++; currentMelds.pop();
             }
         }
     }
@@ -354,13 +342,8 @@
     function getCurrentMax() {
         let counts = new Array(34).fill(0);
         hand.forEach(item => counts[item.id]++);
-        let kongs = 0;
-        counts.forEach(c => { if (c === 4) kongs++; });
-        let max = 14 + kongs;
-        if (hand.length >= 14) {
-            let tempCounts = [...counts];
-            if (checkWinCondition(tempCounts)) return hand.length; 
-        }
+        let kongs = 0; counts.forEach(c => { if (c === 4) kongs++; }); let max = 14 + kongs;
+        if (hand.length >= 14) { let tempCounts = [...counts]; if (checkWinCondition(tempCounts)) return hand.length; }
         return max;
     }
 
@@ -369,10 +352,8 @@
         if (activeConditions.has('heaven') || activeConditions.has('earth')) return true; 
         for (let i = 0; i < 34; i++) {
             if (counts[i] >= 2) {
-                let tempCounts = [...counts]; tempCounts[i] -= 2;
-                let allValidMelds = [];
-                findAllMelds(tempCounts, 0, [], allValidMelds);
-                if (allValidMelds.length > 0) return true;
+                let tempCounts = [...counts]; tempCounts[i] -= 2; let allValidMelds = [];
+                findAllMelds(tempCounts, 0, [], allValidMelds); if (allValidMelds.length > 0) return true;
             }
         }
         return false;
@@ -384,67 +365,41 @@
         else {
             let defaultHtml = `<span class="pattern-tag">請選取 ${currentMax} 張牌</span>`;
             if (lastTagsHtml !== defaultHtml) {
-                smoothHeightUpdate('statusCard', () => {
-                    document.getElementById('statusTitle').innerText = '等待輸入手牌';
-                    document.getElementById('patternDisplay').innerHTML = defaultHtml;
-                    resetUI();
-                });
+                smoothHeightUpdate('statusCard', () => { document.getElementById('statusTitle').innerText = '等待輸入手牌'; document.getElementById('patternDisplay').innerHTML = defaultHtml; resetUI(); });
                 lastTagsHtml = defaultHtml;
-            } else { resetUI(); }
+            } else resetUI();
         }
     }
 
     function clearHand() {
         if (window.isClearing) return; 
         if (hand.length === 0 && activeConditions.size === 0 && activeFlowers.size === 0 && roundWind === 0 && seatWind === 0) return;
-
-        window.isClearing = true;
-        if (navigator.vibrate) navigator.vibrate([15, 40, 15]);
+        window.isClearing = true; if (navigator.vibrate) navigator.vibrate([15]);
 
         const currentTiles = document.querySelectorAll('#handGrid .tile:not(.empty)');
         const oldMax = getCurrentMax(); 
 
         currentTiles.forEach((el, index) => {
-            const rect = el.getBoundingClientRect();
-            const clone = el.cloneNode(true);
-            clone.classList.remove('enter-anim');
-            clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`;
-            clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0';
-            clone.style.zIndex = '999'; clone.style.transition = 'none'; 
-            clone.style.animation = `popOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`;
-            clone.style.animationDelay = `${index * 0.02}s`;
-            document.body.appendChild(clone);
-            setTimeout(() => clone.remove(), 350 + index * 20);
+            const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim');
+            clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`; clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0'; clone.style.zIndex = '999'; clone.style.transition = 'none'; 
+            clone.style.animation = `popOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`; clone.style.animationDelay = `${index * 0.02}s`;
+            document.body.appendChild(clone); setTimeout(() => clone.remove(), 350 + index * 20);
         });
 
         document.querySelectorAll('.condition-chip.active, .flower-tile.active').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('#roundWindSelector .wind-btn, #seatWindSelector .wind-btn').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('#roundWindSelector .wind-btn')[0].classList.add('active');
-        document.querySelectorAll('#seatWindSelector .wind-btn')[0].classList.add('active');
+        document.querySelectorAll('#roundWindSelector .wind-btn')[0].classList.add('active'); document.querySelectorAll('#seatWindSelector .wind-btn')[0].classList.add('active');
 
         hand = []; activeConditions.clear(); activeFlowers.clear(); roundWind = 0; seatWind = 0; lastTagsHtml = '';
         
-        smoothHeightUpdate('statusCard', () => {
-            resetUI();
-            document.getElementById('statusTitle').innerText = '等待輸入手牌';
-            document.getElementById('patternDisplay').innerHTML = '<span class="pattern-tag">請選取 14 張牌</span>';
-        });
+        smoothHeightUpdate('statusCard', () => { resetUI(); document.getElementById('statusTitle').innerText = '等待輸入手牌'; document.getElementById('patternDisplay').innerHTML = '<span class="pattern-tag">請選取 14 張牌</span>'; });
         document.getElementById('flowerCount').innerText = `已選 0 隻`;
 
-        const grid = document.getElementById('handGrid');
-        grid.innerHTML = '';
-        for (let i = 0; i < oldMax; i++) {
-            const empty = document.createElement('div'); empty.className = 'tile empty';
-            grid.appendChild(empty);
-        }
+        const grid = document.getElementById('handGrid'); grid.innerHTML = '';
+        for (let i = 0; i < oldMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; grid.appendChild(empty); }
         document.getElementById('tileCount').innerText = `暗牌已選 0 / 14`;
 
-        const maxAnimTime = 350 + (currentTiles.length * 20);
-        setTimeout(() => { 
-            lastMax = oldMax; 
-            renderHand();     
-            window.isClearing = false; 
-        }, maxAnimTime);
+        setTimeout(() => { lastMax = oldMax; renderHand(); window.isClearing = false; }, 350 + (currentTiles.length * 20));
     }
 
     function renderConditions() {
@@ -453,7 +408,8 @@
             const chip = document.createElement('div'); chip.className = 'condition-chip';
             if (activeConditions.has(cond.id)) chip.classList.add('active');
             chip.innerText = cond.label;
-            chip.onclick = () => {
+            // 🔥 套用 FastClick
+            attachFastClick(chip, () => {
                 if (activeConditions.has(cond.id)) {
                     activeConditions.delete(cond.id);
                     if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); }
@@ -462,14 +418,14 @@
                     if (cond.id === 'kongSelfDrawn') { activeConditions.delete('doubleKongSelfDrawn'); activeConditions.add('selfDrawn'); } 
                     else if (cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.add('selfDrawn'); }
                 }
-                renderConditions(); if (navigator.vibrate) navigator.vibrate(10); checkAndRunEngine();
-            };
+                renderConditions(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
+            });
             bar.appendChild(chip);
         });
     }
 
-    function setRoundWind(index) { roundWind = index; document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate(10); checkAndRunEngine(); }
-    function setSeatWind(index) { seatWind = index; document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate(10); checkAndRunEngine(); }
+    function setRoundWind(index) { roundWind = index; document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); }
+    function setSeatWind(index) { seatWind = index; document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); }
 
     function renderFlowers() {
         const grid = document.getElementById('flowerGrid'); grid.innerHTML = '';
@@ -477,11 +433,12 @@
             const btn = document.createElement('div'); btn.className = 'flower-tile';
             if (activeFlowers.has(f.id)) btn.classList.add('active');
             btn.style.backgroundImage = `url('tiles/f${index + 1}.svg')`;
-            btn.onclick = () => {
+            // 🔥 套用 FastClick
+            attachFastClick(btn, () => {
                 if (activeFlowers.has(f.id)) activeFlowers.delete(f.id); else activeFlowers.add(f.id);
                 btn.classList.toggle('active'); document.getElementById('flowerCount').innerText = `已選 ${activeFlowers.size} 隻`;
-                if (navigator.vibrate) navigator.vibrate(10); checkAndRunEngine();
-            };
+                if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
+            }, true); // 標記為 Tile，加入按壓動畫
             grid.appendChild(btn);
         });
     }
@@ -495,7 +452,8 @@
                 const id = def.startId + i;
                 const btn = document.createElement('div');
                 btn.className = `tile ${def.type}`; btn.style.backgroundImage = `url('tiles/${def.type}${i + 1}.svg')`;
-                btn.onclick = () => addTile(id);
+                // 🔥 套用極速打字 FastClick
+                attachFastClick(btn, () => addTile(id), true);
                 row.appendChild(btn);
             }
             kb.appendChild(row);
@@ -515,137 +473,84 @@
         let projectedMax = getCurrentMax();
         if (hand.length > projectedMax) { hand.pop(); tileKeyCounter--; return; }
         hand.sort((a, b) => a.id - b.id);
-        if (navigator.vibrate) navigator.vibrate(10); renderHand();
+        if (navigator.vibrate) navigator.vibrate([8]); renderHand();
     }
 
     function removeTile(index) {
         hand.splice(index, 1);
-        if (navigator.vibrate) navigator.vibrate(10); renderHand();
+        if (navigator.vibrate) navigator.vibrate([8]); renderHand();
     }
 
     function resetUI() {
-        document.body.className = '';
-        const card = document.getElementById('statusCard');
-        card.style.background = 'rgba(255, 255, 255, 0.12)'; card.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-        card.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)';
-        if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId);
-        document.getElementById('scoreValue').innerText = '--';
+        document.body.className = ''; const card = document.getElementById('statusCard');
+        card.style.background = 'rgba(255, 255, 255, 0.12)'; card.style.borderColor = 'rgba(255, 255, 255, 0.15)'; card.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)';
+        if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); document.getElementById('scoreValue').innerText = '--';
     }
 
-    // ==== 🔥 核心修復：虛擬 DOM 記憶引擎 ====
     function renderHand() {
-        const grid = document.getElementById('handGrid');
-        let currentMax = getCurrentMax();
-        const oldPos = {};
-        
-        // 記憶舊位置，為了 FLIP 動畫
+        const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {};
         grid.querySelectorAll('.tile[data-key]').forEach(el => { oldPos[el.dataset.key] = el.getBoundingClientRect(); });
 
         const updateGridDOM = () => {
-            // 建立記憶庫：保留已經在畫面上的 DOM 元素，絕對不刪除！
             const existingTiles = new Map();
-            grid.querySelectorAll('.tile[data-key]').forEach(el => {
-                existingTiles.set(el.dataset.key, el);
-            });
-            
-            // 只把沒有靈魂的空殼(暗格)先掃掉
+            grid.querySelectorAll('.tile[data-key]').forEach(el => { existingTiles.set(el.dataset.key, el); });
             grid.querySelectorAll('.tile.empty').forEach(el => el.remove());
 
-            // 根據重新排序後的陣列，重新排列 DOM
             hand.forEach((item) => {
                 let el = existingTiles.get(String(item.key));
                 if (!el) {
-                    // 只有「全新」的牌才需要建立 DOM 與發動進場動畫
-                    const info = getTileInfo(item.id);
-                    el = document.createElement('div');
-                    el.className = `tile ${info.type} enter-anim`; 
-                    el.dataset.key = item.key;
-                    let imgNum = info.num;
-                    if (info.type === 'z') { const zNames = ['東','南','西','北','中','發','白']; imgNum = zNames.indexOf(info.num) + 1; }
+                    const info = getTileInfo(item.id); el = document.createElement('div'); el.className = `tile ${info.type} enter-anim`; el.dataset.key = item.key;
+                    let imgNum = info.num; if (info.type === 'z') { const zNames = ['東','南','西','北','中','發','白']; imgNum = zNames.indexOf(info.num) + 1; }
                     el.style.backgroundImage = `url('tiles/${info.type}${imgNum}.svg')`;
                 }
                 
-                // 動態更新刪除事件的索引，確保點哪張刪哪張
-                el.onclick = () => {
+                // 🔥 套用 FastClick 刪除功能
+                attachFastClick(el, () => {
                     const currentIdx = hand.findIndex(t => t.key === item.key);
                     if (currentIdx > -1) removeTile(currentIdx);
-                };
+                }, true);
                 
-                // 將元素「移動」到正確的位置，而不是重建！
                 grid.appendChild(el); 
             });
             
-            // 清除已經被使用者刪掉的舊牌 DOM
-            existingTiles.forEach((el, key) => {
-                if (!hand.find(t => String(t.key) === key)) {
-                    el.remove();
-                }
-            });
-
-            // 補齊剩餘的空殼
+            existingTiles.forEach((el, key) => { if (!hand.find(t => String(t.key) === key)) el.remove(); });
             for (let i = hand.length; i < currentMax; i++) {
                 const empty = document.createElement('div'); empty.className = 'tile empty';
-                if (i >= lastMax && currentMax > lastMax) { empty.classList.add('empty-enter-anim'); }
-                grid.appendChild(empty);
+                if (i >= lastMax && currentMax > lastMax) { empty.classList.add('empty-enter-anim'); } grid.appendChild(empty);
             }
             document.getElementById('tileCount').innerText = `暗牌已選 ${hand.length} / ${currentMax}`;
         };
 
-        // 高度變動時呼叫滑順引擎，否則極速更新 DOM
-        if (lastMax !== currentMax) {
-            smoothHeightUpdate('handCard', updateGridDOM);
-        } else {
-            updateGridDOM();
-        }
+        if (lastMax !== currentMax) smoothHeightUpdate('handCard', updateGridDOM); else updateGridDOM();
 
-        // FLIP 滑動動畫 (現在因為沒有 DOM 重建，舊牌完全不會閃爍！)
         grid.querySelectorAll('.tile[data-key]').forEach(el => {
             const key = el.dataset.key;
             if (oldPos[key]) {
                 el.classList.remove('enter-anim'); 
                 const newRect = el.getBoundingClientRect(); const oldRect = oldPos[key];
-                const dx = oldRect.left - newRect.left;
-                const dy = oldRect.top - newRect.top;
+                const dx = oldRect.left - newRect.left; const dy = oldRect.top - newRect.top;
                 
-                // 只有真的「改變位置」的牌才套用位移動畫，徹底避免原地重繪的跳動
                 if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-                    el.style.transition = 'none'; 
-                    el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-                    el.offsetHeight; // Force reflow
-                    
-                    el.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    el.style.transform = 'translate3d(0,0,0)'; 
-                    
-                    setTimeout(() => { 
-                        el.style.transition = ''; 
-                        el.style.transform = ''; 
-                    }, 300); 
-                } else {
-                    el.style.transition = ''; 
-                    el.style.transform = ''; 
-                }
+                    el.style.transition = 'none'; el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`; el.offsetHeight; 
+                    el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'; el.style.transform = 'translate3d(0,0,0)'; 
+                    setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, 250); 
+                } else { el.style.transition = ''; el.style.transform = ''; }
             }
         });
         
-        lastMax = currentMax;
-        checkAndRunEngine();
+        lastMax = currentMax; checkAndRunEngine();
     }
 
     function getExtras(counts) {
         let faan = 0; let tags = []; let fCount = activeFlowers.size;
-
         if (fCount === 0) { faan += 1; tags.push({ text: "無花 (1番)", isFlower: true }); } 
         else if (fCount === 8) { faan += 8; tags.push({ text: "大花胡/八仙過海 (8番)", isHigh: true, isFlower: true }); } 
         else if (fCount === 7) { faan += 3; tags.push({ text: "花胡 (3番)", isFlower: true }); } 
         else {
-            let hasSeasonSet = ['s1','s2','s3','s4'].every(id => activeFlowers.has(id));
-            let hasPlantSet = ['p1','p2','p3','p4'].every(id => activeFlowers.has(id));
-            if (hasSeasonSet) { faan += 2; tags.push({ text: "一台花 [春夏秋冬] (2番)", isFlower: true }); }
-            if (hasPlantSet) { faan += 2; tags.push({ text: "一台花 [梅蘭菊竹] (2番)", isFlower: true }); }
-            if (!hasSeasonSet && activeFlowers.has(`s${seatWind + 1}`)) { faan += 1; tags.push({ text: "正花 (1番)", isFlower: true }); }
-            if (!hasPlantSet && activeFlowers.has(`p${seatWind + 1}`)) { faan += 1; tags.push({ text: "正花 (1番)", isFlower: true }); }
+            let hasSeasonSet = ['s1','s2','s3','s4'].every(id => activeFlowers.has(id)); let hasPlantSet = ['p1','p2','p3','p4'].every(id => activeFlowers.has(id));
+            if (hasSeasonSet) { faan += 2; tags.push({ text: "一台花 [春夏秋冬] (2番)", isFlower: true }); } if (hasPlantSet) { faan += 2; tags.push({ text: "一台花 [梅蘭菊竹] (2番)", isFlower: true }); }
+            if (!hasSeasonSet && activeFlowers.has(`s${seatWind + 1}`)) { faan += 1; tags.push({ text: "正花 (1番)", isFlower: true }); } if (!hasPlantSet && activeFlowers.has(`p${seatWind + 1}`)) { faan += 1; tags.push({ text: "正花 (1番)", isFlower: true }); }
         }
-
         let condFaan = 0;
         CONDITIONS.forEach(cond => {
             if (cond.id === 'heaven' || cond.id === 'earth') return;
@@ -654,16 +559,13 @@
                 condFaan += cond.faan; tags.push({ text: cond.label, isHigh: cond.faan >= 5 });
             }
         });
-        faan += condFaan;
-        return { faan, tags };
+        faan += condFaan; return { faan, tags };
     }
 
     function isNineGates(counts) {
-        let sum = 0; for(let i=0; i<34; i++) sum += counts[i];
-        if (sum !== 14) return false;
+        let sum = 0; for(let i=0; i<34; i++) sum += counts[i]; if (sum !== 14) return false;
         for (let s = 0; s < 3; s++) {
-            let start = s * 9; let suitSum = 0;
-            for (let i=0; i<9; i++) suitSum += counts[start+i];
+            let start = s * 9; let suitSum = 0; for (let i=0; i<9; i++) suitSum += counts[start+i];
             if (suitSum === 14) {
                 let base = [3,1,1,1,1,1,1,1,3]; let isValid = true;
                 for(let i=0; i<9; i++) if (counts[start+i] < base[i]) isValid = false;
@@ -674,26 +576,16 @@
     }
 
     function isThirteenOrphans(counts) {
-        let sum = 0; for(let i=0; i<34; i++) sum += counts[i];
-        if (sum !== 14) return false;
-        const orphans = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33];
-        let hasPair = false;
-        for (let id of orphans) {
-            if (counts[id] === 0) return false;
-            if (counts[id] === 2) hasPair = true;
-        }
+        let sum = 0; for(let i=0; i<34; i++) sum += counts[i]; if (sum !== 14) return false;
+        const orphans = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33]; let hasPair = false;
+        for (let id of orphans) { if (counts[id] === 0) return false; if (counts[id] === 2) hasPair = true; }
         return hasPair;
     }
 
     function runEngine() {
-        let counts = new Array(34).fill(0);
-        hand.forEach(item => counts[item.id]++);
-        let fCount = activeFlowers.size;
-
+        let counts = new Array(34).fill(0); hand.forEach(item => counts[item.id]++); let fCount = activeFlowers.size;
         if (fCount === 8) return displayResult(8, [{ text: "大花胡/八仙過海 (8番)", isHigh: true, isFlower: true }], true, true);
-
-        let currentMax = getCurrentMax();
-        let specialFaan = 0; let specialTags = []; let isSpecial = false;
+        let currentMax = getCurrentMax(); let specialFaan = 0; let specialTags = []; let isSpecial = false;
 
         if (hand.length === currentMax) {
             if (activeConditions.has('heaven')) { specialFaan = 13; specialTags.push({ text: "天糊 (13番)", isHigh: true }); isSpecial = true; }
@@ -708,9 +600,7 @@
         if (hand.length === currentMax) {
             for (let i = 0; i < 34; i++) {
                 if (counts[i] >= 2) {
-                    let tempCounts = [...counts]; tempCounts[i] -= 2;
-                    let allValidMelds = [];
-                    findAllMelds(tempCounts, 0, [], allValidMelds);
+                    let tempCounts = [...counts]; tempCounts[i] -= 2; let allValidMelds = []; findAllMelds(tempCounts, 0, [], allValidMelds);
                     for (let melds of allValidMelds) { validBreakdowns.push({ eye: i, melds: melds }); }
                 }
             }
@@ -723,101 +613,52 @@
         }
 
         let bestResult = { faan: -1, tags: [], isLimit: false };
-        for (let breakdown of validBreakdowns) {
-            let res = evaluateStandardPatterns(breakdown, counts);
-            if (res.faan > bestResult.faan) bestResult = res;
-        }
-
+        for (let breakdown of validBreakdowns) { let res = evaluateStandardPatterns(breakdown, counts); if (res.faan > bestResult.faan) bestResult = res; }
         displayResult(bestResult.faan, bestResult.tags, true, bestResult.isLimit);
     }
 
     function evaluateStandardPatterns(breakdown, counts) {
         let faan = 0; let tags = []; let isExceptional = false; 
         let kongsCount = 0; for (let i = 0; i < 34; i++) { if (counts[i] === 4) kongsCount++; }
-
         let suits = new Set(); let hasZ = false;
-        for (let i = 0; i < 34; i++) {
-            if (counts[i] > 0) {
-                if (i < 9) suits.add('w'); else if (i < 18) suits.add('t'); else if (i < 27) suits.add('s'); else hasZ = true;
-            }
-        }
+        for (let i = 0; i < 34; i++) { if (counts[i] > 0) { if (i < 9) suits.add('w'); else if (i < 18) suits.add('t'); else if (i < 27) suits.add('s'); else hasZ = true; } }
 
-        if (suits.size === 0 && hasZ) {
-            faan += 10; tags.push({ text: "字一色 (10番)", isHigh: true }); isExceptional = true;
-        } else if (suits.size === 1) {
-            if (kongsCount < 4) {
-                if (!hasZ) { faan += 7; tags.push({ text: "清一色 (7番)", isHigh: true }); }
-                else { faan += 3; tags.push({ text: "混一色 (3番)", isHigh: false }); }
-            }
-        }
+        if (suits.size === 0 && hasZ) { faan += 10; tags.push({ text: "字一色 (10番)", isHigh: true }); isExceptional = true; } 
+        else if (suits.size === 1) { if (kongsCount < 4) { if (!hasZ) { faan += 7; tags.push({ text: "清一色 (7番)", isHigh: true }); } else { faan += 3; tags.push({ text: "混一色 (3番)", isHigh: false }); } } }
 
-        const isAllPongs = breakdown.melds.every(m => m.type === 'pong' || m.type === 'kong');
-        const isAllChows = breakdown.melds.every(m => m.type === 'chow');
+        const isAllPongs = breakdown.melds.every(m => m.type === 'pong' || m.type === 'kong'); const isAllChows = breakdown.melds.every(m => m.type === 'chow');
 
         if (isAllPongs) {
-            let isAllTerminals = true;
-            for (let i = 0; i < 34; i++) { if (counts[i] > 0 && i < 27 && (i % 9 !== 0 && i % 9 !== 8)) isAllTerminals = false; }
+            let isAllTerminals = true; for (let i = 0; i < 34; i++) { if (counts[i] > 0 && i < 27 && (i % 9 !== 0 && i % 9 !== 8)) isAllTerminals = false; }
             if (isAllTerminals && !hasZ) { faan += 10; tags.push({ text: "清么九 (10番)", isHigh: true }); isExceptional = true; } 
             else if (isAllTerminals && hasZ) { if (kongsCount < 4) { faan += 4; tags.push({ text: "花么九 (4番)", isHigh: false }); } } 
             else if (activeConditions.has('concealed') && kongsCount < 4) { faan += 8; tags.push({ text: "坎坎糊 (8番)", isHigh: true }); isExceptional = true; } 
             else if (kongsCount < 4) { faan += 3; tags.push({ text: "對對糊 (3番)", isHigh: false }); }
-            
             if (kongsCount === 4) { faan += 13; tags.push({ text: "十八羅漢 (13番)", isHigh: true }); isExceptional = true; }
-        } else if (isAllChows) {
-            faan += 1; tags.push({ text: "平糊 (1番)", isHigh: false });
+        } else if (isAllChows) { faan += 1; tags.push({ text: "平糊 (1番)", isHigh: false }); }
+
+        let dPongs = 0, dEyes = 0; [31, 32, 33].forEach(id => { if (counts[id] >= 3) dPongs++; else if (counts[id] === 2) dEyes++; });
+        if (dPongs === 3) { faan += 8; tags.push({ text: "大三元 (8番)", isHigh: true }); isExceptional = true; } else if (dPongs === 2 && dEyes === 1) { faan += 5; tags.push({ text: "小三元 (5番)", isHigh: false }); } else if (dPongs > 0) { if (counts[31] >= 3) { faan += 1; tags.push({ text: "紅中 (1番)", isHigh: false }); } if (counts[32] >= 3) { faan += 1; tags.push({ text: "發財 (1番)", isHigh: false }); } if (counts[33] >= 3) { faan += 1; tags.push({ text: "白板 (1番)", isHigh: false }); } } 
+
+        let wPongs = 0, wEyes = 0; [27, 28, 29, 30].forEach(id => { if (counts[id] >= 3) wPongs++; else if (counts[id] === 2) wEyes++; });
+        if (wPongs === 4) { faan += 13; tags.push({ text: "大四喜 (13番)", isHigh: true }); isExceptional = true; } else if (wPongs === 3 && wEyes === 1) { faan += 6; tags.push({ text: "小四喜 (6番)", isHigh: true }); isExceptional = true; } else {
+            if (!isExceptional) { let roundWindId = 27 + roundWind; let seatWindId = 27 + seatWind; let windNames = ['東', '南', '西', '北']; if (counts[roundWindId] >= 3) { faan += 1; tags.push({ text: `${windNames[roundWind]}圈 (1番)`, isWind: true }); } if (counts[seatWindId] >= 3) { faan += 1; tags.push({ text: `${windNames[seatWind]}位 (1番)`, isWind: true }); } }
         }
 
-        let dPongs = 0, dEyes = 0; 
-        [31, 32, 33].forEach(id => { if (counts[id] >= 3) dPongs++; else if (counts[id] === 2) dEyes++; });
-        if (dPongs === 3) { faan += 8; tags.push({ text: "大三元 (8番)", isHigh: true }); isExceptional = true; } 
-        else if (dPongs === 2 && dEyes === 1) { faan += 5; tags.push({ text: "小三元 (5番)", isHigh: false }); } 
-        else if (dPongs > 0) { 
-            if (counts[31] >= 3) { faan += 1; tags.push({ text: "紅中 (1番)", isHigh: false }); }
-            if (counts[32] >= 3) { faan += 1; tags.push({ text: "發財 (1番)", isHigh: false }); }
-            if (counts[33] >= 3) { faan += 1; tags.push({ text: "白板 (1番)", isHigh: false }); }
-        } 
-
-        let wPongs = 0, wEyes = 0; 
-        [27, 28, 29, 30].forEach(id => { if (counts[id] >= 3) wPongs++; else if (counts[id] === 2) wEyes++; });
-        if (wPongs === 4) { faan += 13; tags.push({ text: "大四喜 (13番)", isHigh: true }); isExceptional = true; } 
-        else if (wPongs === 3 && wEyes === 1) { faan += 6; tags.push({ text: "小四喜 (6番)", isHigh: true }); isExceptional = true; } 
-        else {
-            if (!isExceptional) {
-                let roundWindId = 27 + roundWind; let seatWindId = 27 + seatWind; let windNames = ['東', '南', '西', '北'];
-                if (counts[roundWindId] >= 3) { faan += 1; tags.push({ text: `${windNames[roundWind]}圈 (1番)`, isWind: true }); }
-                if (counts[seatWindId] >= 3) { faan += 1; tags.push({ text: `${windNames[seatWind]}位 (1番)`, isWind: true }); }
-            }
-        }
-
-        if (!isExceptional) {
-            let extras = getExtras(counts); faan += extras.faan; tags.push(...extras.tags);
-        }
-
+        if (!isExceptional) { let extras = getExtras(counts); faan += extras.faan; tags.push(...extras.tags); }
         if (faan === 0 && !isExceptional) tags.push({ text: "雞糊 (0番)", isHigh: false });
         return { faan, tags, isLimit: faan >= 10 || isExceptional }; 
     }
 
     function displayResult(faan, tags, isWin, isLimit) {
-        let html = '';
-        tags.forEach(t => {
-            let text = typeof t === 'string' ? t : t.text; let hl = t.isHigh ? 'highlight' : ''; let fl = t.isFlower ? 'flower' : ''; let wd = t.isWind ? 'wind' : '';
-            html += `<span class="pattern-tag ${hl} ${fl} ${wd}">${text}</span>`;
-        });
-
+        let html = ''; tags.forEach(t => { let text = typeof t === 'string' ? t : t.text; let hl = t.isHigh ? 'highlight' : ''; let fl = t.isFlower ? 'flower' : ''; let wd = t.isWind ? 'wind' : ''; html += `<span class="pattern-tag ${hl} ${fl} ${wd}">${text}</span>`; });
         const updateStatusDOM = () => {
             document.getElementById('statusTitle').innerText = isWin ? (isLimit ? '✨ 無限疊加．極限爆棚 ✨' : '計算完成') : '分析失敗';
-            const scoreElement = document.getElementById('scoreValue');
-            let currentScore = parseInt(scoreElement.innerText) || 0;
+            const scoreElement = document.getElementById('scoreValue'); let currentScore = parseInt(scoreElement.innerText) || 0;
             if (isWin && faan > 0) animateValue(scoreElement, currentScore, faan, 300); else scoreElement.innerText = faan; 
             document.getElementById('patternDisplay').innerHTML = html;
         };
-
-        if (html !== lastTagsHtml) {
-            smoothHeightUpdate('statusCard', updateStatusDOM);
-            lastTagsHtml = html;
-        } else {
-            updateStatusDOM();
-        }
+        if (html !== lastTagsHtml) { smoothHeightUpdate('statusCard', updateStatusDOM); lastTagsHtml = html; } else updateStatusDOM();
 
         const card = document.getElementById('statusCard'); document.body.className = '';
         if (isWin) {
@@ -825,41 +666,17 @@
             if (isLimit) { document.body.classList.add('limit-mode'); card.style.background = 'rgba(250, 204, 21, 0.15)'; card.style.borderColor = 'rgba(250, 204, 21, 0.6)'; card.style.boxShadow = '0 20px 50px rgba(236, 72, 153, 0.4), inset 0 2px 15px rgba(250, 204, 21, 0.3)'; } 
             else if (faan >= 5) { document.body.classList.add('success-mode'); card.style.background = 'rgba(59, 130, 246, 0.2)'; card.style.borderColor = 'rgba(59, 130, 246, 0.5)'; card.style.boxShadow = '0 20px 40px rgba(20, 184, 166, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3)'; } 
             else { card.style.background = 'rgba(255, 255, 255, 0.12)'; card.style.borderColor = 'rgba(255, 255, 255, 0.15)'; card.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)'; }
-        } else {
-            document.body.classList.add('failure-mode'); card.style.background = 'rgba(239, 68, 68, 0.15)'; card.style.borderColor = 'rgba(239, 68, 68, 0.4)'; card.style.boxShadow = '0 20px 40px rgba(239, 68, 68, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1)';
-        }
+        } else { document.body.classList.add('failure-mode'); card.style.background = 'rgba(239, 68, 68, 0.15)'; card.style.borderColor = 'rgba(239, 68, 68, 0.4)'; card.style.boxShadow = '0 20px 40px rgba(239, 68, 68, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1)'; }
     }
 
-        // ==== 🔥 終極防縮放引擎 (完美修復單指捲動失效問題) ====
-    document.addEventListener('touchmove', function(event) {
-        // 1. 絕對阻擋：兩根手指以上的觸控 (捏合)
-        if (event.touches.length > 1) { 
-            event.preventDefault(); 
-        }
-        // 2. iOS 專屬防護：如果有 scale 屬性，且不是 1 (代表正在縮放)，才阻擋
-        if (event.scale !== undefined && event.scale !== 1) { 
-            event.preventDefault(); 
-        }
-    }, { passive: false }); // passive: false 才能有效攔截預設行為
-
-    // 攔截 iOS 的特殊手勢事件
+    // 防縮放與防誤觸
+    document.addEventListener('touchmove', function(event) { if (event.touches.length > 1 || event.scale !== 1) { event.preventDefault(); } }, { passive: false });
     document.addEventListener('gesturestart', function(event) { event.preventDefault(); });
     document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
     document.addEventListener('gestureend', function(event) { event.preventDefault(); });
-
-    // 攔截雙擊放大 (Double Tap to Zoom)，但保留正常點擊速度
-    let lastTouchEnd = 0; 
-    document.addEventListener('touchend', function(event) { 
-        const now = (new Date()).getTime(); 
-        // 縮短判定時間至 250ms，避免你連續快速選牌時被誤判為雙擊而阻擋
-        if (now - lastTouchEnd <= 250) { 
-            event.preventDefault(); 
-        } 
-        lastTouchEnd = now; 
-    }, { passive: false });
+    let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
 
     init();
 </script>
 </body>
-
 </html>
