@@ -65,129 +65,114 @@
         .pattern-tag.flower { background: rgba(244, 114, 182, 0.2); border-color: rgba(244, 114, 182, 0.5); color: #f9a8d4; }
         .pattern-tag.wind { background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.5); color: #7dd3fc; }
 
-        /* ==== 🔥 iOS 26 動態島核心樣式 ==== */
-        .island-container {
-            position: relative;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            height: 44px; /* 佔位高度，避免佈局跳動 */
-            margin-bottom: 0;
+        /* ==== 動態島 ==== */
+        .dynamic-island {
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(16px) contrast(120%);
+            -webkit-backdrop-filter: blur(16px) contrast(120%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            border-radius: 30px; margin: 0 auto; width: 100%; max-width: 180px; 
+            display: flex; flex-direction: column; overflow: hidden;
+            transition: max-width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
+            will-change: max-width, border-radius;
         }
 
-        .island-pill {
-            position: absolute;
-            top: 0;
-            height: 44px;
-            background: rgba(0, 0, 0, 0.6); /* 深色玻璃質感 */
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-radius: 22px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 24px;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 蘋果風格彈簧動畫 */
-            overflow: hidden;
-            width: auto;
-            min-width: 160px;
-            max-width: 90%;
-        }
+        .dynamic-island.expanded { max-width: 420px; border-radius: 28px; background: rgba(255, 255, 255, 0.12); }
 
-        .island-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            transition: opacity 0.2s;
-        }
+        .island-header { padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+        .island-title { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s; }
+        .island-chevron { font-size: 10px; opacity: 0.6; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .dynamic-island.expanded .island-chevron { transform: rotate(-180deg); }
 
-        .island-icon { font-size: 16px; color: #60a5fa; }
+        .island-content-grid { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .dynamic-island.expanded .island-content-grid { grid-template-rows: 1fr; }
+        .island-content-inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* 展開狀態：變成大面板 */
-        .island-pill.expanded {
-            width: 100%;
-            height: auto;
-            min-height: 220px;
-            border-radius: 28px;
-            background: rgba(15, 23, 42, 0.85); /* 展開後顏色加深 */
-            padding: 20px;
-            flex-direction: column;
-            justify-content: flex-start;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
+        .island-section { padding: 0 16px 16px 16px; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .dynamic-island.expanded .island-section { opacity: 1; transform: translateY(0); }
+        .dynamic-island.expanded .island-section:nth-child(1) { transition-delay: 0.05s; }
+        .dynamic-island.expanded .island-section:nth-child(3) { transition-delay: 0.10s; }
+        .dynamic-island.expanded .island-section:nth-child(5) { transition-delay: 0.15s; }
 
-        /* 展開後的網格內容 */
-        .island-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            width: 100%;
-            opacity: 0;
-            transform: scale(0.9);
-            pointer-events: none;
-            transition: all 0.3s ease;
-            position: absolute; /* 平常藏起來 */
-            top: 20px;
-            left: 0;
-            padding: 0 20px;
-        }
+        .island-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0 16px 12px 16px; opacity: 0; transition: opacity 0.3s; }
+        .dynamic-island.expanded .island-divider { opacity: 1; }
 
-        .island-pill.expanded .island-content { opacity: 0; pointer-events: none; } /* 隱藏原本文字 */
-        .island-pill.expanded .island-grid { 
-            opacity: 1; 
-            transform: scale(1); 
-            pointer-events: auto; 
-            position: relative; /* 展開後回復正常流 */
-            top: 0;
-        }
+        .island-section-header { font-size: 12px; opacity: 0.6; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 1px; }
+        
+        .conditions-wrapper { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; }
+        .condition-chip { padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.2); color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.2s ease; will-change: transform; flex: 1 1 auto; text-align: center;}
+        .condition-chip.active { background: #3b82f6; color: #fff; border-color: #60a5fa; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); transform: scale(1.05); }
 
-        /* 網格內的按鈕 */
-        .grid-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 12px;
-            text-align: center;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.7);
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .grid-btn.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #60a5fa;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-        }
-
-        /* 點擊背景關閉用的隱形層 */
-        .island-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 90;
-            display: none;
-            /* background: rgba(0,0,0,0.1); 除錯用 */ 
-        }
-        .island-overlay.show { display: block; }
-
-        .section-header { font-size: 13px; opacity: 0.7; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 500; color: rgba(255,255,255,0.8); }
-        .winds-container { display: flex; gap: 15px; margin-bottom: 16px; }
+        .winds-container { display: flex; gap: 15px; }
         .wind-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .wind-selector { display: flex; gap: 6px; }
-        .wind-btn { flex: 1; padding: 8px 0; text-align: center; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15); font-size: 14px; cursor: pointer; transition: 0.2s; color: rgba(255,255,255,0.8); font-weight: 500; will-change: transform; }
-        .wind-btn.active { background: #ffffff; color: #1e293b; font-weight: bold; box-shadow: 0 2px 10px rgba(255,255,255,0.3); }
+        .wind-btn { flex: 1; padding: 6px 0; text-align: center; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); font-size: 13px; cursor: pointer; transition: 0.2s; color: rgba(255,255,255,0.7); font-weight: 500; will-change: transform; }
+        .wind-btn.active { background: #ffffff; color: #1e293b; font-weight: bold; box-shadow: 0 2px 10px rgba(255,255,255,0.3); border-color: #fff; }
 
-        .flower-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
-        .flower-tile { aspect-ratio: 3/4; background-color: #fdfdfd; border-radius: 6px; cursor: pointer; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.1); background-size: 85%; background-position: center; background-repeat: no-repeat; will-change: transform; }
-        .flower-tile.active { transform: translate3d(0, -4px, 0); box-shadow: 0 8px 15px rgba(236, 72, 153, 0.4), inset 0 0 0 2px #ec4899; }
+        /* ==== 🔥 VisionOS 空間美學花牌 ==== */
+        .flower-grid { 
+            display: grid; 
+            grid-template-columns: repeat(8, 1fr); 
+            gap: 8px; 
+            padding: 4px; /* 上下左右留空間給懸浮放大 */
+            /* 加入透視感，讓 Z 軸動畫更立體 */
+            perspective: 1000px; 
+        }
+        .flower-tile { 
+            position: relative; /* 定位基準 */
+            aspect-ratio: 3/4; 
+            background-color: #fdfdfd; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            /* 調整為蘋果極致絲滑的彈簧曲線 */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 -2px 0 rgba(0,0,0,0.05); 
+            background-size: 88%; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            will-change: transform, box-shadow;
+            z-index: 1; /* 確保自己蓋過虛擬光層 */
+        }
 
+        /* 隱形的鈦金屬炫彩光暈層 */
+        .flower-tile::before {
+            content: ''; 
+            position: absolute;
+            inset: -2px; /* 比牌本身大 2px，形成完美邊框 */
+            border-radius: 8px; 
+            z-index: -1; /* 躲在牌的背後 */
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(236,72,153,1) 25%, rgba(56,189,248,1) 50%, rgba(168,85,247,1) 75%, rgba(255,255,255,0.8) 100%);
+            background-size: 300% 300%;
+            opacity: 0; 
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        /* 選中狀態：懸浮 + 發光 */
+        .flower-tile.active { 
+            /* 往上浮起，且往螢幕外 (Z軸) 放大 */
+            transform: translate3d(0, -6px, 10px) scale(1.08); 
+            /* 柔和、面積廣的空間陰影 */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 10px 15px rgba(0,0,0,0.15); 
+            border-color: transparent; 
+            z-index: 10; /* 選中時圖層拉到最高，蓋過旁邊的牌 */
+        }
+
+        /* 啟動流體光暈動畫 */
+        .flower-tile.active::before {
+            opacity: 1;
+            animation: iridescentFlow 3s linear infinite;
+        }
+
+        @keyframes iridescentFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ==== 手牌與鍵盤區 ==== */
         .hand-container { min-height: 120px; }
         .hand-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; opacity: 0.8; margin-bottom: 12px; font-weight: 500; color: rgba(255,255,255,0.9); }
         .tiles-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
@@ -211,6 +196,9 @@
         
         .is-tapped-tile { transform: translate3d(0, 3px, 0) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.15) !important; transition: none !important; }
         .is-tapped-chip { transform: scale(0.92) !important; transition: none !important; opacity: 0.8; }
+        .is-tapped-island { transform: scale(0.96) translateZ(0) !important; transition: none !important; }
+        /* 專屬花牌的點擊回饋：輕微下沉 */
+        .is-tapped-flower { transform: scale(0.95) translateZ(0) !important; transition: none !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important; }
         
         .tile.empty { background-image: none !important; background-color: rgba(0,0,0,0.15); box-shadow: inset 0 2px 6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); cursor: default; }
 
@@ -226,8 +214,6 @@
 <div class="bg-layer bg-base"></div>
 <div class="bg-layer bg-limit"></div>
 
-<div class="island-overlay" id="islandOverlay"></div>
-
 <div class="app-container">
     <div class="glass-card status-header" id="statusCard">
         <div class="status-title" id="statusTitle">等待輸入手牌</div>
@@ -237,42 +223,56 @@
         <div class="pattern-name" id="patternDisplay"><span class="pattern-tag">請選取 14 張牌與條件</span></div>
     </div>
 
-    <div class="island-container">
-        <div class="island-pill" id="islandPill">
-            <div class="island-content" id="islandSummary">
-                <span class="island-icon">✦</span>
-                <span id="islandText">附加條件</span>
-            </div>
-            <div class="island-grid" id="islandGrid"></div>
+    <div class="dynamic-island" id="conditionsIsland">
+        <div class="island-header" id="islandHeaderBtn">
+            <span class="island-title" id="islandTitle">✦ 牌局設定</span>
+            <span class="island-chevron">▼</span>
         </div>
-    </div>
+        
+        <div class="island-content-grid">
+            <div class="island-content-inner">
+                <div class="island-section">
+                    <div class="island-section-header">附加條件</div>
+                    <div class="conditions-wrapper" id="conditionsBar"></div>
+                </div>
 
-    <div class="glass-card flower-section">
-        <div class="winds-container">
-            <div class="wind-group">
-                <div class="section-header"><span>圈風</span></div>
-                <div class="wind-selector" id="roundWindSelector">
-                    <div class="wind-btn active">東</div>
-                    <div class="wind-btn">南</div>
-                    <div class="wind-btn">西</div>
-                    <div class="wind-btn">北</div>
+                <div class="island-divider"></div>
+
+                <div class="island-section">
+                    <div class="winds-container">
+                        <div class="wind-group">
+                            <div class="island-section-header">圈風</div>
+                            <div class="wind-selector" id="roundWindSelector">
+                                <div class="wind-btn active">東</div>
+                                <div class="wind-btn">南</div>
+                                <div class="wind-btn">西</div>
+                                <div class="wind-btn">北</div>
+                            </div>
+                        </div>
+                        <div class="wind-group">
+                            <div class="island-section-header">門風 (正花)</div>
+                            <div class="wind-selector" id="seatWindSelector">
+                                <div class="wind-btn active">東</div>
+                                <div class="wind-btn">南</div>
+                                <div class="wind-btn">西</div>
+                                <div class="wind-btn">北</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="wind-group">
-                <div class="section-header"><span>門風 (定正花)</span></div>
-                <div class="wind-selector" id="seatWindSelector">
-                    <div class="wind-btn active">東</div>
-                    <div class="wind-btn">南</div>
-                    <div class="wind-btn">西</div>
-                    <div class="wind-btn">北</div>
+
+                <div class="island-divider"></div>
+
+                <div class="island-section" style="padding-bottom: 20px;">
+                    <div class="island-section-header">
+                        <span>選擇花牌</span>
+                        <span id="flowerCount" style="color: #f9a8d4; font-weight: normal;">已選 0 隻</span>
+                    </div>
+                    <div class="flower-grid" id="flowerGrid"></div>
                 </div>
+
             </div>
         </div>
-        <div class="section-header">
-            <span>選擇花牌</span>
-            <span id="flowerCount" style="opacity: 1; color: #f9a8d4;">已選 0 隻</span>
-        </div>
-        <div class="flower-grid" id="flowerGrid"></div>
     </div>
 
     <div class="glass-card hand-container" id="handCard">
@@ -286,7 +286,6 @@
     <div class="glass-card keyboard" id="keyboard"></div>
 
     <button id="installBtn" class="install-btn">⬇️ 安裝 App 到桌面</button>
-    
     <div class="footer-credit">
         <span>Developed by Leo Lai</span>
         <span class="version-num" id="appVersion"></span>
@@ -295,15 +294,36 @@
 
 <script>
     // ==== 🔥 版本號更新 ====
-    const APP_VERSION = "v1.6.0 (Dynamic Island Edition)";
+    const APP_VERSION = "v1.8.0 (VisionOS Parallax Edition)";
 
     function attachFastClick(el, action, tapClass = '') {
         if (el._hasFastClick) { el._action = action; return; }
         el._action = action; el._hasFastClick = true; let touchHandled = false; let isScrolling = false; let startX = 0; let startY = 0;
-        el.addEventListener('touchstart', (e) => { touchHandled = true; isScrolling = false; startX = e.touches[0].clientX; startY = e.touches[0].clientY; if(tapClass) el.classList.add(tapClass); }, { passive: true });
-        el.addEventListener('touchmove', (e) => { if(!touchHandled) return; let moveX = Math.abs(e.touches[0].clientX - startX); let moveY = Math.abs(e.touches[0].clientY - startY); if (moveX > 10 || moveY > 10) { isScrolling = true; if(tapClass) el.classList.remove(tapClass); } }, { passive: true });
-        el.addEventListener('touchend', (e) => { if(tapClass) el.classList.remove(tapClass); if (touchHandled && !isScrolling) { if (el._action) el._action(e); } setTimeout(() => { touchHandled = false; }, 400); });
-        el.addEventListener('mousedown', (e) => { if (e.button !== 0) return; if (!touchHandled) { if(tapClass) { el.classList.add(tapClass); setTimeout(() => el.classList.remove(tapClass), 100); } if (el._action) el._action(e); } });
+        
+        el.addEventListener('touchstart', (e) => { 
+            touchHandled = true; isScrolling = false; startX = e.touches[0].clientX; startY = e.touches[0].clientY; 
+            if(tapClass) el.classList.add(tapClass); 
+        }, { passive: true });
+        
+        el.addEventListener('touchmove', (e) => { 
+            if(!touchHandled) return; let moveX = Math.abs(e.touches[0].clientX - startX); let moveY = Math.abs(e.touches[0].clientY - startY); 
+            if (moveX > 10 || moveY > 10) { isScrolling = true; if(tapClass) el.classList.remove(tapClass); } 
+        }, { passive: true });
+        
+        el.addEventListener('touchend', (e) => { 
+            if(tapClass) el.classList.remove(tapClass); 
+            if (touchHandled && !isScrolling) { if (el._action) el._action(e); } 
+            setTimeout(() => { touchHandled = false; }, 400); 
+        });
+        
+        el.addEventListener('mousedown', (e) => { 
+            if (e.button !== 0) return; 
+            if (!touchHandled) { 
+                if(tapClass) { el.classList.add(tapClass); setTimeout(() => el.classList.remove(tapClass), 100); } 
+                if (el._action) el._action(e); 
+            } 
+        });
+        
         el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); });
     }
 
@@ -348,104 +368,21 @@
     let hand = []; let activeConditions = new Set(); let roundWind = 0; let seatWind = 0; let activeFlowers = new Set();
     let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastTagsHtml = ''; 
 
-    // ==== 🔥 動態島核心邏輯 ====
-    let isIslandExpanded = false;
-
     function init() { 
-        // 渲染動態島內容
-        renderIslandGrid();
+        renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
         
-        renderFlowers(); renderKeyboard(); renderHand(); 
+        const island = document.getElementById('conditionsIsland');
+        attachFastClick(document.getElementById('islandHeaderBtn'), () => {
+            island.classList.toggle('expanded');
+            if (navigator.vibrate) navigator.vibrate([5]);
+        }, 'is-tapped-island');
+
         document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i), 'is-tapped-chip'));
         document.querySelectorAll('#seatWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setSeatWind(i), 'is-tapped-chip'));
         attachFastClick(document.getElementById('clearBtnId'), clearHand, 'is-tapped-chip');
         document.getElementById('appVersion').innerText = APP_VERSION;
-
-        // 綁定動態島開關
-        const pill = document.getElementById('islandPill');
-        const overlay = document.getElementById('islandOverlay');
         
-        const toggleIsland = () => {
-            isIslandExpanded = !isIslandExpanded;
-            if(isIslandExpanded) {
-                pill.classList.add('expanded');
-                overlay.classList.add('show');
-                if (navigator.vibrate) navigator.vibrate([10]); // 輕微震動回饋
-            } else {
-                pill.classList.remove('expanded');
-                overlay.classList.remove('show');
-            }
-        };
-
-        // 點擊膠囊展開
-        attachFastClick(pill, (e) => {
-            // 如果點到的是內部的 grid-btn，不要觸發收合
-            if(e.target.classList.contains('grid-btn')) return;
-            toggleIsland();
-        });
-
-        // 點擊背景關閉
-        attachFastClick(overlay, () => {
-            if(isIslandExpanded) toggleIsland();
-        });
-    }
-
-    // 渲染動態島內部的按鈕網格
-    function renderIslandGrid() {
-        const grid = document.getElementById('islandGrid');
-        grid.innerHTML = '';
-        CONDITIONS.forEach(cond => {
-            const btn = document.createElement('div');
-            btn.className = 'grid-btn';
-            btn.id = `cond-btn-${cond.id}`;
-            btn.innerText = cond.label;
-            
-            attachFastClick(btn, (e) => {
-                // 阻止事件冒泡到 pill，防止意外關閉
-                e.stopPropagation(); 
-                
-                if (activeConditions.has(cond.id)) { 
-                    activeConditions.delete(cond.id); 
-                    if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); } 
-                } 
-                else { 
-                    activeConditions.add(cond.id); 
-                    if (cond.id === 'kongSelfDrawn') { activeConditions.delete('doubleKongSelfDrawn'); activeConditions.add('selfDrawn'); } 
-                    else if (cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.add('selfDrawn'); } 
-                }
-                
-                updateIslandUI(); // 更新視覺狀態
-                if (navigator.vibrate) navigator.vibrate([8]); 
-                checkAndRunEngine();
-            }, 'is-tapped-chip');
-            
-            grid.appendChild(btn);
-        });
-        updateIslandUI();
-    }
-
-    // 更新動態島的文字與按鈕狀態
-    function updateIslandUI() {
-        // 1. 更新內部按鈕亮起狀態
-        CONDITIONS.forEach(cond => {
-            const btn = document.getElementById(`cond-btn-${cond.id}`);
-            if (btn) {
-                if (activeConditions.has(cond.id)) btn.classList.add('active'); 
-                else btn.classList.remove('active');
-            }
-        });
-
-        // 2. 更新膠囊上的文字摘要
-        const textEl = document.getElementById('islandText');
-        if (activeConditions.size === 0) {
-            textEl.innerText = "附加條件";
-            textEl.style.color = "rgba(255,255,255,0.7)";
-        } else {
-            // 取出所有已選條件的名稱
-            const activeLabels = CONDITIONS.filter(c => activeConditions.has(c.id)).map(c => c.label.split(' ')[0]); // 只取名稱不取番數
-            textEl.innerText = activeLabels.join(', ');
-            textEl.style.color = "#60a5fa"; // 有選的時候變亮藍色
-        }
+        updateIslandSummary(); 
     }
 
     function animateValue(obj, start, end, duration) {
@@ -456,6 +393,105 @@
             obj.innerText = currentVal; if (progress < 1) scoreAnimationId = window.requestAnimationFrame(step); else obj.innerText = end; 
         };
         if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); scoreAnimationId = window.requestAnimationFrame(step);
+    }
+
+    function renderConditions() {
+        const bar = document.getElementById('conditionsBar'); 
+        if (bar.children.length === 0) {
+            CONDITIONS.forEach(cond => {
+                const chip = document.createElement('div'); chip.className = 'condition-chip'; chip.id = `cond-${cond.id}`; chip.innerText = cond.label;
+                attachFastClick(chip, () => {
+                    if (activeConditions.has(cond.id)) { activeConditions.delete(cond.id); if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); } } 
+                    else { activeConditions.add(cond.id); if (cond.id === 'kongSelfDrawn') { activeConditions.delete('doubleKongSelfDrawn'); activeConditions.add('selfDrawn'); } else if (cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.add('selfDrawn'); } }
+                    updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
+                }, 'is-tapped-chip');
+                bar.appendChild(chip);
+            });
+        }
+        updateIslandSummary();
+    }
+    
+    function updateIslandSummary() {
+        let activeLabels = [];
+
+        CONDITIONS.forEach(cond => {
+            const chip = document.getElementById(`cond-${cond.id}`);
+            if (chip) { 
+                if (activeConditions.has(cond.id)) { 
+                    chip.classList.add('active'); 
+                    activeLabels.push(cond.label.split(' ')[0]); 
+                } 
+                else { chip.classList.remove('active'); } 
+            }
+        });
+
+        const windNames = ['東', '南', '西', '北'];
+        if (roundWind !== 0 || seatWind !== 0) {
+            activeLabels.push(`${windNames[roundWind]}圈${windNames[seatWind]}位`);
+        }
+
+        if (activeFlowers.size > 0) {
+            activeLabels.push(`${activeFlowers.size}花`);
+        }
+
+        const title = document.getElementById('islandTitle');
+        if (activeLabels.length === 0) {
+            title.innerText = '✦ 牌局設定';
+            title.style.color = 'rgba(255, 255, 255, 0.8)';
+        } else {
+            title.innerText = `✦ ${activeLabels.join(', ')}`;
+            title.style.color = '#60a5fa'; 
+        }
+    }
+
+    function setRoundWind(index) { 
+        roundWind = index; 
+        document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); 
+        updateIslandSummary();
+        if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
+    }
+    
+    function setSeatWind(index) { 
+        seatWind = index; 
+        document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); 
+        updateIslandSummary();
+        if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
+    }
+
+    function renderFlowers() {
+        const grid = document.getElementById('flowerGrid'); 
+        if (grid.children.length === 0) {
+            FLOWERS.forEach((f, index) => {
+                const btn = document.createElement('div'); btn.className = 'flower-tile'; btn.id = `flower-${f.id}`; if (activeFlowers.has(f.id)) btn.classList.add('active'); btn.style.backgroundImage = `url('tiles/f${index + 1}.svg')`;
+                // 🔥 花牌套用專屬的 'is-tapped-flower' 回饋
+                attachFastClick(btn, () => {
+                    if (activeFlowers.has(f.id)) activeFlowers.delete(f.id); else activeFlowers.add(f.id);
+                    btn.classList.toggle('active'); 
+                    document.getElementById('flowerCount').innerText = `已選 ${activeFlowers.size} 隻`;
+                    updateIslandSummary();
+                    if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
+                }, 'is-tapped-flower');
+                grid.appendChild(btn);
+            });
+        }
+    }
+
+    function renderKeyboard() {
+        const kb = document.getElementById('keyboard'); 
+        if (kb.children.length > 0) return;
+        TILE_DEFS.forEach(def => {
+            const row = document.createElement('div'); row.className = 'suit-row'; const limit = def.names ? def.names.length : def.count;
+            for (let i = 0; i < limit; i++) {
+                const id = def.startId + i; const btn = document.createElement('div'); btn.className = `tile ${def.type}`; btn.style.backgroundImage = `url('tiles/${def.type}${i + 1}.svg')`;
+                attachFastClick(btn, () => addTile(id), 'is-tapped-tile'); row.appendChild(btn);
+            }
+            kb.appendChild(row);
+        });
+    }
+
+    function getTileInfo(id) {
+        if (id < 9) return { type: 'w', num: id + 1, suit: '萬' }; if (id < 18) return { type: 't', num: id - 8, suit: '筒' }; if (id < 27) return { type: 's', num: id - 17, suit: '索' };
+        const zNames = ['東','南','西','北','中','發','白']; return { type: 'z', num: zNames[id - 27], suit: '' };
     }
 
     function findAllMelds(counts, index, currentMelds, allValidMelds) {
@@ -500,76 +536,6 @@
                 lastTagsHtml = defaultHtml;
             } else resetUI();
         }
-    }
-
-    function clearHand() {
-        if (window.isClearing) return; 
-        if (hand.length === 0 && activeConditions.size === 0 && activeFlowers.size === 0 && roundWind === 0 && seatWind === 0) return;
-        window.isClearing = true; if (navigator.vibrate) navigator.vibrate([15]);
-
-        const currentTiles = document.querySelectorAll('#handGrid .tile:not(.empty)'); const oldMax = getCurrentMax(); 
-
-        currentTiles.forEach((el, index) => {
-            const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim');
-            clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`; clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0'; clone.style.zIndex = '999'; clone.style.transition = 'none'; 
-            clone.style.animation = `popOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`; clone.style.animationDelay = `${index * 0.02}s`;
-            document.body.appendChild(clone); setTimeout(() => clone.remove(), 350 + index * 20);
-        });
-
-        document.querySelectorAll('.flower-tile.active').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('#roundWindSelector .wind-btn, #seatWindSelector .wind-btn').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('#roundWindSelector .wind-btn')[0].classList.add('active'); document.querySelectorAll('#seatWindSelector .wind-btn')[0].classList.add('active');
-
-        // 🔥 重置動態島狀態
-        activeConditions.clear(); 
-        updateIslandUI();
-
-        hand = []; activeFlowers.clear(); roundWind = 0; seatWind = 0; lastTagsHtml = '';
-        
-        smoothHeightUpdate('statusCard', () => { resetUI(); document.getElementById('statusTitle').innerText = '等待輸入手牌'; document.getElementById('patternDisplay').innerHTML = '<span class="pattern-tag">請選取 14 張牌</span>'; });
-        document.getElementById('flowerCount').innerText = `已選 0 隻`;
-
-        const grid = document.getElementById('handGrid'); grid.innerHTML = '';
-        for (let i = 0; i < oldMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; grid.appendChild(empty); }
-        document.getElementById('tileCount').innerText = `暗牌已選 0 / 14`;
-
-        setTimeout(() => { lastMax = oldMax; renderHand(); window.isClearing = false; }, 350 + (currentTiles.length * 20));
-    }
-
-    function setRoundWind(index) { roundWind = index; document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); }
-    function setSeatWind(index) { seatWind = index; document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); }
-
-    function renderFlowers() {
-        const grid = document.getElementById('flowerGrid'); 
-        if (grid.children.length === 0) {
-            FLOWERS.forEach((f, index) => {
-                const btn = document.createElement('div'); btn.className = 'flower-tile'; btn.id = `flower-${f.id}`; if (activeFlowers.has(f.id)) btn.classList.add('active'); btn.style.backgroundImage = `url('tiles/f${index + 1}.svg')`;
-                attachFastClick(btn, () => {
-                    if (activeFlowers.has(f.id)) activeFlowers.delete(f.id); else activeFlowers.add(f.id);
-                    btn.classList.toggle('active'); document.getElementById('flowerCount').innerText = `已選 ${activeFlowers.size} 隻`;
-                    if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
-                }, 'is-tapped-tile');
-                grid.appendChild(btn);
-            });
-        }
-    }
-
-    function renderKeyboard() {
-        const kb = document.getElementById('keyboard'); 
-        if (kb.children.length > 0) return;
-        TILE_DEFS.forEach(def => {
-            const row = document.createElement('div'); row.className = 'suit-row'; const limit = def.names ? def.names.length : def.count;
-            for (let i = 0; i < limit; i++) {
-                const id = def.startId + i; const btn = document.createElement('div'); btn.className = `tile ${def.type}`; btn.style.backgroundImage = `url('tiles/${def.type}${i + 1}.svg')`;
-                attachFastClick(btn, () => addTile(id), 'is-tapped-tile'); row.appendChild(btn);
-            }
-            kb.appendChild(row);
-        });
-    }
-
-    function getTileInfo(id) {
-        if (id < 9) return { type: 'w', num: id + 1, suit: '萬' }; if (id < 18) return { type: 't', num: id - 8, suit: '筒' }; if (id < 27) return { type: 's', num: id - 17, suit: '索' };
-        const zNames = ['東','南','西','北','中','發','白']; return { type: 'z', num: zNames[id - 27], suit: '' };
     }
 
     function addTile(id) {
@@ -629,6 +595,41 @@
             }
         });
         lastMax = currentMax; checkAndRunEngine();
+    }
+
+    function clearHand() {
+        if (window.isClearing) return; 
+        if (hand.length === 0 && activeConditions.size === 0 && activeFlowers.size === 0 && roundWind === 0 && seatWind === 0) return;
+        window.isClearing = true; if (navigator.vibrate) navigator.vibrate([15]);
+
+        const currentTiles = document.querySelectorAll('#handGrid .tile:not(.empty)'); const oldMax = getCurrentMax(); 
+
+        currentTiles.forEach((el, index) => {
+            const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim');
+            clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`; clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0'; clone.style.zIndex = '999'; clone.style.transition = 'none'; 
+            clone.style.animation = `popOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`; clone.style.animationDelay = `${index * 0.02}s`;
+            document.body.appendChild(clone); setTimeout(() => clone.remove(), 350 + index * 20);
+        });
+
+        activeConditions.clear(); 
+        activeFlowers.clear(); 
+        roundWind = 0; seatWind = 0; 
+        updateIslandSummary(); 
+        
+        document.querySelectorAll('.flower-tile.active').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('#roundWindSelector .wind-btn, #seatWindSelector .wind-btn').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('#roundWindSelector .wind-btn')[0].classList.add('active'); document.querySelectorAll('#seatWindSelector .wind-btn')[0].classList.add('active');
+
+        hand = []; lastTagsHtml = '';
+        
+        smoothHeightUpdate('statusCard', () => { resetUI(); document.getElementById('statusTitle').innerText = '等待輸入手牌'; document.getElementById('patternDisplay').innerHTML = '<span class="pattern-tag">請選取 14 張牌</span>'; });
+        document.getElementById('flowerCount').innerText = `已選 0 隻`;
+
+        const grid = document.getElementById('handGrid'); grid.innerHTML = '';
+        for (let i = 0; i < oldMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; grid.appendChild(empty); }
+        document.getElementById('tileCount').innerText = `暗牌已選 0 / 14`;
+
+        setTimeout(() => { lastMax = oldMax; renderHand(); window.isClearing = false; }, 350 + (currentTiles.length * 20));
     }
 
     function getExtras(counts) {
