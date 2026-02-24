@@ -1,5 +1,6 @@
 // 🔥 100% 穩定的快取宣告 (每次更新請同時修改這裡與 app.js)
 const APP_VERSION = "v2.7.8 (Smooth 60FPS Engine)";
+const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [
     './',
