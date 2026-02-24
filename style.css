@@ -1,67 +1,59 @@
-/* ==== 核心環境設定 (重置為淺色系) ==== */
-* { 
-    box-sizing: border-box; margin: 0; padding: 0; 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-    touch-action: manipulation; 
-}
+/* ==== 核心環境設定 ==== */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; touch-action: manipulation; }
 
-body {
-    /* 全新背景：空靈白晝 (Ethereal Daylight) 漸層 */
-    background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #fce7f3 100%);
-    color: #1e293b; 
-    display: flex; justify-content: center; min-height: 100vh; position: relative;
-    padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px;
-    padding-bottom: max(30px, env(safe-area-inset-bottom) + 10px); padding-left: 15px;
-    touch-action: pan-y;
-    -webkit-user-select: none; -moz-user-select: none; user-select: none; 
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.5s ease, color 0.5s ease;
-}
+body { background-color: #e0f2fe; color: #1e293b; display: flex; justify-content: center; min-height: 100vh; position: relative; padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px; padding-bottom: max(30px, env(safe-area-inset-bottom) + 10px); padding-left: 15px; touch-action: pan-y; -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; transition: color 0.8s ease; }
 
-/* 狀態模式色彩微調 */
-body.success-mode { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #172554; }
-body.limit-mode { background: linear-gradient(135deg, #fef9c3 0%, #fde047 100%); color: #422006; }
-body.failure-mode { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #450a0a; }
+.bg-layer { position: fixed; inset: 0; z-index: -2; opacity: 0; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+.bg-base { background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #fce7f3 100%); opacity: 1; }
+.bg-success { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+.bg-limit { background: linear-gradient(135deg, #fef9c3 0%, #fde047 100%); }
+.bg-failure { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); }
+
+body.success-mode .bg-base { opacity: 0; } body.success-mode .bg-success { opacity: 1; } body.success-mode { color: #172554; }
+body.limit-mode .bg-base { opacity: 0; } body.limit-mode .bg-limit { opacity: 1; } body.limit-mode { color: #422006; }
+body.failure-mode .bg-base { opacity: 0; } body.failure-mode .bg-failure { opacity: 1; } body.failure-mode { color: #450a0a; }
 
 .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; padding-bottom: 20px; flex: 1; }
 
-/* 全新玻璃卡片風格：更輕透、冰晶感 */
-.glass-card {
-    background: rgba(255, 255, 255, 0.5); 
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    border-radius: 28px; 
-    border: 1px solid rgba(255, 255, 255, 0.6); 
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
-    padding: 20px; transition: all 0.3s ease; transform: translateZ(0); 
-}
+.glass-card { position: relative; backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%); border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 8px 32px rgba(31, 38, 135, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.8); padding: 20px; transform: translateZ(0); z-index: 1; transition: border-color 0.8s ease, box-shadow 0.8s ease, transform 0.3s ease; }
+.glass-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; background-color: rgba(255, 255, 255, 0.5); transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1); will-change: background-color; }
+
+body.success-mode #statusCard { border-color: rgba(147, 197, 253, 0.8); box-shadow: 0 12px 36px rgba(59, 130, 246, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5); } body.success-mode #statusCard::before { background-color: rgba(219, 234, 254, 0.7); }
+body.limit-mode #statusCard { border-color: rgba(253, 224, 71, 0.8); box-shadow: 0 12px 36px rgba(234, 179, 8, 0.2), inset 0 2px 15px rgba(250, 204, 21, 0.3); } body.limit-mode #statusCard::before { background-color: rgba(254, 249, 195, 0.7); }
+body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shadow: 0 12px 36px rgba(239, 68, 68, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5); } body.failure-mode #statusCard::before { background-color: rgba(254, 226, 226, 0.7); }
+
+.status-title, .score-display, .pattern-name { transition: opacity 0.25s ease, transform 0.25s ease, color 0.3s ease; }
+.content-fade-out .status-title, .content-fade-out .score-display, .content-fade-out .pattern-name { opacity: 0; transform: scale(0.95); }
 
 .status-header { text-align: center; }
 .status-title { font-size: 13px; opacity: 0.6; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; color: #64748b; }
-.score-display { font-size: 64px; font-weight: 300; line-height: 1; margin-bottom: 12px; color: #0f172a; text-shadow: 0 2px 10px rgba(0,0,0,0.05); font-variant-numeric: tabular-nums; }
+
+/* 🔥 修正 1：計分板水平基準線對齊 (Baseline Alignment) 解決圖四問題 */
+.score-display { 
+    display: flex; align-items: baseline; justify-content: center; gap: 4px;
+    font-size: 64px; font-weight: 300; line-height: 1; margin-bottom: 12px; color: #0f172a; text-shadow: 0 2px 10px rgba(0,0,0,0.05); font-variant-numeric: tabular-nums; 
+}
+.score-display span:last-child { margin-left: 0 !important; } /* 抵銷 HTML 裡的 margin，改用 flex gap */
+
+.heartbeat-pop { animation: heartbeat 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform; }
+@keyframes heartbeat { 0% { transform: scale(1); } 40% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
 .pattern-name { font-size: 15px; font-weight: 500; min-height: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;}
 
-/* Tag 風格重製 */
-.pattern-tag { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8); color: #334155; padding: 4px 12px; border-radius: 14px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: 600; }
+.pattern-tag { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8); color: #334155; padding: 4px 12px; border-radius: 14px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: 600; opacity: 0; transform: scale(0.8) translateY(10px); animation: tagSpringIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
+@keyframes tagSpringIn { 100% { opacity: 1; transform: scale(1) translateY(0); } }
 .pattern-tag.highlight { background: rgba(250, 204, 21, 0.3); border-color: rgba(250, 204, 21, 0.6); color: #854d0e; }
 .pattern-tag.flower { background: rgba(244, 114, 182, 0.3); border-color: rgba(244, 114, 182, 0.6); color: #9d174d; }
 .pattern-tag.wind { background: rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.6); color: #0c4a6e; }
 
-/* ==== 動態島 (Dynamic Island) 淺色重製 ==== */
-.dynamic-island {
-    background: rgba(255, 255, 255, 0.7); 
-    backdrop-filter: blur(20px) saturate(150%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8);
-    border-radius: 30px; margin: 0 auto; width: 100%; max-width: 180px; 
-    display: flex; flex-direction: column; overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: max-width, border-radius; color: #334155;
-}
+.dynamic-island { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8); border-radius: 30px; margin: 0 auto; width: 100%; max-width: 180px; display: flex; flex-direction: column; overflow: hidden; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: max-width, border-radius; color: #334155; }
 .dynamic-island.expanded { max-width: 420px; border-radius: 28px; background: rgba(255, 255, 255, 0.6); }
 .island-header { padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-.island-title { font-size: 13px; font-weight: 700; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s; }
+
+.island-title { font-size: 13px; font-weight: 700; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, color 0.3s ease; }
+.island-title.slide-out { transform: translateY(-10px); opacity: 0; transition: transform 0.2s ease-in, opacity 0.2s ease-in; }
+.island-title.slide-in { transform: translateY(10px); opacity: 0; transition: none; }
+
 .island-chevron { font-size: 10px; opacity: 0.6; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); color: #64748b; }
 .dynamic-island.expanded .island-chevron { transform: rotate(-180deg); }
 .island-content-grid { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -76,58 +68,34 @@ body.failure-mode { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%
 .dynamic-island.expanded .island-divider { opacity: 1; }
 .island-section-header { font-size: 12px; opacity: 0.8; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 700; color: #475569; letter-spacing: 1px; }
 
-/* Chip 與按鈕淺色重製 */
-.conditions-wrapper { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; }
-.condition-chip { padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: #64748b; cursor: pointer; transition: all 0.2s ease; will-change: transform; flex: 1 1 auto; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+/* 🔥 修正 2：加入 minmax(0, 1fr) 與溢出隱藏，解決圖二/圖三的版面撐破問題 */
+.conditions-wrapper { 
+    display: grid; 
+    grid-template-columns: repeat(6, minmax(0, 1fr)); 
+    gap: 8px; 
+}
+.condition-chip { 
+    padding: 8px 2px; /* 縮小左右內邊距，給文字更多空間 */
+    border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* 避免超長文字撐破網格 */
+    letter-spacing: -0.2px; grid-column: span 2; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; will-change: transform; 
+}
 .condition-chip.active { background: #3b82f6; color: #fff; border-color: #60a5fa; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transform: scale(1.05); }
+.condition-chip:nth-child(7), .condition-chip:nth-child(8) { grid-column: span 3; }
+@media (max-width: 380px) { .condition-chip { font-size: 10px; letter-spacing: -0.5px; } }
+
 .winds-container { display: flex; gap: 15px; }
 .wind-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .wind-selector { display: flex; gap: 6px; }
-.wind-btn { flex: 1; padding: 6px 0; text-align: center; border-radius: 8px; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8); font-size: 13px; cursor: pointer; transition: 0.2s; color: #64748b; font-weight: 600; will-change: transform; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.wind-btn { flex: 1; padding: 6px 0; text-align: center; border-radius: 8px; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8); font-size: 13px; cursor: pointer; color: #64748b; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; will-change: transform; }
 .wind-btn.active { background: #ffffff; color: #0f172a; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #fff; }
 
-/* ==== 🔥 v2.0.0 核心：真實液態光學引擎 (True Liquid Optical Engine) ==== */
-.flower-grid { 
-    display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 6px 4px; 
-}
-
-/* 1. 花牌基礎狀態：白瓷/象牙質感 */
-.flower-tile { 
-    position: relative; z-index: 1; aspect-ratio: 3/4; 
-    background-color: #fcfaf9; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 1px rgba(0,0,0,0.05); 
-    background-size: 88%; background-position: center; background-repeat: no-repeat; 
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-    will-change: transform, box-shadow, backdrop-filter;
-    overflow: hidden; 
-}
-
-/* 2. 液態化 (Liquidization) 激活狀態 */
-.flower-tile.active { 
-    transform: scale(1.08) translateY(-2px);
-    z-index: 10;
-    background-color: transparent; 
-    backdrop-filter: url(#liquid-fx) saturate(180%) blur(0.5px);
-    -webkit-backdrop-filter: url(#liquid-fx) saturate(180%) blur(0.5px);
-    
-    box-shadow: 
-        inset 0 0 0 1px rgba(255,255,255, 0.9), 
-        inset 0 1px 3px rgba(255,255,255, 0.8), 
-        0 12px 24px rgba(0,0,0,0.15); 
-}
-
-/* 3. 鏡面高光反射層 (Specular Highlight Layer) */
-.flower-tile::after {
-    content: ""; position: absolute; inset: 0; border-radius: 8px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
-    opacity: 0; transition: opacity 0.3s ease; pointer-events: none; mix-blend-mode: overlay;
-}
+.flower-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 6px 4px; }
+.flower-tile { position: relative; z-index: 1; aspect-ratio: 3/4; background-color: #fcfaf9; border-radius: 8px; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 1px rgba(0,0,0,0.05); background-size: 88%; background-position: center; background-repeat: no-repeat; overflow: hidden; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; will-change: transform, box-shadow, backdrop-filter; }
+.flower-tile.active { transform: scale(1.08) translateY(-2px); z-index: 10; background-color: transparent; backdrop-filter: url(#liquid-fx) saturate(180%) blur(0.5px); -webkit-backdrop-filter: url(#liquid-fx) saturate(180%) blur(0.5px); box-shadow: inset 0 0 0 1px rgba(255,255,255, 0.9), inset 0 1px 3px rgba(255,255,255, 0.8), 0 12px 24px rgba(0,0,0,0.15); }
+.flower-tile::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; mix-blend-mode: overlay; }
 .flower-tile.active::after { opacity: 1; }
 
-
-/* ==== 手牌與鍵盤區 (淺色重製) ==== */
 .hand-container { min-height: 120px; }
 .hand-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; opacity: 0.8; margin-bottom: 12px; font-weight: 600; color: #475569; }
 .tiles-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
@@ -137,27 +105,38 @@ body.failure-mode { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%
 .enter-anim { animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
 @keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
 .empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
-@keyframes popOut { 0% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } 100% { opacity: 0; transform: scale(0.6) translate3d(0, 20px, 0); } }
 
-.keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.breathing { animation: floatBreathing 3s ease-in-out infinite alternate; }
+@keyframes floatBreathing { 0% { transform: translateY(0px); } 100% { transform: translateY(-3px); } }
+
+/* 🔥 修正 3：強制移除鍵盤上方空隙，解決圖一問題 */
+.keyboard { 
+    display: flex; flex-direction: column; gap: 8px; 
+    margin-top: 0 !important; /* 確保沒有任何多餘的 margin 將它推下去 */
+}
 .suit-row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
 
-/* 普通麻雀牌重製：白瓷質感 */
-.tile {
-    aspect-ratio: 3/4; background-color: #fcfaf9; border-radius: 6px; cursor: pointer; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1), inset 0 -2px 1px rgba(0,0,0,0.05); 
-    transition: transform 0.05s, box-shadow 0.05s; width: 100%; height: auto; background-size: 85%; background-position: center; background-repeat: no-repeat;
-    will-change: transform; color: #1e293b;
-}
-
-.is-tapped-tile { transform: translate3d(0, 2px, 0) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.05) !important; transition: none !important; }
-.is-tapped-chip { transform: scale(0.95) !important; transition: none !important; opacity: 0.9; }
-.is-tapped-island { transform: scale(0.98) translateZ(0) !important; transition: none !important; }
+.tile { aspect-ratio: 3/4; background-color: #fcfaf9; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1), inset 0 -2px 1px rgba(0,0,0,0.05); width: 100%; height: auto; background-size: 85%; background-position: center; background-repeat: no-repeat; color: #1e293b; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s; will-change: transform; }
+.is-tapped-tile { animation: none !important; transform: translate3d(0, 2px, 0) scale(0.92) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.05) !important; transition: none !important; }
+.is-tapped-chip { transform: scale(0.92) !important; transition: none !important; opacity: 0.8; }
+.is-tapped-island { transform: scale(0.96) translateZ(0) !important; transition: none !important; }
 
 .tile.empty { background-image: none !important; background-color: rgba(255,255,255,0.3); box-shadow: inset 0 2px 6px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.4); cursor: default; }
+.clear-btn { background: rgba(255, 255, 255, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.8) !important; border-radius: 20px !important; color: #475569 !important; padding: 5px 12px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, color 0.2s; will-change: transform; }
 
-.clear-btn { background: rgba(255, 255, 255, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.8) !important; border-radius: 20px !important; color: #475569 !important; padding: 5px 12px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; cursor: pointer; transition: all 0.2s ease; transform: translateZ(0); will-change: transform; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.install-btn { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; display: none; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255,255,255,0.4); margin: 10px auto 0 auto; backdrop-filter: blur(10px); transition: transform 0.2s ease; }
+.install-btn { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; display: none; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255,255,255,0.4); margin: 10px auto 0 auto; backdrop-filter: blur(10px); transition: transform 0.2s ease; position: relative; overflow: hidden; }
+.install-btn::before { content: ""; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: diamondShimmer 6s infinite; pointer-events: none; }
+@keyframes diamondShimmer { 0% { left: -150%; } 15% { left: 200%; } 100% { left: 200%; } }
 
-.footer-credit { text-align: center; font-size: 11px; font-weight: 400; color: #94a3b8; letter-spacing: 0.5px; margin-top: 15px; margin-bottom: 5px; display: flex; flex-direction: column; gap: 4px; }
+.footer-credit { text-align: center; font-size: 11px; font-weight: 400; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; flex-direction: column; gap: 4px; margin-top: auto !important; padding-top: 20px; }
 .version-num { font-size: 10px; opacity: 0.8; }
+
+#statusCard::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -2; pointer-events: none; box-shadow: 0 0 30px rgba(125, 211, 252, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.6); opacity: 0; transition: opacity 0.8s ease; }
+body:not(.success-mode):not(.limit-mode):not(.failure-mode) #statusCard::after { animation: ambientBreath 5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate; }
+@keyframes ambientBreath { 0% { opacity: 0.1; transform: scale(0.995); } 100% { opacity: 0.8; transform: scale(1.01); } }
+
+@keyframes jellySquish { 0% { transform: scaleY(1) translateZ(0); } 30% { transform: scaleY(0.96) translateZ(0); } 100% { transform: scaleY(1) translateZ(0); } }
+@keyframes jellyStretch { 0% { transform: scaleY(1) translateZ(0); } 30% { transform: scaleY(1.03) translateZ(0); } 100% { transform: scaleY(1) translateZ(0); } }
+.jelly-squish { animation: jellySquish 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
+.jelly-stretch { animation: jellyStretch 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
+#keyboard.jelly-squish, #keyboard.jelly-stretch { animation-delay: 0.05s; }

@@ -1,4 +1,5 @@
-const APP_VERSION = "v2.0.0 (Ethereal Liquid Optical Update)";
+// 🔥 穩定版降落：回到 v2.5.0 (Kinetic Jelly Wave Update)
+const APP_VERSION = "v2.5.0 (Kinetic Jelly Wave Update)";
 
 function attachFastClick(el, action, tapClass = '') {
     if (el._hasFastClick) { el._action = action; return; }
@@ -27,7 +28,6 @@ function attachFastClick(el, action, tapClass = '') {
             if (el._action) el._action(e); 
         } 
     });
-    
     el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); });
 }
 
@@ -75,10 +75,29 @@ let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastT
 function init() { 
     renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
     
-    const island = document.getElementById('conditionsIsland');
     attachFastClick(document.getElementById('islandHeaderBtn'), () => {
+        const island = document.getElementById('conditionsIsland');
+        const isExpanding = !island.classList.contains('expanded'); 
+        
         island.classList.toggle('expanded');
         if (navigator.vibrate) navigator.vibrate([5]);
+
+        const handCard = document.getElementById('handCard');
+        const keyboard = document.getElementById('keyboard');
+        
+        handCard.classList.remove('jelly-squish', 'jelly-stretch');
+        keyboard.classList.remove('jelly-squish', 'jelly-stretch');
+        
+        void handCard.offsetWidth;
+        
+        if (isExpanding) {
+            handCard.classList.add('jelly-squish');
+            keyboard.classList.add('jelly-squish');
+        } else {
+            handCard.classList.add('jelly-stretch');
+            keyboard.classList.add('jelly-stretch');
+        }
+
     }, 'is-tapped-island');
 
     document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i), 'is-tapped-chip'));
@@ -91,12 +110,56 @@ function init() {
 
 function animateValue(obj, start, end, duration) {
     let startTimestamp = null;
+    obj.classList.remove('heartbeat-pop'); 
+    
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const easeOutProgress = 1 - Math.pow(1 - progress, 4); const currentVal = Math.floor(start + (end - start) * easeOutProgress);
-        obj.innerText = currentVal; if (progress < 1) scoreAnimationId = window.requestAnimationFrame(step); else obj.innerText = end; 
+        obj.innerText = currentVal; 
+        
+        if (progress < 1) {
+            scoreAnimationId = window.requestAnimationFrame(step); 
+        } else {
+            obj.innerText = end; 
+            void obj.offsetWidth; 
+            obj.classList.add('heartbeat-pop');
+        }
     };
     if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); scoreAnimationId = window.requestAnimationFrame(step);
+}
+
+function animateToText(obj, start, endNum, finalText, faanUnitEl, duration) {
+    let startTimestamp = null;
+    obj.style.fontSize = '64px';
+    if (faanUnitEl) faanUnitEl.style.display = 'inline';
+    obj.classList.remove('heartbeat-pop'); 
+
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeOutProgress = 1 - Math.pow(1 - progress, 4); 
+        let currentVal;
+        
+        if (start === endNum && progress < 0.9) {
+            currentVal = Math.floor(Math.random() * 13);
+        } else {
+            currentVal = Math.floor(start + (endNum - start) * easeOutProgress);
+        }
+
+        obj.innerText = currentVal;
+
+        if (progress < 1) {
+            scoreAnimationId = window.requestAnimationFrame(step);
+        } else {
+            obj.innerText = finalText;
+            obj.style.fontSize = '50px'; 
+            if (faanUnitEl) faanUnitEl.style.display = 'none'; 
+            void obj.offsetWidth; 
+            obj.classList.add('heartbeat-pop');
+        }
+    };
+    if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId);
+    scoreAnimationId = window.requestAnimationFrame(step);
 }
 
 function renderConditions() {
@@ -117,7 +180,6 @@ function renderConditions() {
 
 function updateIslandSummary() {
     let activeLabels = [];
-
     CONDITIONS.forEach(cond => {
         const chip = document.getElementById(`cond-${cond.id}`);
         if (chip) { 
@@ -130,36 +192,39 @@ function updateIslandSummary() {
     });
 
     const windNames = ['東', '南', '西', '北'];
-    if (roundWind !== 0 || seatWind !== 0) {
-        activeLabels.push(`${windNames[roundWind]}圈${windNames[seatWind]}位`);
-    }
-
-    if (activeFlowers.size > 0) {
-        activeLabels.push(`${activeFlowers.size}花`);
-    }
+    if (roundWind !== 0 || seatWind !== 0) activeLabels.push(`${windNames[roundWind]}圈${windNames[seatWind]}位`);
+    if (activeFlowers.size > 0) activeLabels.push(`${activeFlowers.size}花`);
 
     const title = document.getElementById('islandTitle');
-    if (activeLabels.length === 0) {
-        title.innerText = '✦ 牌局設定';
-        title.style.color = '#64748b';
+    const newText = activeLabels.length === 0 ? '✦ 牌局設定' : `✦ ${activeLabels.join(', ')}`;
+    const newColor = activeLabels.length === 0 ? '#64748b' : '#3b82f6';
+    
+    if (title.innerText !== newText && title.innerText !== '') {
+        title.classList.add('slide-out');
+        setTimeout(() => {
+            title.innerText = newText;
+            title.style.color = newColor;
+            title.classList.remove('slide-out');
+            title.classList.add('slide-in');
+            void title.offsetWidth; 
+            title.classList.remove('slide-in');
+        }, 200);
     } else {
-        title.innerText = `✦ ${activeLabels.join(', ')}`;
-        title.style.color = '#3b82f6'; 
+        title.innerText = newText; 
+        title.style.color = newColor; 
     }
 }
 
 function setRoundWind(index) { 
     roundWind = index; 
     document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); 
-    updateIslandSummary();
-    if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
+    updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
 }
 
 function setSeatWind(index) { 
     seatWind = index; 
     document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); 
-    updateIslandSummary();
-    if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
+    updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
 }
 
 function renderFlowers() {
@@ -167,13 +232,11 @@ function renderFlowers() {
     if (grid.children.length === 0) {
         FLOWERS.forEach((f, index) => {
             const btn = document.createElement('div'); btn.className = 'flower-tile'; btn.id = `flower-${f.id}`; if (activeFlowers.has(f.id)) btn.classList.add('active'); btn.style.backgroundImage = `url('tiles/f${index + 1}.svg')`;
-            
             attachFastClick(btn, () => {
                 if (activeFlowers.has(f.id)) activeFlowers.delete(f.id); else activeFlowers.add(f.id);
                 btn.classList.toggle('active'); 
                 document.getElementById('flowerCount').innerText = `已選 ${activeFlowers.size} 隻`;
-                updateIslandSummary();
-                if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
+                updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
             });
             grid.appendChild(btn);
         });
@@ -230,15 +293,47 @@ function checkWinCondition(counts) {
     return false;
 }
 
+function transitionToWaitState(defaultHtml) {
+    const wasInResultMode = document.body.className.includes('mode');
+    
+    const updateWaitDOM = () => {
+        document.getElementById('statusTitle').innerText = '等待輸入手牌'; 
+        document.getElementById('statusTitle').style.color = '#64748b';
+        
+        document.body.className = ''; 
+        if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); 
+        const scoreElement = document.getElementById('scoreValue');
+        scoreElement.innerText = '--';
+        scoreElement.style.fontSize = '64px';
+        scoreElement.classList.remove('heartbeat-pop');
+        const faanUnit = scoreElement.nextElementSibling;
+        if (faanUnit) faanUnit.style.display = 'inline';
+
+        document.getElementById('patternDisplay').innerHTML = defaultHtml;
+        document.getElementById('statusCard').classList.remove('content-fade-out');
+        lastTagsHtml = defaultHtml;
+    };
+
+    if (wasInResultMode) {
+        document.getElementById('statusCard').classList.add('content-fade-out');
+        setTimeout(() => {
+            smoothHeightUpdate('statusCard', updateWaitDOM);
+        }, 250); 
+    } else {
+        if (lastTagsHtml !== defaultHtml) {
+            smoothHeightUpdate('statusCard', updateWaitDOM);
+        } else {
+            updateWaitDOM();
+        }
+    }
+}
+
 function checkAndRunEngine() {
     let currentMax = getCurrentMax();
     if (activeFlowers.size >= 7 || hand.length === currentMax) runEngine();
     else {
-        let defaultHtml = `<span class="pattern-tag">請選取 ${currentMax} 張牌</span>`;
-        if (lastTagsHtml !== defaultHtml) {
-            smoothHeightUpdate('statusCard', () => { document.getElementById('statusTitle').innerText = '等待輸入手牌'; document.getElementById('patternDisplay').innerHTML = defaultHtml; resetUI(); });
-            lastTagsHtml = defaultHtml;
-        } else resetUI();
+        let defaultHtml = `<span class="pattern-tag" style="opacity: 1; transform: none; animation: none;">請選取 ${currentMax} 張牌</span>`;
+        transitionToWaitState(defaultHtml);
     }
 }
 
@@ -250,15 +345,13 @@ function addTile(id) {
 
 function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 
-function resetUI() {
-    document.body.className = ''; const card = document.getElementById('statusCard');
-    card.style.background = 'rgba(255, 255, 255, 0.5)'; card.style.borderColor = 'rgba(255, 255, 255, 0.6)'; card.style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.8)';
-    if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); document.getElementById('scoreValue').innerText = '--';
-}
-
+// 恢復為最穩定的原生排版動畫邏輯
 function renderHand() {
     const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {};
-    grid.querySelectorAll('.tile[data-key]').forEach(el => { oldPos[el.dataset.key] = el.getBoundingClientRect(); });
+    grid.querySelectorAll('.tile[data-key]').forEach(el => { 
+        oldPos[el.dataset.key] = el.getBoundingClientRect(); 
+        el.classList.remove('breathing'); 
+    });
 
     const updateGridDOM = () => {
         const existingTiles = new Map(); grid.querySelectorAll('.tile[data-key]').forEach(el => { existingTiles.set(el.dataset.key, el); });
@@ -298,6 +391,14 @@ function renderHand() {
             } else { el.style.transition = ''; el.style.transform = ''; }
         }
     });
+    
+    setTimeout(() => {
+        grid.querySelectorAll('.tile[data-key]').forEach((el, index) => {
+            el.style.animationDelay = `${index * 0.15}s`;
+            el.classList.add('breathing');
+        });
+    }, 300);
+
     lastMax = currentMax; checkAndRunEngine();
 }
 
@@ -309,15 +410,13 @@ function clearHand() {
     const currentTiles = document.querySelectorAll('#handGrid .tile:not(.empty)'); const oldMax = getCurrentMax(); 
 
     currentTiles.forEach((el, index) => {
-        const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim');
+        const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim'); clone.classList.remove('breathing');
         clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`; clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0'; clone.style.zIndex = '999'; clone.style.transition = 'none'; 
         clone.style.animation = `popOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`; clone.style.animationDelay = `${index * 0.02}s`;
         document.body.appendChild(clone); setTimeout(() => clone.remove(), 350 + index * 20);
     });
 
-    activeConditions.clear(); 
-    activeFlowers.clear(); 
-    roundWind = 0; seatWind = 0; 
+    activeConditions.clear(); activeFlowers.clear(); roundWind = 0; seatWind = 0; 
     updateIslandSummary(); 
     
     document.querySelectorAll('.flower-tile.active').forEach(el => el.classList.remove('active'));
@@ -326,7 +425,7 @@ function clearHand() {
 
     hand = []; lastTagsHtml = '';
     
-    smoothHeightUpdate('statusCard', () => { resetUI(); document.getElementById('statusTitle').innerText = '等待輸入手牌'; document.getElementById('patternDisplay').innerHTML = '<span class="pattern-tag">請選取 14 張牌</span>'; });
+    transitionToWaitState('<span class="pattern-tag" style="opacity: 1; transform: none; animation: none;">請選取 14 張牌</span>');
     document.getElementById('flowerCount').innerText = `已選 0 隻`;
 
     const grid = document.getElementById('handGrid'); grid.innerHTML = '';
@@ -375,7 +474,9 @@ function isThirteenOrphans(counts) {
 
 function runEngine() {
     let counts = new Array(34).fill(0); hand.forEach(item => counts[item.id]++); let fCount = activeFlowers.size;
-    if (fCount === 8) return displayResult(8, [{ text: "大花胡/八仙過海 (8番)", isHigh: true, isFlower: true }], true, true);
+    
+    if (fCount === 8) return displayResult(8, [{ text: "大花胡/八仙過海 (8番)", isHigh: true, isFlower: true }], true);
+    
     let currentMax = getCurrentMax(); let specialFaan = 0; let specialTags = []; let isSpecial = false;
 
     if (hand.length === currentMax) {
@@ -384,7 +485,7 @@ function runEngine() {
         else if (isThirteenOrphans(counts)) { specialFaan = 13; specialTags.push({ text: "十三么 (13番)", isHigh: true }); isSpecial = true; }
         else if (isNineGates(counts)) { specialFaan = 13; specialTags.push({ text: "九子連環 (13番)", isHigh: true }); isSpecial = true; }
     }
-    if (isSpecial) return displayResult(specialFaan, specialTags, true, specialFaan >= 10);
+    if (isSpecial) return displayResult(specialFaan, specialTags, true);
 
     let validBreakdowns = [];
     if (hand.length === currentMax) {
@@ -395,15 +496,25 @@ function runEngine() {
             }
         }
     }
+    
     if (validBreakdowns.length === 0) {
-        if (fCount === 7) return displayResult(3, [{ text: "花糊 (3番)", isFlower: true }], true, false);
+        if (fCount === 7) return displayResult(3, [{ text: "花糊 (3番)", isFlower: true }], true);
         if (hand.length < currentMax) return; 
-        return displayResult(0, [{ text: "未成糊牌結構 (詐糊)", isHigh: false }], false, false);
+        return displayResult(0, [{ text: "未成糊牌結構 (詐糊)", isHigh: false }], false);
     }
 
-    let bestResult = { faan: -1, tags: [], isLimit: false };
-    for (let breakdown of validBreakdowns) { let res = evaluateStandardPatterns(breakdown, counts); if (res.faan > bestResult.faan) bestResult = res; }
-    displayResult(bestResult.faan, bestResult.tags, true, bestResult.isLimit);
+    let bestResult = { faan: -1, tags: [] };
+    for (let breakdown of validBreakdowns) { 
+        let res = evaluateStandardPatterns(breakdown, counts); 
+        if (res.faan > bestResult.faan) bestResult = res; 
+    }
+    
+    if (bestResult.faan < 3) {
+        let zaWuTags = [...bestResult.tags, { text: "不足三番起糊 (詐糊)", isHigh: false }];
+        return displayResult(bestResult.faan, zaWuTags, false);
+    }
+
+    displayResult(bestResult.faan, bestResult.tags, true);
 }
 
 function evaluateStandardPatterns(breakdown, counts) {
@@ -434,26 +545,62 @@ function evaluateStandardPatterns(breakdown, counts) {
 
     if (!isExceptional) { let extras = getExtras(counts); faan += extras.faan; tags.push(...extras.tags); }
     if (faan === 0 && !isExceptional) tags.push({ text: "雞糊 (0番)", isHigh: false });
-    return { faan, tags, isLimit: faan >= 10 || isExceptional }; 
+    return { faan, tags }; 
 }
 
-function displayResult(faan, tags, isWin, isLimit) {
-    let html = ''; tags.forEach(t => { let text = typeof t === 'string' ? t : t.text; let hl = t.isHigh ? 'highlight' : ''; let fl = t.isFlower ? 'flower' : ''; let wd = t.isWind ? 'wind' : ''; html += `<span class="pattern-tag ${hl} ${fl} ${wd}">${text}</span>`; });
+function displayResult(faan, tags, isWin) {
+    let html = ''; 
+    tags.forEach((t, index) => { 
+        let text = typeof t === 'string' ? t : t.text; 
+        let hl = t.isHigh ? 'highlight' : ''; let fl = t.isFlower ? 'flower' : ''; let wd = t.isWind ? 'wind' : ''; 
+        html += `<span class="pattern-tag ${hl} ${fl} ${wd}" style="animation-delay: ${index * 0.05}s">${text}</span>`; 
+    });
+    
+    const isZaWu = !isWin && hand.length === getCurrentMax(); 
+    const isBaauPang = isWin && faan >= 10;
+
     const updateStatusDOM = () => {
-        document.getElementById('statusTitle').innerText = isWin ? (isLimit ? '✨ 無限疊加．極限爆棚 ✨' : '計算完成') : '分析失敗';
-        const scoreElement = document.getElementById('scoreValue'); let currentScore = parseInt(scoreElement.innerText) || 0;
-        if (isWin && faan > 0) animateValue(scoreElement, currentScore, faan, 300); else scoreElement.innerText = faan; 
+        const titleElement = document.getElementById('statusTitle');
+        const scoreElement = document.getElementById('scoreValue');
+        const faanUnit = scoreElement.nextElementSibling; 
+        let currentScore = parseInt(scoreElement.innerText) || 0;
+
+        if (isZaWu) {
+            titleElement.innerText = '🚨 判定失敗 🚨';
+            titleElement.style.color = '#ef4444';
+            animateToText(scoreElement, currentScore, faan, '詐糊', faanUnit, 500);
+            
+        } else if (isBaauPang) {
+            titleElement.innerText = '✨ 極限爆棚 ✨';
+            titleElement.style.color = '#eab308';
+            animateToText(scoreElement, currentScore, faan, '爆棚', faanUnit, 500);
+            
+        } else if (isWin) {
+            titleElement.innerText = '計算完成';
+            titleElement.style.color = '#475569';
+            scoreElement.style.fontSize = '64px';
+            if (faanUnit) faanUnit.style.display = 'inline';
+            animateValue(scoreElement, currentScore, faan, 300);
+            
+        }
         document.getElementById('patternDisplay').innerHTML = html;
+        document.getElementById('statusCard').classList.remove('content-fade-out');
     };
+
     if (html !== lastTagsHtml) { smoothHeightUpdate('statusCard', updateStatusDOM); lastTagsHtml = html; } else updateStatusDOM();
 
-    const card = document.getElementById('statusCard'); document.body.className = '';
-    if (isWin) {
-        if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-        if (isLimit) { document.body.classList.add('limit-mode'); card.style.background = 'rgba(254, 249, 195, 0.7)'; card.style.borderColor = 'rgba(253, 224, 71, 0.8)'; card.style.boxShadow = '0 12px 36px rgba(234, 179, 8, 0.2), inset 0 2px 15px rgba(250, 204, 21, 0.3)'; } 
-        else if (faan >= 5) { document.body.classList.add('success-mode'); card.style.background = 'rgba(219, 234, 254, 0.7)'; card.style.borderColor = 'rgba(147, 197, 253, 0.8)'; card.style.boxShadow = '0 12px 36px rgba(59, 130, 246, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5)'; } 
-        else { card.style.background = 'rgba(255, 255, 255, 0.5)'; card.style.borderColor = 'rgba(255, 255, 255, 0.6)'; card.style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.8)'; }
-    } else { document.body.classList.add('failure-mode'); card.style.background = 'rgba(254, 226, 226, 0.7)'; card.style.borderColor = 'rgba(252, 165, 165, 0.8)'; card.style.boxShadow = '0 12px 36px rgba(239, 68, 68, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5)'; }
+    document.body.className = ''; 
+    
+    if (isZaWu) {
+        document.body.classList.add('failure-mode'); 
+        if (navigator.vibrate) navigator.vibrate([50, 50, 50]); 
+    } else if (isBaauPang) {
+        document.body.classList.add('limit-mode'); 
+        if (navigator.vibrate) navigator.vibrate([30, 50, 30, 50, 30]); 
+    } else if (isWin) {
+        document.body.classList.add('success-mode'); 
+        if (navigator.vibrate) navigator.vibrate([30, 50, 30]); 
+    }
 }
 
 document.addEventListener('touchmove', function(event) { if (event.touches.length > 1) { event.preventDefault(); } }, { passive: false });
