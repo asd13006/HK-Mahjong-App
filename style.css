@@ -214,3 +214,13 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     0% { box-shadow: 0 8px 24px rgba(234, 179, 8, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); }
     100% { box-shadow: 0 8px 36px rgba(234, 179, 8, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.8); }
 }
+
+/* ==== ✨ v2.7.7 邊界果凍物理回彈 ==== */
+.app-container {
+    will-change: transform; /* 開啟 GPU 加速 */
+}
+
+.jelly-snap-back {
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transform: translateY(0) scale(1, 1) !important;
+}

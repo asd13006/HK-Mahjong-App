@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.7.6 (Eco-Performance Update)";
+const APP_VERSION = "v2.7.7 (Elastic Overscroll Update)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -668,18 +668,53 @@ document.addEventListener('gesturechange', function(event) { event.preventDefaul
 document.addEventListener('gestureend', function(event) { event.preventDefault(); });
 let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
 
-// 🔥 終極第二道防線：精準攔截 Android 頂部下拉刷新
+// 🔥 終極第二道防線升級版：精準攔截並注入「自定義果凍物理引擎」
+const appContainer = document.querySelector('.app-container');
 let pwaStartY = 0;
+let isOverscrolling = false;
+
 document.addEventListener('touchstart', function(e) {
     pwaStartY = e.touches[0].clientY;
+    appContainer.classList.remove('jelly-snap-back');
+    appContainer.style.transition = 'none'; // 滑動時移除延遲，跟隨手指
 }, { passive: true });
 
 document.addEventListener('touchmove', function(e) {
     const pwaCurrentY = e.touches[0].clientY;
-    // 如果使用者在網頁最頂端 (scrollY === 0)，且手指正在往下滑動
-    if (window.scrollY === 0 && pwaCurrentY > pwaStartY) {
-        e.preventDefault(); // 絕對強制取消原生的下拉刷新圈圈
+    const deltaY = pwaCurrentY - pwaStartY;
+    
+    // 判斷是否在最頂部並向下拉
+    const isAtTop = window.scrollY <= 0 && deltaY > 0;
+    // 判斷是否在最底部並向上拉 (加 2px 容錯率)
+    const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2 && deltaY < 0;
+
+    if (isAtTop || isAtBottom) {
+        e.preventDefault(); // 絕對強制取消原生的下拉刷新與生硬死鎖
+        isOverscrolling = true;
+        
+        // 物理阻力計算 (阻尼係數：數值越小越難拉)
+        const resistance = 0.25; 
+        const stretchY = deltaY * resistance;
+        
+        // 視覺欺騙：加入輕微的垂直拉伸感 (Y軸微拉長，X軸微變窄，創造果凍形變)
+        const scaleY = 1 + Math.abs(stretchY) / 1500;
+        const scaleX = 1 - Math.abs(stretchY) / 3000;
+        
+        // 動態設定變形原點 (往下拉以頂部為軸，往上拉以底部為軸)
+        appContainer.style.transformOrigin = isAtTop ? "top center" : "bottom center";
+        appContainer.style.transform = `translateY(${stretchY}px) scale(${scaleX}, ${scaleY})`;
+    } else {
+        isOverscrolling = false;
     }
 }, { passive: false });
 
-init(); // 這是原本就在檔案最後一行的代碼，保留在最底層
+document.addEventListener('touchend', function() {
+    if (isOverscrolling) {
+        isOverscrolling = false;
+        appContainer.style.transform = ''; // 清除手指控制的形變
+        appContainer.classList.add('jelly-snap-back'); // 加上完美的回彈動畫
+    }
+});
+
+// (確保 init() 依然在檔案的絕對最後一行)
+init();
