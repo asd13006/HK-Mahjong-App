@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.7.4 (Android Pull-to-Refresh Fix)";
+const APP_VERSION = "v2.7.6 (Eco-Performance Update)";
 
 let newWorker;
 window.isUpdateReady = false;
