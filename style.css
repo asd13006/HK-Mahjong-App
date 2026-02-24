@@ -140,3 +140,20 @@ body:not(.success-mode):not(.limit-mode):not(.failure-mode) #statusCard::after {
 .jelly-squish { animation: jellySquish 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
 .jelly-stretch { animation: jellyStretch 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
 #keyboard.jelly-squish, #keyboard.jelly-stretch { animation-delay: 0.05s; }
+
+/* ==== ✨ v2.6.0：動態島「系統更新」狀態變身 ==== */
+.dynamic-island.update-ready {
+    border-color: rgba(234, 179, 8, 0.6); /* 變成柔和的金色邊框 */
+    /* 加入金色的待機呼吸光 */
+    animation: islandUpdateBreathe 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
+}
+
+/* 當它變成更新按鈕時，隱藏旁邊的下拉箭頭 ▼ */
+.dynamic-island.update-ready .island-chevron {
+    display: none;
+}
+
+@keyframes islandUpdateBreathe {
+    0% { box-shadow: 0 8px 24px rgba(234, 179, 8, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); }
+    100% { box-shadow: 0 8px 36px rgba(234, 179, 8, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.8); }
+}

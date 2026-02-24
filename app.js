@@ -1,5 +1,9 @@
-// 🔥 穩定版降落：回到 v2.5.0 (Kinetic Jelly Wave Update)
-const APP_VERSION = "v2.5.0 (Kinetic Jelly Wave Update)";
+// 🔥 更新版本號
+const APP_VERSION = "v2.6.0 (Dynamic Island Update Engine)";
+
+// PWA 更新核心變數
+let newWorker;
+window.isUpdateReady = false;
 
 function attachFastClick(el, action, tapClass = '') {
     if (el._hasFastClick) { el._action = action; return; }
@@ -41,7 +45,55 @@ function smoothHeightUpdate(elementId, updateDOM) {
     }
 }
 
-if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => {}); }); }
+// ✨ PWA Service Worker 註冊與動態島變身邏輯
+if ('serviceWorker' in navigator) { 
+    window.addEventListener('load', () => { 
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+                newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    // 當背後默默下載完新版本時，觸發動態島變身！
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        showUpdateOnIsland();
+                    }
+                });
+            });
+        }).catch(err => console.log('SW Error:', err)); 
+    }); 
+
+    // 監聽重啟指令，執行無縫刷新
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+    });
+}
+
+function showUpdateOnIsland() {
+    window.isUpdateReady = true;
+    const island = document.getElementById('conditionsIsland');
+    const title = document.getElementById('islandTitle');
+    
+    // 讓膠囊發出黃金呼吸光
+    island.classList.add('update-ready');
+    
+    // 執行無縫推擠動畫替換文字
+    title.classList.add('slide-out');
+    setTimeout(() => {
+        title.innerText = '✨ 發現新版本 (點擊更新)';
+        title.style.color = '#ca8a04'; // 蘋果的高級暗金色
+        title.classList.remove('slide-out');
+        title.classList.add('slide-in');
+        void title.offsetWidth; 
+        title.classList.remove('slide-in');
+        
+        // 如果動態島本來是打開的，強制收起來，讓按鈕明顯
+        if (island.classList.contains('expanded')) {
+            island.classList.remove('expanded');
+        }
+    }, 200);
+}
 
 let deferredPrompt; const installBtn = document.getElementById('installBtn');
 const isIOS = /ipad|iphone|ipod/.test(navigator.userAgent.toLowerCase());
@@ -76,6 +128,14 @@ function init() {
     renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
     
     attachFastClick(document.getElementById('islandHeaderBtn'), () => {
+        // ✨ 動態島點擊事件攔截：如果有更新，點擊就是「升級」，不再是展開設定
+        if (window.isUpdateReady && newWorker) {
+            if (navigator.vibrate) navigator.vibrate([30, 50, 30]); // 特殊的歡呼震動
+            newWorker.postMessage({ type: 'SKIP_WAITING' }); // 通知 SW 切換新版並刷新
+            return; 
+        }
+
+        // 正常的展開收合邏輯
         const island = document.getElementById('conditionsIsland');
         const isExpanding = !island.classList.contains('expanded'); 
         
@@ -97,7 +157,6 @@ function init() {
             handCard.classList.add('jelly-stretch');
             keyboard.classList.add('jelly-stretch');
         }
-
     }, 'is-tapped-island');
 
     document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i), 'is-tapped-chip'));
@@ -179,6 +238,9 @@ function renderConditions() {
 }
 
 function updateIslandSummary() {
+    // ✨ 保護機制：如果在等待更新狀態，就不允許其他動作覆蓋動態島的文字
+    if (window.isUpdateReady) return; 
+
     let activeLabels = [];
     CONDITIONS.forEach(cond => {
         const chip = document.getElementById(`cond-${cond.id}`);
@@ -345,7 +407,6 @@ function addTile(id) {
 
 function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 
-// 恢復為最穩定的原生排版動畫邏輯
 function renderHand() {
     const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {};
     grid.querySelectorAll('.tile[data-key]').forEach(el => { 
