@@ -1,18 +1,15 @@
-// ✨ 使用 importScripts 載入共用的版本號檔案
-importScripts('version.js');
+// 🌟 唯一真相來源：未來不管加什麼新功能，你永遠只需要修改這一行的版本號！
+const APP_VERSION = "v2.7.0 (Single Source Hack)";
 
-// 動態結合 APP_VERSION 產生快取名稱
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
-
 const urlsToCache = [
     './',
     './index.html',
     './style.css',
-    './app.js',
-    './version.js' // 🔥 記得要把 version.js 也加進快取清單中！
+    './app.js'
 ];
 
-// ... 下面的 self.addEventListener('install' ... 等代碼完全不用動，保持原樣即可 ...self.addEventListener('install', (e) => {
+self.addEventListener('install', (e) => {
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(urlsToCache);

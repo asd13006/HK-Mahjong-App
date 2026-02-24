@@ -1,4 +1,4 @@
-// PWA 更新核心變數
+// 🔥 PWA 更新核心變數 (版本號已移交給 sw.js 統一管理)
 let newWorker;
 window.isUpdateReady = false;
 
@@ -42,32 +42,28 @@ function smoothHeightUpdate(elementId, updateDOM) {
     }
 }
 
-// ✨ PWA Service Worker 註冊與動態島變身邏輯
+// ✨ PWA Service Worker 註冊與喚醒機制
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
         navigator.serviceWorker.register('sw.js').then(reg => {
             reg.addEventListener('updatefound', () => {
                 newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
-                    // 當背後默默下載完新版本時，觸發動態島變身！
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                         showUpdateOnIsland();
                     }
                 });
             });
 
-            // 🔥 新增：方案一「喚醒 / 返回前台」時自動檢查更新
+            // 喚醒自動檢查更新
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
-                    // 當 App 從後台被叫回前台時，強制 Service Worker 檢查更新
                     reg.update().catch(err => console.log('SW Update Check Error:', err));
                 }
             });
-
         }).catch(err => console.log('SW Error:', err)); 
     }); 
 
-    // 監聽重啟指令，執行無縫刷新
     let refreshing;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
@@ -81,20 +77,16 @@ function showUpdateOnIsland() {
     const island = document.getElementById('conditionsIsland');
     const title = document.getElementById('islandTitle');
     
-    // 讓膠囊發出黃金呼吸光
     island.classList.add('update-ready');
-    
-    // 執行無縫推擠動畫替換文字
     title.classList.add('slide-out');
     setTimeout(() => {
         title.innerText = '✨ 發現新版本 (點擊更新)';
-        title.style.color = '#ca8a04'; // 蘋果的高級暗金色
+        title.style.color = '#ca8a04'; 
         title.classList.remove('slide-out');
         title.classList.add('slide-in');
         void title.offsetWidth; 
         title.classList.remove('slide-in');
         
-        // 如果動態島本來是打開的，強制收起來，讓按鈕明顯
         if (island.classList.contains('expanded')) {
             island.classList.remove('expanded');
         }
@@ -133,11 +125,25 @@ let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastT
 function init() { 
     renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
     
+    // 🚀 核心駭客魔法：隱形偵察兵去 sw.js 抓版本號
+    // 加上時間戳 ?t=... 確保瀏覽器不會拿快取來騙我們
+    fetch('sw.js?t=' + new Date().getTime())
+        .then(response => response.text())
+        .then(text => {
+            // 使用正則表達式尋找 const APP_VERSION = "..."
+            const match = text.match(/const\s+APP_VERSION\s*=\s*["']([^"']+)["']/);
+            if (match && match[1]) {
+                document.getElementById('appVersion').innerText = match[1];
+            } else {
+                document.getElementById('appVersion').innerText = "v.Latest";
+            }
+        })
+        .catch(() => document.getElementById('appVersion').innerText = "v.Latest");
+
     attachFastClick(document.getElementById('islandHeaderBtn'), () => {
-        // ✨ 動態島點擊事件攔截：如果有更新，點擊就是「升級」，不再是展開設定
         if (window.isUpdateReady && newWorker) {
-            if (navigator.vibrate) navigator.vibrate([30, 50, 30]); // 特殊的歡呼震動
-            newWorker.postMessage({ type: 'SKIP_WAITING' }); // 通知 SW 切換新版並刷新
+            if (navigator.vibrate) navigator.vibrate([30, 50, 30]); 
+            newWorker.postMessage({ type: 'SKIP_WAITING' }); 
             return; 
         }
 
@@ -162,13 +168,11 @@ function init() {
             handCard.classList.add('jelly-stretch');
             keyboard.classList.add('jelly-stretch');
         }
-
     }, 'is-tapped-island');
 
     document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i), 'is-tapped-chip'));
     document.querySelectorAll('#seatWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setSeatWind(i), 'is-tapped-chip'));
     attachFastClick(document.getElementById('clearBtnId'), clearHand, 'is-tapped-chip');
-    document.getElementById('appVersion').innerText = APP_VERSION;
     
     updateIslandSummary(); 
 }
@@ -244,7 +248,6 @@ function renderConditions() {
 }
 
 function updateIslandSummary() {
-    // ✨ 保護機制：如果在等待更新狀態，就不允許其他動作覆蓋動態島的文字
     if (window.isUpdateReady) return; 
 
     let activeLabels = [];
