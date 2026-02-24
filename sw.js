@@ -1,6 +1,6 @@
 // 每次你修改了 app.js 或 style.css 後，只要把這裡的 v2.6.0 改成 v2.6.1，
 // 用戶的手機就會自動觸發「動態島」更新提示！
-const CACHE_NAME = 'mahjong-cache-v2.6.2';
+const CACHE_NAME = 'mahjong-cache-v2.6.1';
 const urlsToCache = [
     './',
     './index.html',
@@ -41,5 +41,4 @@ self.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
-
 });

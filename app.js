@@ -1,5 +1,5 @@
 // 🔥 更新版本號：v2.6.1 加入了背景喚醒自動檢查機制
-const APP_VERSION = "v2.6.2 (Background Wake Update)";
+const APP_VERSION = "v2.6.1 (Background Wake Update)";
 
 // PWA 更新核心變數
 let newWorker;
@@ -679,6 +679,5 @@ document.addEventListener('gesturestart', function(event) { event.preventDefault
 document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
 document.addEventListener('gestureend', function(event) { event.preventDefault(); });
 let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
-
 
 init();
