@@ -148,9 +148,9 @@ body:not(.success-mode):not(.limit-mode):not(.failure-mode) #statusCard::after {
     animation: islandUpdateBreathe 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
 }
 
-/* 當它變成更新按鈕時，隱藏旁邊的下拉箭頭 ▼ */
-.dynamic-island.update-ready .island-chevron {
-    display: none;
+/* ==== ✨ v2.6.2：動態島「系統更新」狀態的橫向彈性拉伸 ==== */
+.dynamic-island.update-ready:not(.expanded) {
+    max-width: 280px; /* 給予足夠的寬度，完美容納整句更新文字 */
 }
 
 @keyframes islandUpdateBreathe {

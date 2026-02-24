@@ -1,5 +1,5 @@
 // 🔥 更新版本號：v2.6.1 加入了背景喚醒自動檢查機制
-const APP_VERSION = "v2.6.1 (Background Wake Update)";
+const APP_VERSION = "v2.6.2 (Alert Pill Morphing Update)";
 
 // PWA 更新核心變數
 let newWorker;
