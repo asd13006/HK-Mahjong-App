@@ -1,14 +1,18 @@
-// 每次你修改了 app.js 或 style.css 後，只要把這裡的 v2.6.0 改成 v2.6.1，
-// 用戶的手機就會自動觸發「動態島」更新提示！
-const CACHE_NAME = 'mahjong-cache-v2.6.2';
+// ✨ 使用 importScripts 載入共用的版本號檔案
+importScripts('version.js');
+
+// 動態結合 APP_VERSION 產生快取名稱
+const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
+
 const urlsToCache = [
     './',
     './index.html',
     './style.css',
-    './app.js'
+    './app.js',
+    './version.js' // 🔥 記得要把 version.js 也加進快取清單中！
 ];
 
-self.addEventListener('install', (e) => {
+// ... 下面的 self.addEventListener('install' ... 等代碼完全不用動，保持原樣即可 ...self.addEventListener('install', (e) => {
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(urlsToCache);
