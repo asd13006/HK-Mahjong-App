@@ -3,107 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>香港麻雀沉浸式計番大腦</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#eef2ff">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>香港麻雀計番神器</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    
     <link rel="stylesheet" href="style.css">
+    
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <filter id="liquid-fx">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="liquid" />
+            <feBlend in="SourceGraphic" in2="liquid" />
+        </filter>
+    </svg>
 </head>
 <body>
+    <div class="bg-layer bg-base"></div>
+    <div class="bg-layer bg-success"></div>
+    <div class="bg-layer bg-limit"></div>
+    <div class="bg-layer bg-failure"></div>
 
-<div class="bg-layer bg-base"></div>
-<div class="bg-layer bg-success"></div>
-<div class="bg-layer bg-limit"></div>
-<div class="bg-layer bg-failure"></div>
-
-<svg style="display: none;">
-    <defs>
-        <filter id="liquid-fx" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-    </defs>
-</svg>
-
-<div class="app-container">
-    <div class="glass-card status-header" id="statusCard">
-        <div class="status-title" id="statusTitle">等待輸入手牌</div>
-        <div class="score-display">
-            <span id="scoreValue">--</span><span style="font-size: 24px; opacity: 0.5; font-weight: 400; margin-left: 4px; color: #475569;">番</span>
-        </div>
-        <div class="pattern-name" id="patternDisplay"><span class="pattern-tag">請選取 14 張牌與條件</span></div>
-    </div>
-
-    <div class="dynamic-island" id="conditionsIsland">
-        <div class="island-header" id="islandHeaderBtn">
-            <span class="island-title" id="islandTitle" style="color: #475569;">✦ 牌局設定</span>
-            <span class="island-chevron">▼</span>
-        </div>
+    <div class="app-container">
         
-        <div class="island-content-grid">
-            <div class="island-content-inner">
-                <div class="island-section">
-                    <div class="island-section-header">附加條件</div>
-                    <div class="conditions-wrapper" id="conditionsBar"></div>
+        <div id="statusCard" class="glass-card">
+            <div class="status-header">
+                <div id="statusTitle" class="status-title">等待輸入手牌</div>
+                <div style="display: flex; justify-content: center; align-items: baseline; gap: 4px;">
+                    <div id="scoreValue" class="score-display">--</div>
+                    <div style="font-size: 24px; font-weight: 600; color: #475569; display: inline;">番</div>
                 </div>
-
-                <div class="island-divider"></div>
-
-                <div class="island-section">
-                    <div class="winds-container">
-                        <div class="wind-group">
-                            <div class="island-section-header">圈風</div>
-                            <div class="wind-selector" id="roundWindSelector">
-                                <div class="wind-btn active">東</div>
-                                <div class="wind-btn">南</div>
-                                <div class="wind-btn">西</div>
-                                <div class="wind-btn">北</div>
-                            </div>
-                        </div>
-                        <div class="wind-group">
-                            <div class="island-section-header">門風 (正花)</div>
-                            <div class="wind-selector" id="seatWindSelector">
-                                <div class="wind-btn active">東</div>
-                                <div class="wind-btn">南</div>
-                                <div class="wind-btn">西</div>
-                                <div class="wind-btn">北</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="island-divider"></div>
-
-                <div class="island-section" style="padding-bottom: 20px;">
-                    <div class="island-section-header">
-                        <span>選擇花牌</span>
-                        <span id="flowerCount" style="color: #9d174d; font-weight: 600;">已選 0 隻</span>
-                    </div>
-                    <div class="flower-grid" id="flowerGrid"></div>
-                </div>
-
+            </div>
+            <div id="patternDisplay" class="pattern-name">
+                <span class="pattern-tag" style="opacity: 1; transform: none; animation: none;">請選取 14 張牌</span>
             </div>
         </div>
-    </div>
 
-    <div class="glass-card hand-container" id="handCard">
-        <div class="hand-header">
-            <span id="tileCount">暗牌已選 0 / 14</span>
-            <button class="clear-btn" id="clearBtnId">清除重選</button>
+        <div id="conditionsIsland" class="dynamic-island">
+            <div id="islandHeaderBtn" class="island-header">
+                <div id="islandTitle" class="island-title">✦ 牌局設定</div>
+                <div class="island-chevron">▼</div>
+            </div>
+            <div class="island-content-grid">
+                <div class="island-content-inner">
+                    <div class="island-section">
+                        <div class="island-section-header"><span>特殊牌型</span></div>
+                        <div id="conditionsBar" class="conditions-wrapper"></div>
+                    </div>
+                    <div class="island-divider"></div>
+                    <div class="island-section">
+                        <div class="island-section-header"><span>風圈與風位</span></div>
+                        <div class="winds-container">
+                            <div class="wind-group">
+                                <div class="wind-selector" id="roundWindSelector">
+                                    <div class="wind-btn active">東</div><div class="wind-btn">南</div><div class="wind-btn">西</div><div class="wind-btn">北</div>
+                                </div>
+                            </div>
+                            <div class="wind-group">
+                                <div class="wind-selector" id="seatWindSelector">
+                                    <div class="wind-btn active">東</div><div class="wind-btn">南</div><div class="wind-btn">西</div><div class="wind-btn">北</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="island-divider"></div>
+                    <div class="island-section">
+                        <div class="island-section-header"><span>花牌</span><span id="flowerCount">已選 0 隻</span></div>
+                        <div id="flowerGrid" class="flower-grid"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="tiles-grid" id="handGrid"></div>
-    </div>
 
-    <div class="glass-card keyboard" id="keyboard"></div>
+        <div id="handCard" class="glass-card hand-container">
+            <div class="hand-header">
+                <span id="tileCount">暗牌已選 0 / 14</span>
+                <button id="clearBtnId" class="clear-btn">清空</button>
+            </div>
+            <div id="handGrid" class="tiles-grid"></div>
+        </div>
 
-    <button id="installBtn" class="install-btn">⬇️ 安裝 App 到桌面</button>
-    <div class="footer-credit">
-        <span>Developed by Leo Lai</span>
-        <span class="version-num" id="appVersion"></span>
+        <div id="keyboard" class="glass-card keyboard"></div>
+
+        <div class="footer-credit">
+            <div>Developed by Leo Lai</div>
+            <div id="appVersion" class="version-num"></div>
+        </div>
+
+        <button id="installBtn" class="install-btn">💎 安裝神器到桌面</button>
+
     </div>
-</div>
 
     <script src="app.js"></script>
 </body>

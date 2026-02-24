@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.7.2 (Stable Versioning)";
+const APP_VERSION = "v2.7.4 (Android Pull-to-Refresh Fix)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -668,4 +668,18 @@ document.addEventListener('gesturechange', function(event) { event.preventDefaul
 document.addEventListener('gestureend', function(event) { event.preventDefault(); });
 let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
 
-init();
+// 🔥 終極第二道防線：精準攔截 Android 頂部下拉刷新
+let pwaStartY = 0;
+document.addEventListener('touchstart', function(e) {
+    pwaStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchmove', function(e) {
+    const pwaCurrentY = e.touches[0].clientY;
+    // 如果使用者在網頁最頂端 (scrollY === 0)，且手指正在往下滑動
+    if (window.scrollY === 0 && pwaCurrentY > pwaStartY) {
+        e.preventDefault(); // 絕對強制取消原生的下拉刷新圈圈
+    }
+}, { passive: false });
+
+init(); // 這是原本就在檔案最後一行的代碼，保留在最底層
