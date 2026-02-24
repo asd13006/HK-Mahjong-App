@@ -1,5 +1,5 @@
-// 🔥 更新版本號
-const APP_VERSION = "v2.6.0 (Dynamic Island Update Engine)";
+// 🔥 更新版本號：v2.6.1 加入了背景喚醒自動檢查機制
+const APP_VERSION = "v2.6.1 (Background Wake Update)";
 
 // PWA 更新核心變數
 let newWorker;
@@ -58,6 +58,15 @@ if ('serviceWorker' in navigator) {
                     }
                 });
             });
+
+            // 🔥 新增：方案一「喚醒 / 返回前台」時自動檢查更新
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    // 當 App 從後台被叫回前台時，強制 Service Worker 檢查更新
+                    reg.update().catch(err => console.log('SW Update Check Error:', err));
+                }
+            });
+
         }).catch(err => console.log('SW Error:', err)); 
     }); 
 
@@ -135,7 +144,6 @@ function init() {
             return; 
         }
 
-        // 正常的展開收合邏輯
         const island = document.getElementById('conditionsIsland');
         const isExpanding = !island.classList.contains('expanded'); 
         
@@ -157,6 +165,7 @@ function init() {
             handCard.classList.add('jelly-stretch');
             keyboard.classList.add('jelly-stretch');
         }
+
     }, 'is-tapped-island');
 
     document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i), 'is-tapped-chip'));
@@ -407,6 +416,7 @@ function addTile(id) {
 
 function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 
+// 恢復為最穩定的原生排版動畫邏輯
 function renderHand() {
     const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {};
     grid.querySelectorAll('.tile[data-key]').forEach(el => { 
