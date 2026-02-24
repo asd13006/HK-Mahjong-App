@@ -1,4 +1,6 @@
-// 🔥 PWA 更新核心變數 (版本號已移交給 sw.js 統一管理)
+// 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
+const APP_VERSION = "v2.7.2 (Stable Versioning)";
+
 let newWorker;
 window.isUpdateReady = false;
 
@@ -42,7 +44,6 @@ function smoothHeightUpdate(elementId, updateDOM) {
     }
 }
 
-// ✨ PWA Service Worker 註冊與喚醒機制
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
         navigator.serviceWorker.register('sw.js').then(reg => {
@@ -55,7 +56,6 @@ if ('serviceWorker' in navigator) {
                 });
             });
 
-            // 喚醒自動檢查更新
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
                     reg.update().catch(err => console.log('SW Update Check Error:', err));
@@ -125,20 +125,8 @@ let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastT
 function init() { 
     renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
     
-    // 🚀 核心駭客魔法：隱形偵察兵去 sw.js 抓版本號
-    // 加上時間戳 ?t=... 確保瀏覽器不會拿快取來騙我們
-    fetch('sw.js?t=' + new Date().getTime())
-        .then(response => response.text())
-        .then(text => {
-            // 使用正則表達式尋找 const APP_VERSION = "..."
-            const match = text.match(/const\s+APP_VERSION\s*=\s*["']([^"']+)["']/);
-            if (match && match[1]) {
-                document.getElementById('appVersion').innerText = match[1];
-            } else {
-                document.getElementById('appVersion').innerText = "v.Latest";
-            }
-        })
-        .catch(() => document.getElementById('appVersion').innerText = "v.Latest");
+    // 🔥 改回最穩定、直接載入常數的方式
+    document.getElementById('appVersion').innerText = APP_VERSION;
 
     attachFastClick(document.getElementById('islandHeaderBtn'), () => {
         if (window.isUpdateReady && newWorker) {
@@ -416,7 +404,7 @@ function addTile(id) {
 
 function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 
-// 恢復為最穩定的原生排版動畫邏輯
+// 穩定的原生排版動畫邏輯
 function renderHand() {
     const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {};
     grid.querySelectorAll('.tile[data-key]').forEach(el => { 

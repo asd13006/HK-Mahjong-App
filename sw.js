@@ -1,7 +1,7 @@
-// 🌟 唯一真相來源：未來不管加什麼新功能，你永遠只需要修改這一行的版本號！
-const APP_VERSION = "v2.7.0 (Single Source Hack)";
-
+// 🔥 100% 穩定的快取宣告 (每次更新請同時修改這裡與 app.js)
+const APP_VERSION = "v2.7.2 (Stable Versioning)";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
+
 const urlsToCache = [
     './',
     './index.html',
@@ -37,7 +37,6 @@ self.addEventListener('fetch', (e) => {
     );
 });
 
-// 接收來自 app.js 的指令：瞬間切換到新版本
 self.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
