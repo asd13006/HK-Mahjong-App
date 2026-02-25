@@ -1,4 +1,4 @@
-const APP_VERSION = "v2.8.3 (Epic Combo Update)";
+const APP_VERSION = "v2.8.4 (iOS Ultimate Update Fix)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -44,10 +44,19 @@ function smoothHeightUpdate(elementId, updateDOM) {
     }
 }
 
-// ✨ v2.8.2 iOS 延遲喚醒自動檢查
+// ✨ v2.8.4 iOS 終極防禦版：強制繞過快取與全面狀態攔截
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
-        navigator.serviceWorker.register('sw.js').then(reg => {
+        // 1. 強制 Safari 忽略快取，每次都去伺服器核對 sw.js 檔案
+        navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+            
+            // 2. 攔截盲區：如果背景已經有抓好的新版本，立刻觸發動態島
+            if (reg.waiting) {
+                newWorker = reg.waiting;
+                showUpdateOnIsland();
+            }
+
+            // 3. 監聽全新的下載進度
             reg.addEventListener('updatefound', () => {
                 newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
@@ -57,16 +66,25 @@ if ('serviceWorker' in navigator) {
                 });
             });
 
+            // 4. 專治 iOS 的多重喚醒檢查
             const checkUpdateSafely = () => {
-                setTimeout(() => {
-                    reg.update().catch(err => console.log('SW Update Check Error:', err));
-                }, 1500);
+                // 確保手機有網路才檢查
+                if (navigator.onLine) {
+                    setTimeout(() => {
+                        reg.update().catch(err => console.log('SW Update Check Error:', err));
+                    }, 2000); // 延長到 2 秒，確保 iOS 網路模組徹底甦醒
+                }
             };
 
+            // 防線 A：網頁可見度改變
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') checkUpdateSafely();
             });
+            // 防線 B：視窗獲得焦點
             window.addEventListener('focus', checkUpdateSafely);
+            // 防線 C：網路從斷線恢復連線時
+            window.addEventListener('online', checkUpdateSafely);
+            // 防線 D：背景定時巡邏
             setInterval(checkUpdateSafely, 30 * 60 * 1000);
 
         }).catch(err => console.log('SW Error:', err)); 
