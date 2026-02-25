@@ -1,4 +1,4 @@
-const APP_VERSION = "v2.8.4 (iOS Ultimate Update Fix)";
+const APP_VERSION = "v2.8.5 (Cache-Buster Edition)";
 
 let newWorker;
 window.isUpdateReady = false;
