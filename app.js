@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.8.0 (Edge Glow Update)";
+const APP_VERSION = "v2.8.1 (Compact Footer Update)";
 
 let newWorker;
 window.isUpdateReady = false;

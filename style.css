@@ -23,7 +23,11 @@ body {
     color: #1e293b; 
     display: flex; justify-content: center; min-height: 100vh; position: relative; 
     padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px; 
-    padding-bottom: max(30px, env(safe-area-inset-bottom) + 10px); padding-left: 15px; 
+    
+    /* 🔥 核心修改：將底部的安全距離收縮到最極限的貼合狀態 */
+    padding-bottom: max(8px, env(safe-area-inset-bottom)); 
+    
+    padding-left: 15px; 
     touch-action: pan-y; 
     -webkit-user-select: none; -moz-user-select: none; user-select: none; 
     -webkit-tap-highlight-color: transparent; 
@@ -175,15 +179,17 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     font-weight: 400; 
     color: #94a3b8; 
     letter-spacing: 0.5px; 
-    margin-bottom: 5px; 
+    
+    /* 🔥 核心修改：將版權文字下方的多餘空隙徹底移除 */
+    margin-bottom: 0px; 
+    
     display: flex; 
     flex-direction: column; 
     gap: 4px; 
-    
-    /* 🔥 核心修改：移除 auto，改為固定的上方間距 */
     margin-top: 15px; 
     padding-top: 5px; 
 }
+
 .version-num { font-size: 10px; opacity: 0.8; }
 
 #statusCard::after { 
