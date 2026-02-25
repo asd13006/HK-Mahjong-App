@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的快取宣告 (每次更新請同時修改這裡與 app.js)
-const APP_VERSION = "v2.8.2 (iOS Auto Update Fix)";
+const APP_VERSION = "v2.8.3 (Epic Combo Update)";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [

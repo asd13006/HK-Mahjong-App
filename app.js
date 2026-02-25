@@ -1,8 +1,8 @@
-// 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.8.2 (iOS Auto Update Fix)";
+const APP_VERSION = "v2.8.3 (Epic Combo Update)";
 
 let newWorker;
 window.isUpdateReady = false;
+let displaySeq = 0; // v2.8.3 連擊控制器
 
 function attachFastClick(el, action, tapClass = '') {
     if (el._hasFastClick) { el._action = action; return; }
@@ -44,7 +44,7 @@ function smoothHeightUpdate(elementId, updateDOM) {
     }
 }
 
-// ✨ v2.8.2 強化版：PWA Service Worker 註冊與 iOS 喚醒機制
+// ✨ v2.8.2 iOS 延遲喚醒自動檢查
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
         navigator.serviceWorker.register('sw.js').then(reg => {
@@ -57,23 +57,16 @@ if ('serviceWorker' in navigator) {
                 });
             });
 
-            // 🔥 專治 iOS 的延遲喚醒檢查函數
             const checkUpdateSafely = () => {
-                // 故意延遲 1.5 秒，等待 iOS 從休眠中喚醒並重新連上網路
                 setTimeout(() => {
                     reg.update().catch(err => console.log('SW Update Check Error:', err));
                 }, 1500);
             };
 
-            // 防線 1：標準網頁可見度改變時
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') checkUpdateSafely();
             });
-
-            // 防線 2：iOS 備用機制 (視窗重新獲得焦點時)
             window.addEventListener('focus', checkUpdateSafely);
-
-            // 防線 3：如果用戶一直開著螢幕打牌，每 30 分鐘背景定時檢查一次
             setInterval(checkUpdateSafely, 30 * 60 * 1000);
 
         }).catch(err => console.log('SW Error:', err)); 
@@ -135,12 +128,10 @@ const FLOWERS = [
 ];
 
 let hand = []; let activeConditions = new Set(); let roundWind = 0; let seatWind = 0; let activeFlowers = new Set();
-let scoreAnimationId = null; let tileKeyCounter = 0; let lastMax = 14; let lastTagsHtml = ''; 
+let tileKeyCounter = 0; let lastMax = 14; let lastTagsHtml = ''; 
 
 function init() { 
     renderConditions(); renderFlowers(); renderKeyboard(); renderHand(); 
-    
-    // 🔥 改回最穩定、直接載入常數的方式
     document.getElementById('appVersion').innerText = APP_VERSION;
 
     attachFastClick(document.getElementById('islandHeaderBtn'), () => {
@@ -178,60 +169,6 @@ function init() {
     attachFastClick(document.getElementById('clearBtnId'), clearHand, 'is-tapped-chip');
     
     updateIslandSummary(); 
-}
-
-function animateValue(obj, start, end, duration) {
-    let startTimestamp = null;
-    obj.classList.remove('heartbeat-pop'); 
-    
-    const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        const easeOutProgress = 1 - Math.pow(1 - progress, 4); const currentVal = Math.floor(start + (end - start) * easeOutProgress);
-        obj.innerText = currentVal; 
-        
-        if (progress < 1) {
-            scoreAnimationId = window.requestAnimationFrame(step); 
-        } else {
-            obj.innerText = end; 
-            void obj.offsetWidth; 
-            obj.classList.add('heartbeat-pop');
-        }
-    };
-    if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); scoreAnimationId = window.requestAnimationFrame(step);
-}
-
-function animateToText(obj, start, endNum, finalText, faanUnitEl, duration) {
-    let startTimestamp = null;
-    obj.style.fontSize = '64px';
-    if (faanUnitEl) faanUnitEl.style.display = 'inline';
-    obj.classList.remove('heartbeat-pop'); 
-
-    const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        const easeOutProgress = 1 - Math.pow(1 - progress, 4); 
-        let currentVal;
-        
-        if (start === endNum && progress < 0.9) {
-            currentVal = Math.floor(Math.random() * 13);
-        } else {
-            currentVal = Math.floor(start + (endNum - start) * easeOutProgress);
-        }
-
-        obj.innerText = currentVal;
-
-        if (progress < 1) {
-            scoreAnimationId = window.requestAnimationFrame(step);
-        } else {
-            obj.innerText = finalText;
-            obj.style.fontSize = '50px'; 
-            if (faanUnitEl) faanUnitEl.style.display = 'none'; 
-            void obj.offsetWidth; 
-            obj.classList.add('heartbeat-pop');
-        }
-    };
-    if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId);
-    scoreAnimationId = window.requestAnimationFrame(step);
 }
 
 function renderConditions() {
@@ -367,15 +304,20 @@ function checkWinCondition(counts) {
     return false;
 }
 
+// ==== ✨ v2.8.3 狀態切換與連擊引擎 ====
 function transitionToWaitState(defaultHtml) {
+    displaySeq++; 
     const wasInResultMode = document.body.className.includes('mode');
     
     const updateWaitDOM = () => {
+        const statusCard = document.getElementById('statusCard');
+        statusCard.classList.remove('glow-epic', 'glow-fail');
+        statusCard.classList.add('glow-normal');
+
         document.getElementById('statusTitle').innerText = '等待輸入手牌'; 
         document.getElementById('statusTitle').style.color = '#64748b';
-        
         document.body.className = ''; 
-        if (scoreAnimationId) window.cancelAnimationFrame(scoreAnimationId); 
+        
         const scoreElement = document.getElementById('scoreValue');
         scoreElement.innerText = '--';
         scoreElement.style.fontSize = '64px';
@@ -390,15 +332,10 @@ function transitionToWaitState(defaultHtml) {
 
     if (wasInResultMode) {
         document.getElementById('statusCard').classList.add('content-fade-out');
-        setTimeout(() => {
-            smoothHeightUpdate('statusCard', updateWaitDOM);
-        }, 250); 
+        setTimeout(() => { smoothHeightUpdate('statusCard', updateWaitDOM); }, 250); 
     } else {
-        if (lastTagsHtml !== defaultHtml) {
-            smoothHeightUpdate('statusCard', updateWaitDOM);
-        } else {
-            updateWaitDOM();
-        }
+        if (lastTagsHtml !== defaultHtml) { smoothHeightUpdate('statusCard', updateWaitDOM); } 
+        else { updateWaitDOM(); }
     }
 }
 
@@ -419,7 +356,6 @@ function addTile(id) {
 
 function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 
-// 穩定的原生排版動畫邏輯
 function renderHand() {
     const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {};
     grid.querySelectorAll('.tile[data-key]').forEach(el => { 
@@ -622,68 +558,111 @@ function evaluateStandardPatterns(breakdown, counts) {
     return { faan, tags }; 
 }
 
+// ==== ✨ v2.8.3 顯示引擎 (異步 RPG 連擊) ====
 function displayResult(faan, tags, isWin) {
-    let html = ''; 
-    tags.forEach((t, index) => { 
-        let text = typeof t === 'string' ? t : t.text; 
-        let hl = t.isHigh ? 'highlight' : ''; let fl = t.isFlower ? 'flower' : ''; let wd = t.isWind ? 'wind' : ''; 
-        html += `<span class="pattern-tag ${hl} ${fl} ${wd}" style="animation-delay: ${index * 0.05}s">${text}</span>`; 
-    });
-    
+    displaySeq++;
+    const seq = displaySeq; 
+
     const isZaWu = !isWin && hand.length === getCurrentMax(); 
     const isBaauPang = isWin && faan >= 10;
+    const isEpic = isBaauPang || tags.some(t => typeof t === 'object' && t.isHigh);
 
     const updateStatusDOM = () => {
+        const statusCard = document.getElementById('statusCard');
         const titleElement = document.getElementById('statusTitle');
-        const scoreElement = document.getElementById('scoreValue');
-        const faanUnit = scoreElement.nextElementSibling; 
-        let currentScore = parseInt(scoreElement.innerText) || 0;
-
+        
+        statusCard.classList.remove('glow-normal', 'glow-epic', 'glow-fail');
         if (isZaWu) {
+            statusCard.classList.add('glow-fail');
             titleElement.innerText = '🚨 判定失敗 🚨';
             titleElement.style.color = '#ef4444';
-            animateToText(scoreElement, currentScore, faan, '詐糊', faanUnit, 500);
-            
-        } else if (isBaauPang) {
+        } else if (isEpic) {
+            statusCard.classList.add('glow-epic');
             titleElement.innerText = '✨ 極限爆棚 ✨';
             titleElement.style.color = '#eab308';
-            animateToText(scoreElement, currentScore, faan, '爆棚', faanUnit, 500);
-            
         } else if (isWin) {
+            statusCard.classList.add('glow-normal');
             titleElement.innerText = '計算完成';
             titleElement.style.color = '#475569';
-            scoreElement.style.fontSize = '64px';
-            if (faanUnit) faanUnit.style.display = 'inline';
-            animateValue(scoreElement, currentScore, faan, 300);
-            
         }
-        document.getElementById('patternDisplay').innerHTML = html;
-        document.getElementById('statusCard').classList.remove('content-fade-out');
+
+        document.body.className = ''; 
+        if (isZaWu) document.body.classList.add('failure-mode'); 
+        else if (isBaauPang) document.body.classList.add('limit-mode'); 
+        else if (isWin) document.body.classList.add('success-mode'); 
+
+        const scoreElement = document.getElementById('scoreValue');
+        const faanUnit = scoreElement.nextElementSibling;
+        scoreElement.classList.remove('heartbeat-pop');
+        
+        if (isZaWu) { scoreElement.innerText = '--'; scoreElement.style.fontSize = '50px'; } 
+        else { scoreElement.innerText = '0'; scoreElement.style.fontSize = '64px'; }
+        if (faanUnit) faanUnit.style.display = 'inline';
+
+        const patternDisplay = document.getElementById('patternDisplay');
+        patternDisplay.innerHTML = '';
+        
+        tags.forEach(t => {
+            let text = typeof t === 'string' ? t : t.text;
+            let isHigh = typeof t === 'object' && t.isHigh;
+            let epicClass = isHigh ? 'epic-tag' : ''; 
+            let fl = t.isFlower ? 'flower' : ''; 
+            let wd = t.isWind ? 'wind' : ''; 
+            
+            const span = document.createElement('span');
+            span.className = `pattern-tag hide-tag ${epicClass} ${fl} ${wd}`;
+            span.innerText = text;
+            
+            const match = text.match(/\((\d+)番\)/);
+            span.dataset.stepFaan = match ? match[1] : '0';
+            patternDisplay.appendChild(span);
+        });
+        statusCard.classList.remove('content-fade-out');
     };
 
-    if (html !== lastTagsHtml) { smoothHeightUpdate('statusCard', updateStatusDOM); lastTagsHtml = html; } else updateStatusDOM();
+    const tempHtml = tags.map(t => typeof t === 'string' ? t : t.text).join('');
+    if (tempHtml !== lastTagsHtml) { smoothHeightUpdate('statusCard', updateStatusDOM); lastTagsHtml = tempHtml; } 
+    else { updateStatusDOM(); }
 
-    document.body.className = ''; 
-    
-    if (isZaWu) {
-        document.body.classList.add('failure-mode'); 
-        if (navigator.vibrate) navigator.vibrate([50, 50, 50]); 
-    } else if (isBaauPang) {
-        document.body.classList.add('limit-mode'); 
-        if (navigator.vibrate) navigator.vibrate([30, 50, 30, 50, 30]); 
-    } else if (isWin) {
-        document.body.classList.add('success-mode'); 
-        if (navigator.vibrate) navigator.vibrate([30, 50, 30]); 
-    }
+    setTimeout(async () => {
+        if (seq !== displaySeq) return;
+        
+        const scoreElement = document.getElementById('scoreValue');
+        const spans = document.getElementById('patternDisplay').querySelectorAll('.pattern-tag');
+        let currentScore = 0;
+
+        for (let i = 0; i < spans.length; i++) {
+            if (seq !== displaySeq) return; 
+            
+            const span = spans[i];
+            span.classList.remove('hide-tag');
+            span.classList.add('pop-in-tag'); 
+
+            if (isWin) {
+                currentScore += parseInt(span.dataset.stepFaan || 0);
+                if (i === spans.length - 1) currentScore = faan; 
+                scoreElement.innerText = currentScore;
+                if (navigator.vibrate) navigator.vibrate([10]); 
+            }
+            await new Promise(r => setTimeout(r, 150)); 
+        }
+
+        if (seq !== displaySeq) return;
+        
+        if (isZaWu) {
+            scoreElement.innerText = '詐糊';
+            if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        } else {
+            scoreElement.classList.add('heartbeat-pop');
+            if (navigator.vibrate) {
+                if (isBaauPang) navigator.vibrate([30, 50, 30, 50, 30]);
+                else navigator.vibrate([30, 50, 30]);
+            }
+        }
+    }, 300); 
 }
 
-document.addEventListener('touchmove', function(event) { if (event.touches.length > 1) { event.preventDefault(); } }, { passive: false });
-document.addEventListener('gesturestart', function(event) { event.preventDefault(); });
-document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
-document.addEventListener('gestureend', function(event) { event.preventDefault(); });
-let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
-
-// 🔥 v2.8.0：超輕量級邊緣光暈引擎 (保證 0 卡頓)
+// 🔥 v2.8.0 輕量級邊緣光暈引擎
 const topGlow = document.getElementById('topGlow');
 const bottomGlow = document.getElementById('bottomGlow');
 let edgeStartY = 0;
@@ -697,27 +676,29 @@ document.addEventListener('touchmove', function(e) {
     const deltaY = currentY - edgeStartY;
     const currentScroll = window.scrollY;
     
-    // 判斷是否觸碰邊界
     const isAtTop = currentScroll <= 0 && deltaY > 0;
     const isAtBottom = (window.innerHeight + currentScroll) >= document.body.offsetHeight - 2 && deltaY < 0;
 
     if (isAtTop) {
-        e.preventDefault(); // 阻擋原生刷新
+        if (e.cancelable) e.preventDefault();
         topGlow.classList.add('is-pulling');
     } else if (isAtBottom) {
-        e.preventDefault(); // 阻擋原生刷新
+        if (e.cancelable) e.preventDefault();
         bottomGlow.classList.add('is-pulling');
     } else {
-        // 如果往回滑，立刻熄滅光暈
         topGlow.classList.remove('is-pulling');
         bottomGlow.classList.remove('is-pulling');
     }
 }, { passive: false });
 
 document.addEventListener('touchend', function() {
-    // 手指放開時，優雅地淡出光暈
     topGlow.classList.remove('is-pulling');
     bottomGlow.classList.remove('is-pulling');
 });
+
+document.addEventListener('gesturestart', function(event) { event.preventDefault(); });
+document.addEventListener('gesturechange', function(event) { event.preventDefault(); });
+document.addEventListener('gestureend', function(event) { event.preventDefault(); });
+let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
 
 init();
