@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.7.8 (Smooth 60FPS Engine)";
+const APP_VERSION = "v2.8.0 (Edge Glow Update)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -668,62 +668,41 @@ document.addEventListener('gesturechange', function(event) { event.preventDefaul
 document.addEventListener('gestureend', function(event) { event.preventDefault(); });
 let lastTouchEnd = 0; document.addEventListener('touchend', function(event) { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) { event.preventDefault(); } lastTouchEnd = now; }, { passive: false });
 
-// 🔥 終極第二道防線：60FPS 極致流暢果凍物理引擎 (rAF 優化版)
-const appContainer = document.querySelector('.app-container');
-let pwaStartY = 0;
-let currentDeltaY = 0;
-let isOverscrolling = false;
-let isTicking = false; // 用來控制 GPU 渲染節奏
-let cachedMaxScroll = 0; // 效能關鍵：快取最大高度
+// 🔥 v2.8.0：超輕量級邊緣光暈引擎 (保證 0 卡頓)
+const topGlow = document.getElementById('topGlow');
+const bottomGlow = document.getElementById('bottomGlow');
+let edgeStartY = 0;
 
 document.addEventListener('touchstart', function(e) {
-    pwaStartY = e.touches[0].clientY;
-    appContainer.classList.remove('jelly-snap-back');
-    appContainer.style.transition = 'none';
-    
-    // 效能優化：只在觸碰瞬間計算一次極限高度，避免滑動時 CPU 瘋狂重算
-    cachedMaxScroll = Math.max(0, document.body.offsetHeight - window.innerHeight);
+    edgeStartY = e.touches[0].clientY;
 }, { passive: true });
 
 document.addEventListener('touchmove', function(e) {
-    const pwaCurrentY = e.touches[0].clientY;
-    const deltaY = pwaCurrentY - pwaStartY;
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - edgeStartY;
     const currentScroll = window.scrollY;
     
-    // 使用快取的高度進行判斷，極大降低運算負擔
+    // 判斷是否觸碰邊界
     const isAtTop = currentScroll <= 0 && deltaY > 0;
-    const isAtBottom = currentScroll >= cachedMaxScroll - 2 && deltaY < 0;
+    const isAtBottom = (window.innerHeight + currentScroll) >= document.body.offsetHeight - 2 && deltaY < 0;
 
-    if (isAtTop || isAtBottom) {
-        if (e.cancelable) e.preventDefault(); // 強制攔截原生下拉
-        isOverscrolling = true;
-        currentDeltaY = deltaY;
-        
-        // 效能優化：將動畫交給 GPU 排程 (requestAnimationFrame)，保證 60FPS 不卡頓
-        if (!isTicking) {
-            window.requestAnimationFrame(() => {
-                const resistance = 0.25; 
-                const stretchY = currentDeltaY * resistance;
-                const scaleY = 1 + Math.abs(stretchY) / 1500;
-                const scaleX = 1 - Math.abs(stretchY) / 3000;
-                
-                appContainer.style.transformOrigin = isAtTop ? "top center" : "bottom center";
-                appContainer.style.transform = `translateY(${stretchY}px) scale(${scaleX}, ${scaleY})`;
-                isTicking = false;
-            });
-            isTicking = true;
-        }
+    if (isAtTop) {
+        e.preventDefault(); // 阻擋原生刷新
+        topGlow.classList.add('is-pulling');
+    } else if (isAtBottom) {
+        e.preventDefault(); // 阻擋原生刷新
+        bottomGlow.classList.add('is-pulling');
     } else {
-        isOverscrolling = false;
+        // 如果往回滑，立刻熄滅光暈
+        topGlow.classList.remove('is-pulling');
+        bottomGlow.classList.remove('is-pulling');
     }
 }, { passive: false });
 
 document.addEventListener('touchend', function() {
-    if (isOverscrolling) {
-        isOverscrolling = false;
-        appContainer.style.transform = ''; 
-        appContainer.classList.add('jelly-snap-back'); 
-    }
+    // 手指放開時，優雅地淡出光暈
+    topGlow.classList.remove('is-pulling');
+    bottomGlow.classList.remove('is-pulling');
 });
 
 init();
