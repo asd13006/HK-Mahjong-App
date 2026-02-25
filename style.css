@@ -77,7 +77,28 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .pattern-tag.flower { background: rgba(244, 114, 182, 0.3); border-color: rgba(244, 114, 182, 0.6); color: #9d174d; }
 .pattern-tag.wind { background: rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.6); color: #0c4a6e; }
 
-.dynamic-island { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8); border-radius: 30px; margin: 0 auto; width: 100%; max-width: 180px; display: flex; flex-direction: column; overflow: hidden; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: max-width, border-radius; color: #334155; }
+.dynamic-island { 
+    background: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(20px) saturate(150%); 
+    -webkit-backdrop-filter: blur(20px) saturate(150%); 
+    border: 1px solid rgba(255, 255, 255, 0.5); 
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
+    border-radius: 30px; 
+    margin: 0 auto; 
+    width: 100%; 
+    max-width: 180px; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+    color: #334155;
+    
+    /* 🔥 優化 1：精準指定動畫屬性，絕對不用 all */
+    transition: max-width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s ease, background 0.4s ease; 
+    
+    /* 🔥 優化 2：強制開啟獨立的 GPU 渲染層 */
+    transform: translateZ(0); 
+    will-change: max-width, border-radius, transform; 
+}
 .dynamic-island.expanded { max-width: 420px; border-radius: 28px; background: rgba(255, 255, 255, 0.6); }
 .island-header { padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
 
@@ -87,8 +108,22 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 
 .island-chevron { font-size: 10px; opacity: 0.6; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); color: #64748b; }
 .dynamic-island.expanded .island-chevron { transform: rotate(-180deg); }
-.island-content-grid { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.dynamic-island.expanded .island-content-grid { grid-template-rows: 1fr; }
+
+/* 2. 放棄極耗 CPU 的 Grid 排版動畫，改用傳統且流暢的 max-height */
+.island-content-grid { 
+    display: block; /* 移除 display: grid */
+    max-height: 0;  /* 改用 max-height 隱藏 */
+    
+    /* 🔥 優化 3：使用對老手機最友善的 max-height 動畫 */
+    transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    will-change: max-height;
+}
+
+/* 3. 展開時的狀態：給予足夠的高度 */
+.dynamic-island.expanded .island-content-grid { 
+    max-height: 480px; /* 給予足夠容納設定選項的高度 */
+}
+
 .island-content-inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 .island-section { padding: 0 16px 16px 16px; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .dynamic-island.expanded .island-section { opacity: 1; transform: translateY(0); }
