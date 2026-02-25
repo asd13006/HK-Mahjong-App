@@ -300,3 +300,101 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     transform: scaleY(1) translateY(0);
 }
 
+/* ==== ✨ 爆棚專屬：深琥珀玻璃反光 SSR 特效 (極致絲滑 GPU 加速) ==== */
+.baau-pang-text {
+    position: relative;
+    display: inline-block;
+    
+    /* 1. 雙層背景：上層是傾斜白光，下層是深琥珀色底 */
+    background-image: 
+        /* 表層：傾斜 135 度的銳利白光 (模擬玻璃/壓克力反光) */
+        linear-gradient(
+            135deg, 
+            rgba(255, 255, 255, 0) 40%, 
+            rgba(255, 255, 255, 0.9) 50%, 
+            rgba(255, 255, 255, 0) 60%
+        ),
+        /* 底層：沉穩的深琥珀色 (加一點點極微弱的上下深淺變化，增加實體厚重感) */
+        linear-gradient(to bottom, #d97706, #92400e);
+        
+    /* 上層(白光)放大成 200% 方便產生滑動距離，下層(琥珀底)保持 100% 固定 */
+    background-size: 200% 200%, 100% 100%;
+    
+    /* 起始位置：白光在右下方外側，琥珀底固定在左上角 (0 0) */
+    background-position: 200% 200%, 0 0;
+    
+    background-repeat: no-repeat;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* 2. 靜態廣域柔和光暈 (保留外圍橘金色的神聖感) */
+    filter: 
+        drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.6)) 
+        drop-shadow(0px 0px 25px rgba(245, 158, 11, 0.8));
+        
+    /* 🌟 提前宣告 GPU 加速準備 */
+    will-change: transform, background-position;
+    
+    /* 啟動三重動畫：神聖懸浮呼吸 + 玻璃反光掃掠 */
+    animation: 
+        holyFloatSmooth 2.5s ease-in-out infinite alternate,
+        glassGlareSweep 3s cubic-bezier(0.25, 0.1, 0.25, 1) infinite !important;
+}
+
+/* 3. 十字星芒粒子 (左上角主星 - 保持不變) */
+.baau-pang-text::before {
+    content: '✦';
+    position: absolute;
+    top: -15px;
+    left: -20px;
+    font-size: 28px;
+    color: #fffbeb;
+    text-shadow: 0 0 10px #fcd34d;
+    z-index: 10;
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: starTwinkleSmoothA 2s ease-in-out infinite alternate;
+}
+
+/* 3. 十字星芒粒子 (右下角副星 - 保持不變) */
+.baau-pang-text::after {
+    content: '✦';
+    position: absolute;
+    bottom: -5px;
+    right: -15px;
+    font-size: 20px;
+    color: #ffffff;
+    text-shadow: 0 0 8px #f59e0b;
+    z-index: 10;
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: starTwinkleSmoothB 2.5s ease-in-out infinite alternate-reverse;
+}
+
+/* ==== 🌟 動畫關鍵影格 ==== */
+
+/* 🌟 新增：玻璃反光掃掠動畫 (只移動上層白光，底色維持不動) */
+@keyframes glassGlareSweep {
+    0% { background-position: 200% 200%, 0 0; }
+    35% { background-position: -100% -100%, 0 0; } /* 白光迅速從右下角掃過左上角 */
+    100% { background-position: -100% -100%, 0 0; } /* 剩下的時間停頓，營造有節奏的反光感 */
+}
+
+/* 神聖懸浮 (保持不變) */
+@keyframes holyFloatSmooth {
+    0% { transform: scale(1) translateY(0) translateZ(0); }
+    100% { transform: scale(1.06) translateY(-3px) translateZ(0); }
+}
+
+/* 星芒閃爍旋轉 A (保持不變) */
+@keyframes starTwinkleSmoothA {
+    0% { transform: scale(0.4) rotate(0deg) translateZ(0); opacity: 0.2; }
+    100% { transform: scale(1.1) rotate(45deg) translateZ(0); opacity: 1; }
+}
+
+/* 星芒閃爍旋轉 B (保持不變) */
+@keyframes starTwinkleSmoothB {
+    0% { transform: scale(0.3) rotate(15deg) translateZ(0); opacity: 0.1; }
+    100% { transform: scale(1.3) rotate(-30deg) translateZ(0); opacity: 0.9; }
+}

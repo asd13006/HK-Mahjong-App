@@ -1,4 +1,4 @@
-const APP_VERSION = "v2.8.7 (Cache-Buster Edition)";
+const APP_VERSION = "v2.8.17 (Cache-Buster Edition)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -322,7 +322,7 @@ function checkWinCondition(counts) {
     return false;
 }
 
-// ==== ✨ v2.8.3 狀態切換與連擊引擎 ====
+// ==== 狀態切換引擎 (全域高度鎖定版) ====
 function transitionToWaitState(defaultHtml) {
     displaySeq++; 
     const wasInResultMode = document.body.className.includes('mode');
@@ -339,7 +339,12 @@ function transitionToWaitState(defaultHtml) {
         const scoreElement = document.getElementById('scoreValue');
         scoreElement.innerText = '--';
         scoreElement.style.fontSize = '64px';
-        scoreElement.classList.remove('heartbeat-pop');
+        
+        // 🌟 核心防護：清空時強制重置特效，並鎖定行高為 64px 避免塌陷
+        scoreElement.classList.remove('heartbeat-pop', 'baau-pang-text');
+        scoreElement.style.fontWeight = '300';
+        scoreElement.style.lineHeight = '64px'; 
+        
         const faanUnit = scoreElement.nextElementSibling;
         if (faanUnit) faanUnit.style.display = 'inline';
 
@@ -587,13 +592,52 @@ function evaluateStandardPatterns(breakdown, counts) {
     return { faan, tags }; 
 }
 
-// ==== ✨ v2.8.3 顯示引擎 (異步 RPG 連擊) ====
+// ==== 狀態切換引擎 (加入特效重置機制) ====
+function transitionToWaitState(defaultHtml) {
+    displaySeq++; 
+    const wasInResultMode = document.body.className.includes('mode');
+    
+    const updateWaitDOM = () => {
+        const statusCard = document.getElementById('statusCard');
+        statusCard.classList.remove('glow-epic', 'glow-fail');
+        statusCard.classList.add('glow-normal');
+
+        document.getElementById('statusTitle').innerText = '等待輸入手牌'; 
+        document.getElementById('statusTitle').style.color = '#64748b';
+        document.body.className = ''; 
+        
+        const scoreElement = document.getElementById('scoreValue');
+        scoreElement.innerText = '--';
+        scoreElement.style.fontSize = '64px';
+        
+        // 🌟 清空時強制移除爆棚的金色特效與樣式
+        scoreElement.classList.remove('heartbeat-pop', 'baau-pang-text');
+        scoreElement.style.fontWeight = '300';
+        scoreElement.style.lineHeight = '1';
+        
+        const faanUnit = scoreElement.nextElementSibling;
+        if (faanUnit) faanUnit.style.display = 'inline';
+
+        document.getElementById('patternDisplay').innerHTML = defaultHtml;
+        document.getElementById('statusCard').classList.remove('content-fade-out');
+        lastTagsHtml = defaultHtml;
+    };
+
+    if (wasInResultMode) {
+        document.getElementById('statusCard').classList.add('content-fade-out');
+        setTimeout(() => { smoothHeightUpdate('statusCard', updateWaitDOM); }, 250); 
+    } else {
+        if (lastTagsHtml !== defaultHtml) { smoothHeightUpdate('statusCard', updateWaitDOM); } 
+        else { updateWaitDOM(); }
+    }
+}
+// ==== ✨ v2.8.17 顯示引擎 (全域外框高度鎖定版) ====
 function displayResult(faan, tags, isWin) {
     displaySeq++;
     const seq = displaySeq; 
 
     const isZaWu = !isWin && hand.length === getCurrentMax(); 
-    const isBaauPang = isWin && faan >= 10;
+    const isBaauPang = isWin && faan >= 13;
     const isEpic = isBaauPang || tags.some(t => typeof t === 'object' && t.isHigh);
 
     const updateStatusDOM = () => {
@@ -622,10 +666,15 @@ function displayResult(faan, tags, isWin) {
 
         const scoreElement = document.getElementById('scoreValue');
         const faanUnit = scoreElement.nextElementSibling;
-        scoreElement.classList.remove('heartbeat-pop');
+        
+        // 🌟 核心防護：每次重新計算時，鎖定行高為 64px
+        scoreElement.classList.remove('heartbeat-pop', 'baau-pang-text');
+        scoreElement.style.fontWeight = '300';
+        scoreElement.style.lineHeight = '64px'; 
         
         if (isZaWu) { scoreElement.innerText = '--'; scoreElement.style.fontSize = '50px'; } 
         else { scoreElement.innerText = '0'; scoreElement.style.fontSize = '64px'; }
+        
         if (faanUnit) faanUnit.style.display = 'inline';
 
         const patternDisplay = document.getElementById('patternDisplay');
@@ -657,6 +706,7 @@ function displayResult(faan, tags, isWin) {
         if (seq !== displaySeq) return;
         
         const scoreElement = document.getElementById('scoreValue');
+        const faanUnit = scoreElement.nextElementSibling;
         const spans = document.getElementById('patternDisplay').querySelectorAll('.pattern-tag');
         let currentScore = 0;
 
@@ -670,7 +720,17 @@ function displayResult(faan, tags, isWin) {
             if (isWin) {
                 currentScore += parseInt(span.dataset.stepFaan || 0);
                 if (i === spans.length - 1) currentScore = faan; 
-                scoreElement.innerText = currentScore;
+
+                if (isBaauPang && i === spans.length - 1) {
+                    scoreElement.innerText = '爆棚';
+                    scoreElement.style.fontSize = '56px'; 
+                    scoreElement.style.fontWeight = '600'; 
+                    scoreElement.style.lineHeight = '64px'; // 爆棚鎖定
+                    if (faanUnit) faanUnit.style.display = 'none';
+                } else {
+                    scoreElement.innerText = currentScore;
+                }
+                
                 if (navigator.vibrate) navigator.vibrate([10]); 
             }
             await new Promise(r => setTimeout(r, 150)); 
@@ -679,13 +739,21 @@ function displayResult(faan, tags, isWin) {
         if (seq !== displaySeq) return;
         
         if (isZaWu) {
+            // 🌟 核心防護：詐糊時同樣隱藏「番」字，並確保字體粗細與行高鎖定
             scoreElement.innerText = '詐糊';
+            scoreElement.style.fontSize = '50px';
+            scoreElement.style.fontWeight = '600'; // 稍微加粗讓詐糊更醒目
+            scoreElement.style.lineHeight = '64px'; // 詐糊鎖定
+            if (faanUnit) faanUnit.style.display = 'none'; // 完美隱藏番字
+            
             if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
         } else {
-            scoreElement.classList.add('heartbeat-pop');
-            if (navigator.vibrate) {
-                if (isBaauPang) navigator.vibrate([30, 50, 30, 50, 30]);
-                else navigator.vibrate([30, 50, 30]);
+            if (isBaauPang) {
+                scoreElement.classList.add('baau-pang-text');
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30, 50, 30]);
+            } else {
+                scoreElement.classList.add('heartbeat-pop');
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
             }
         }
     }, 300); 
