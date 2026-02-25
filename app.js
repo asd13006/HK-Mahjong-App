@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的版本宣告 (每次更新請同時修改這裡與 sw.js)
-const APP_VERSION = "v2.8.1 (Compact Footer Update)";
+const APP_VERSION = "v2.8.2 (iOS Auto Update Fix)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -44,6 +44,7 @@ function smoothHeightUpdate(elementId, updateDOM) {
     }
 }
 
+// ✨ v2.8.2 強化版：PWA Service Worker 註冊與 iOS 喚醒機制
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
         navigator.serviceWorker.register('sw.js').then(reg => {
@@ -56,11 +57,25 @@ if ('serviceWorker' in navigator) {
                 });
             });
 
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
+            // 🔥 專治 iOS 的延遲喚醒檢查函數
+            const checkUpdateSafely = () => {
+                // 故意延遲 1.5 秒，等待 iOS 從休眠中喚醒並重新連上網路
+                setTimeout(() => {
                     reg.update().catch(err => console.log('SW Update Check Error:', err));
-                }
+                }, 1500);
+            };
+
+            // 防線 1：標準網頁可見度改變時
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') checkUpdateSafely();
             });
+
+            // 防線 2：iOS 備用機制 (視窗重新獲得焦點時)
+            window.addEventListener('focus', checkUpdateSafely);
+
+            // 防線 3：如果用戶一直開著螢幕打牌，每 30 分鐘背景定時檢查一次
+            setInterval(checkUpdateSafely, 30 * 60 * 1000);
+
         }).catch(err => console.log('SW Error:', err)); 
     }); 
 
