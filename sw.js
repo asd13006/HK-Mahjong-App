@@ -1,5 +1,5 @@
 // 🔥 100% 穩定的快取宣告 (每次更新請同時修改這裡與 app.js)
-const APP_VERSION = "v2.8.3 (Epic Combo Update)";
+const APP_VERSION = "v2.8.31 (Epic Combo Update)";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [
@@ -41,4 +41,5 @@ self.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
+
 });
