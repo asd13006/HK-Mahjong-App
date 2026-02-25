@@ -179,6 +179,25 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 @keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
 .empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
 
+/* ✨ 退場果凍動畫 (GPU 硬體加速版)：絲滑流暢不掉幀 */
+@keyframes popOut {
+    0% { 
+        opacity: 1; 
+        /* 偷偷加上 translateZ(0) 強制喚醒顯示卡 (GPU) 處理動畫 */
+        transform: scale(1) translateZ(0); 
+    }
+    30% { 
+        opacity: 1; 
+        /* 維持果凍擠壓感，並保持 3D 加速狀態 */
+        transform: scaleX(1.15) scaleY(0.85) translateZ(0); 
+    }
+    100% { 
+        opacity: 0; 
+        /* 縮小消失 */
+        transform: scaleX(0) scaleY(0) translateZ(0); 
+    }
+}
+
 .breathing { 
     /* 視覺欺騙：只呼吸 4 次 (約 12 秒) 就會優雅地停留在原位，既保留了發牌時的生命力，又能讓手機進入省電休眠 */
     animation: floatBreathing 3s ease-in-out 4 alternate forwards; 

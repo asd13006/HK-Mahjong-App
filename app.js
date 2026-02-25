@@ -1,4 +1,4 @@
-const APP_VERSION = "v2.8.5 (Cache-Buster Edition)";
+const APP_VERSION = "v2.8.6 (Cache-Buster Edition)";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -440,8 +440,17 @@ function clearHand() {
     currentTiles.forEach((el, index) => {
         const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim'); clone.classList.remove('breathing');
         clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`; clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0'; clone.style.zIndex = '999'; clone.style.transition = 'none'; 
-        clone.style.animation = `popOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`; clone.style.animationDelay = `${index * 0.02}s`;
-        document.body.appendChild(clone); setTimeout(() => clone.remove(), 350 + index * 20);
+        
+        // 🌟 修改 1：將基礎動畫時間從 0.3s 延長到 0.5s，讓果凍感有時間展現
+        clone.style.animation = `popOut 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`; 
+        // 🌟 修改 2：將每張牌退場的骨牌延遲從 0.02s 放大到 0.04s
+        clone.style.animationDelay = `${index * 0.04}s`;
+        
+        clone.style.willChange = 'transform, opacity'; // 保留 GPU 加速
+
+        document.body.appendChild(clone); 
+        // 🌟 修改 3：配合動畫延長，刪除分身的時間也要延後 (550ms + 間隔 40ms)
+        setTimeout(() => clone.remove(), 550 + index * 40);
     });
 
     activeConditions.clear(); activeFlowers.clear(); roundWind = 0; seatWind = 0; 
@@ -460,7 +469,8 @@ function clearHand() {
     for (let i = 0; i < oldMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; grid.appendChild(empty); }
     document.getElementById('tileCount').innerText = `暗牌已選 0 / 14`;
 
-    setTimeout(() => { lastMax = oldMax; renderHand(); window.isClearing = false; }, 350 + (currentTiles.length * 20));
+    // 🌟 修改 4：最後解鎖畫面、允許下一步操作的等待時間，也要同步拉長
+    setTimeout(() => { lastMax = oldMax; renderHand(); window.isClearing = false; }, 550 + (currentTiles.length * 40));
 }
 
 function getExtras(counts) {
