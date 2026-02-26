@@ -398,3 +398,90 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     0% { transform: scale(0.3) rotate(15deg) translateZ(0); opacity: 0.1; }
     100% { transform: scale(1.3) rotate(-30deg) translateZ(0); opacity: 0.9; }
 }
+
+/* ==== ✨ 番數標籤稀有度系統 (Rarity Tiers) ==== */
+
+/* 確保基礎標籤有平滑過渡效果 */
+.pattern-tag {
+    transition: all 0.3s ease;
+}
+
+/* 🔘 階級 1：普通級 Common (1~2番) - 乾淨簡約 */
+.pattern-tag.tier-common {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
+}
+
+/* 🔵 階級 2：稀有級 Rare (3~6番) - 精緻寶石漸層 */
+.pattern-tag.tier-rare {
+    background: linear-gradient(135deg, #0ea5e9, #2dd4bf);
+    color: #ffffff;
+    border: 1px solid transparent;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* 🟣 階級 3：史詩級 Epic (7~9番) - 高階幻彩與霓虹發光 */
+.pattern-tag.tier-epic {
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    color: #ffffff;
+    border: 1px solid transparent;
+    box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    font-weight: 500;
+}
+
+/* 🟡 階級 4：傳說級 Legendary (10番以上) - 神聖琥珀與黃金光暈 */
+.pattern-tag.tier-legendary {
+    background: linear-gradient(to bottom, #d97706, #92400e);
+    color: #fef3c7;
+    border: 1px solid #fcd34d;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.8), inset 0 0 5px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 6px rgba(253, 230, 138, 0.6);
+    font-weight: 600;
+}
+
+/* ==== ✨ 標籤進場動畫引擎 (逐一揭曉與彈性物理) ==== */
+
+/* 1. 潛伏預備狀態：隱藏、下沉、縮小 */
+.pattern-tag.hide-tag {
+    opacity: 0 !important;
+    transform: translateY(20px) scale(0.8);
+    pointer-events: none; /* 隱藏時不可點擊 */
+}
+
+/* 2. 基礎彈性進場：普通與稀有級標籤 (平滑 Q 彈) */
+.pattern-tag.pop-in-tag {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    /* 使用 cubic-bezier 創造超過 100% 再縮回來的彈簧物理效果 */
+    animation: tagSpringUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 3. 史詩級震撼進場 (更誇張的彈跳 + 瞬間高光) */
+.pattern-tag.tier-epic.pop-in-tag {
+    animation: tagSpringUpEpic 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards;
+}
+
+/* 4. 傳說級霸氣進場 (極限彈跳 + 耀眼閃光) */
+.pattern-tag.tier-legendary.pop-in-tag {
+    animation: tagSpringUpLegendary 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.8) forwards;
+}
+
+/* ==== 動畫關鍵影格 ==== */
+@keyframes tagSpringUp {
+    0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes tagSpringUpEpic {
+    0% { opacity: 0; transform: translateY(25px) scale(0.6); filter: brightness(2); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
+}
+
+@keyframes tagSpringUpLegendary {
+    0% { opacity: 0; transform: translateY(30px) scale(0.4); filter: brightness(3) drop-shadow(0 0 30px #fcd34d); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1) drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); }
+}

@@ -1,8 +1,8 @@
-const APP_VERSION = "v2.8.17 (Cache-Buster Edition)";
+const APP_VERSION = "v2.8.20";
 
 let newWorker;
 window.isUpdateReady = false;
-let displaySeq = 0; // v2.8.3 連擊控制器
+let displaySeq = 0; 
 
 function attachFastClick(el, action, tapClass = '') {
     if (el._hasFastClick) { el._action = action; return; }
@@ -47,46 +47,23 @@ function smoothHeightUpdate(elementId, updateDOM) {
 // ✨ v2.8.4 iOS 終極防禦版：強制繞過快取與全面狀態攔截
 if ('serviceWorker' in navigator) { 
     window.addEventListener('load', () => { 
-        // 1. 強制 Safari 忽略快取，每次都去伺服器核對 sw.js 檔案
         navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
-            
-            // 2. 攔截盲區：如果背景已經有抓好的新版本，立刻觸發動態島
-            if (reg.waiting) {
-                newWorker = reg.waiting;
-                showUpdateOnIsland();
-            }
-
-            // 3. 監聽全新的下載進度
+            if (reg.waiting) { newWorker = reg.waiting; showUpdateOnIsland(); }
             reg.addEventListener('updatefound', () => {
                 newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        showUpdateOnIsland();
-                    }
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) { showUpdateOnIsland(); }
                 });
             });
 
-            // 4. 專治 iOS 的多重喚醒檢查
             const checkUpdateSafely = () => {
-                // 確保手機有網路才檢查
-                if (navigator.onLine) {
-                    setTimeout(() => {
-                        reg.update().catch(err => console.log('SW Update Check Error:', err));
-                    }, 2000); // 延長到 2 秒，確保 iOS 網路模組徹底甦醒
-                }
+                if (navigator.onLine) { setTimeout(() => { reg.update().catch(err => console.log('SW Update Check Error:', err)); }, 2000); }
             };
 
-            // 防線 A：網頁可見度改變
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') checkUpdateSafely();
-            });
-            // 防線 B：視窗獲得焦點
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdateSafely(); });
             window.addEventListener('focus', checkUpdateSafely);
-            // 防線 C：網路從斷線恢復連線時
             window.addEventListener('online', checkUpdateSafely);
-            // 防線 D：背景定時巡邏
             setInterval(checkUpdateSafely, 30 * 60 * 1000);
-
         }).catch(err => console.log('SW Error:', err)); 
     }); 
 
@@ -113,9 +90,7 @@ function showUpdateOnIsland() {
         void title.offsetWidth; 
         title.classList.remove('slide-in');
         
-        if (island.classList.contains('expanded')) {
-            island.classList.remove('expanded');
-        }
+        if (island.classList.contains('expanded')) { island.classList.remove('expanded'); }
     }, 200);
 }
 
@@ -189,14 +164,38 @@ function init() {
     updateIslandSummary(); 
 }
 
+// 🌟 修改：將互斥防呆邏輯完美融入你原本的 Set 架構中
 function renderConditions() {
     const bar = document.getElementById('conditionsBar'); 
     if (bar.children.length === 0) {
         CONDITIONS.forEach(cond => {
             const chip = document.createElement('div'); chip.className = 'condition-chip'; chip.id = `cond-${cond.id}`; chip.innerText = cond.label;
             attachFastClick(chip, () => {
-                if (activeConditions.has(cond.id)) { activeConditions.delete(cond.id); if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); } } 
-                else { activeConditions.add(cond.id); if (cond.id === 'kongSelfDrawn') { activeConditions.delete('doubleKongSelfDrawn'); activeConditions.add('selfDrawn'); } else if (cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.add('selfDrawn'); } }
+                if (activeConditions.has(cond.id)) { 
+                    activeConditions.delete(cond.id); 
+                    // 取消自摸時，連帶取消槓上自摸
+                    if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); } 
+                } 
+                else { 
+                    activeConditions.add(cond.id); 
+                    
+                    // 🛡️ 防呆：槓上自摸必含自摸
+                    if (cond.id === 'kongSelfDrawn' || cond.id === 'doubleKongSelfDrawn') { activeConditions.add('selfDrawn'); }
+                    
+                    // 🛡️ 防呆邏輯 1：【天地不容 與 門前清】
+                    if (cond.id === 'heaven') { activeConditions.delete('earth'); activeConditions.delete('concealed'); }
+                    if (cond.id === 'earth') { activeConditions.delete('heaven'); activeConditions.delete('concealed'); }
+                    if (cond.id === 'concealed') { activeConditions.delete('heaven'); activeConditions.delete('earth'); }
+
+                    // 🛡️ 防呆邏輯 2：【槓與搶的矛盾】 + 【海底撈月】
+                    if (cond.id === 'robKong') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); }
+                    if (cond.id === 'kongSelfDrawn' || cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('robKong'); activeConditions.delete('lastTile'); }
+                    if (cond.id === 'lastTile') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); }
+                    
+                    // 🛡️ 防呆：單槓雙槓不共存
+                    if (cond.id === 'kongSelfDrawn') activeConditions.delete('doubleKongSelfDrawn');
+                    if (cond.id === 'doubleKongSelfDrawn') activeConditions.delete('kongSelfDrawn');
+                }
                 updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine();
             }, 'is-tapped-chip');
             bar.appendChild(chip);
@@ -446,16 +445,11 @@ function clearHand() {
         const rect = el.getBoundingClientRect(); const clone = el.cloneNode(true); clone.classList.remove('enter-anim'); clone.classList.remove('breathing');
         clone.style.position = 'fixed'; clone.style.left = `${rect.left}px`; clone.style.top = `${rect.top}px`; clone.style.width = `${rect.width}px`; clone.style.height = `${rect.height}px`; clone.style.margin = '0'; clone.style.zIndex = '999'; clone.style.transition = 'none'; 
         
-        // 🌟 核心修改 1：換成「不回彈的平滑吸入曲線」，時間設為俐落的 0.35 秒
         clone.style.animation = `popOut 0.35s cubic-bezier(0.36, 0, 0.66, -0.56) forwards`; 
-        
-        // 🌟 核心修改 2：骨牌間隔收緊到 0.025 秒，創造順暢的波浪感
         clone.style.animationDelay = `${index * 0.025}s`;
-        
-        clone.style.willChange = 'transform, opacity'; // 保持 GPU 加速
+        clone.style.willChange = 'transform, opacity';
 
         document.body.appendChild(clone); 
-        // 配合新時間，清理分身的排程改為 400ms + 間隔
         setTimeout(() => clone.remove(), 400 + index * 25);
     });
 
@@ -475,7 +469,6 @@ function clearHand() {
     for (let i = 0; i < oldMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; grid.appendChild(empty); }
     document.getElementById('tileCount').innerText = `暗牌已選 0 / 14`;
 
-    // 配合新時間，解鎖畫面的排程也同步縮短
     setTimeout(() => { lastMax = oldMax; renderHand(); window.isClearing = false; }, 400 + (currentTiles.length * 25));
 }
 
@@ -592,46 +585,7 @@ function evaluateStandardPatterns(breakdown, counts) {
     return { faan, tags }; 
 }
 
-// ==== 狀態切換引擎 (加入特效重置機制) ====
-function transitionToWaitState(defaultHtml) {
-    displaySeq++; 
-    const wasInResultMode = document.body.className.includes('mode');
-    
-    const updateWaitDOM = () => {
-        const statusCard = document.getElementById('statusCard');
-        statusCard.classList.remove('glow-epic', 'glow-fail');
-        statusCard.classList.add('glow-normal');
-
-        document.getElementById('statusTitle').innerText = '等待輸入手牌'; 
-        document.getElementById('statusTitle').style.color = '#64748b';
-        document.body.className = ''; 
-        
-        const scoreElement = document.getElementById('scoreValue');
-        scoreElement.innerText = '--';
-        scoreElement.style.fontSize = '64px';
-        
-        // 🌟 清空時強制移除爆棚的金色特效與樣式
-        scoreElement.classList.remove('heartbeat-pop', 'baau-pang-text');
-        scoreElement.style.fontWeight = '300';
-        scoreElement.style.lineHeight = '1';
-        
-        const faanUnit = scoreElement.nextElementSibling;
-        if (faanUnit) faanUnit.style.display = 'inline';
-
-        document.getElementById('patternDisplay').innerHTML = defaultHtml;
-        document.getElementById('statusCard').classList.remove('content-fade-out');
-        lastTagsHtml = defaultHtml;
-    };
-
-    if (wasInResultMode) {
-        document.getElementById('statusCard').classList.add('content-fade-out');
-        setTimeout(() => { smoothHeightUpdate('statusCard', updateWaitDOM); }, 250); 
-    } else {
-        if (lastTagsHtml !== defaultHtml) { smoothHeightUpdate('statusCard', updateWaitDOM); } 
-        else { updateWaitDOM(); }
-    }
-}
-// ==== ✨ v2.8.17 顯示引擎 (全域外框高度鎖定版) ====
+// ==== ✨ v2.8.20 顯示引擎 (全域外框高度鎖定 + 稀有度標籤版) ====
 function displayResult(faan, tags, isWin) {
     displaySeq++;
     const seq = displaySeq; 
@@ -688,11 +642,25 @@ function displayResult(faan, tags, isWin) {
             let wd = t.isWind ? 'wind' : ''; 
             
             const span = document.createElement('span');
-            span.className = `pattern-tag hide-tag ${epicClass} ${fl} ${wd}`;
+            
+            // 🌟 提取番數數值
+            const match = text.match(/\((\d+)番\)/);
+            const faanValue = match ? parseInt(match[1]) : 0;
+            span.dataset.stepFaan = faanValue;
+            
+            // 🌟 根據番數自動賦予稀有度階級 (Tier)
+            let tierClass = 'tier-common'; 
+            if (faanValue >= 10) {
+                tierClass = 'tier-legendary';
+            } else if (faanValue >= 7) {
+                tierClass = 'tier-epic';
+            } else if (faanValue >= 3) {
+                tierClass = 'tier-rare';
+            }
+            
+            span.className = `pattern-tag hide-tag ${epicClass} ${fl} ${wd} ${tierClass}`;
             span.innerText = text;
             
-            const match = text.match(/\((\d+)番\)/);
-            span.dataset.stepFaan = match ? match[1] : '0';
             patternDisplay.appendChild(span);
         });
         statusCard.classList.remove('content-fade-out');
@@ -739,12 +707,11 @@ function displayResult(faan, tags, isWin) {
         if (seq !== displaySeq) return;
         
         if (isZaWu) {
-            // 🌟 核心防護：詐糊時同樣隱藏「番」字，並確保字體粗細與行高鎖定
             scoreElement.innerText = '詐糊';
             scoreElement.style.fontSize = '50px';
-            scoreElement.style.fontWeight = '600'; // 稍微加粗讓詐糊更醒目
+            scoreElement.style.fontWeight = '600'; 
             scoreElement.style.lineHeight = '64px'; // 詐糊鎖定
-            if (faanUnit) faanUnit.style.display = 'none'; // 完美隱藏番字
+            if (faanUnit) faanUnit.style.display = 'none'; // 隱藏番字
             
             if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
         } else {
