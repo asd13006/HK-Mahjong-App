@@ -140,20 +140,151 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     grid-template-columns: repeat(6, minmax(0, 1fr)); 
     gap: 8px; 
 }
+
+/* ==== ✨ 1. 牌局設定標籤本體 (真・冰塊玻璃擬態) ==== */
 .condition-chip { 
-    padding: 8px 2px; /* 縮小左右內邊距，給文字更多空間 */
-    border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* 避免超長文字撐破網格 */
-    letter-spacing: -0.2px; grid-column: span 2; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; will-change: transform; 
+    padding: 8px 2px; 
+    border-radius: 20px; 
+    font-size: 11px; 
+    font-weight: 600; 
+    
+    /* 🌟 抽乾白色素：只保留 15% 的極致清透白底 */
+    background: rgba(255, 255, 255, 0.15); 
+    
+    /* 🌟 強化透視：提高飽和度，讓底下的漸層透上來更鮮豔 */
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    
+    /* 🌟 3D 邊緣高光：模擬頂部光源打在玻璃切邊上的反光 */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-top: 1px solid rgba(255, 255, 255, 0.7); 
+    border-left: 1px solid rgba(255, 255, 255, 0.5); 
+    
+    /* 🌟 內部微光與外部陰影：拉開玻璃與底層的空間感 */
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(0, 0, 0, 0.05);
+    
+    /* 文字稍微加深一點點，確保在透明背景下的閱讀性 */
+    color: #475569; 
+    
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    white-space: nowrap; 
+    letter-spacing: -0.2px; 
+    grid-column: span 2; 
+    position: relative;
+    z-index: 1; 
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+    will-change: transform; 
 }
-.condition-chip.active { background: #3b82f6; color: #fff; border-color: #60a5fa; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transform: scale(1.05); }
+
+/* ==== ✨ 牌局設定標籤本體 (加入毛玻璃濾鏡) ==== */
+.condition-chip { 
+    padding: 8px 2px; 
+    border-radius: 20px; 
+    font-size: 11px; 
+    font-weight: 600; 
+    background: rgba(255, 255, 255, 0.5); 
+    
+    /* 🌟 新增：終極玻璃擬態濾鏡 */
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    
+    border: 1px solid rgba(255, 255, 255, 0.8); 
+    color: #64748b; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    
+    white-space: nowrap; 
+    letter-spacing: -0.2px; 
+    grid-column: span 2; 
+    position: relative;
+    z-index: 1; 
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, z-index 0s;
+    will-change: transform; 
+}
+
+/* 1. 建立隱形的發光替身層 (純藍紫科技霓虹 - 內斂版) */
+.condition-chip::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    border-radius: inherit;
+    
+    /* 🌟 原汁原味的藍紫漸層 */
+    background: linear-gradient(135deg, #4da3ff 0%, #8b5cf6 100%);
+    
+    /* 🌟 核心收束：大幅降低光暈擴散範圍 (12px) 與透明度 (0.45)，保留頂部精緻微光 */
+    box-shadow: 
+        0 3px 12px rgba(139, 92, 246, 0.45), 
+        inset 0 1px 1px rgba(255, 255, 255, 0.4); 
+        
+    opacity: 0;
+    will-change: opacity;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* 2. 當被點擊 (Active) 時的本體變化 */
+.condition-chip.active {
+    background-color: transparent !important; 
+    border-color: transparent !important;
+    box-shadow: none; 
+    
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    
+    /* 🌟 核心收束：微調放大比例，從 1.05 降為 1.02，保留實體回饋但不暴漲 */
+    transform: scale(1.02); 
+    
+    /* 確保光暈在最上層，不會被鄰居切斷 */
+    z-index: 10; 
+}
+
+/* 3. 喚醒發光替身層 */
+.condition-chip.active::before {
+    opacity: 1; 
+}
+
+/* 確保特定按鈕跨欄設定維持不變 */
 .condition-chip:nth-child(7), .condition-chip:nth-child(8) { grid-column: span 3; }
 @media (max-width: 380px) { .condition-chip { font-size: 10px; letter-spacing: -0.5px; } }
 
 .winds-container { display: flex; gap: 15px; }
 .wind-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .wind-selector { display: flex; gap: 6px; }
-.wind-btn { flex: 1; padding: 6px 0; text-align: center; border-radius: 8px; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8); font-size: 13px; cursor: pointer; color: #64748b; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; will-change: transform; }
+/* ==== ✨ 風位/圈位按鈕 (加入毛玻璃濾鏡) ==== */
+/* ==== ✨ 2. 風位/圈位按鈕 (真・冰塊玻璃擬態) ==== */
+.wind-btn { 
+    flex: 1; 
+    padding: 6px 0; 
+    text-align: center; 
+    border-radius: 8px; 
+    
+    /* 🌟 抽乾白色素與強化透視 */
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    
+    /* 🌟 3D 邊緣高光與厚度陰影 */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-top: 1px solid rgba(255, 255, 255, 0.7); 
+    border-left: 1px solid rgba(255, 255, 255, 0.5); 
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(0, 0, 0, 0.05);
+    
+    font-size: 13px; 
+    cursor: pointer; 
+    color: #475569; 
+    font-weight: 600; 
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; 
+    will-change: transform; 
+}
 .wind-btn.active { background: #ffffff; color: #0f172a; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #fff; }
 
 .flower-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 6px 4px; }
@@ -219,8 +350,47 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .is-tapped-chip { transform: scale(0.92) !important; transition: none !important; opacity: 0.8; }
 .is-tapped-island { transform: scale(0.96) translateZ(0) !important; transition: none !important; }
 
-.tile.empty { background-image: none !important; background-color: rgba(255,255,255,0.3); box-shadow: inset 0 2px 6px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.4); cursor: default; }
-.clear-btn { background: rgba(255, 255, 255, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.8) !important; border-radius: 20px !important; color: #475569 !important; padding: 5px 12px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, color 0.2s; will-change: transform; }
+/* ==== ✨ 3. 暗牌區空槽 (真・冰塊下凹挖槽質感) ==== */
+.tile.empty { 
+    background-image: none !important; 
+    
+    /* 🌟 極致清透，只留 10% 的白 */
+    background-color: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    
+    /* 🌟 模擬物理下凹：邊框反轉，下方與右方受光，上方暗 */
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5); 
+    border-right: 1px solid rgba(255, 255, 255, 0.3); 
+    
+    /* 🌟 內部陰影：營造凹陷感 */
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.05); 
+    cursor: default; 
+}
+
+/* ==== ✨ 4. 清除按鈕 (真・冰塊玻璃擬態) ==== */
+.clear-btn { 
+    background: rgba(255, 255, 255, 0.2) !important; 
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    
+    /* 🌟 3D 邊緣高光 */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important; 
+    border-top: 1px solid rgba(255, 255, 255, 0.8) !important; 
+    border-left: 1px solid rgba(255, 255, 255, 0.5) !important; 
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.05) !important; 
+    
+    border-radius: 20px !important; 
+    color: #475569 !important; 
+    padding: 5px 12px !important; 
+    font-size: 12px !important; 
+    line-height: 1 !important; 
+    font-weight: 600 !important; 
+    cursor: pointer; 
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; 
+    will-change: transform; 
+}
 
 .install-btn { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; display: none; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255,255,255,0.4); margin: 10px auto 0 auto; backdrop-filter: blur(10px); transition: transform 0.2s ease; position: relative; overflow: hidden; }
 .install-btn::before { content: ""; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: diamondShimmer 6s infinite; pointer-events: none; }

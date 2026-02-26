@@ -1,4 +1,4 @@
-const APP_VERSION = "v2.8.20";
+const APP_VERSION = "v2.8.27";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -164,12 +164,18 @@ function init() {
     updateIslandSummary(); 
 }
 
-// 🌟 修改：將互斥防呆邏輯完美融入你原本的 Set 架構中
+// 🌟 替換這整段 renderConditions 函數 (隱藏設定區番數 + 大師級防呆版)
 function renderConditions() {
     const bar = document.getElementById('conditionsBar'); 
     if (bar.children.length === 0) {
         CONDITIONS.forEach(cond => {
-            const chip = document.createElement('div'); chip.className = 'condition-chip'; chip.id = `cond-${cond.id}`; chip.innerText = cond.label;
+            const chip = document.createElement('div'); 
+            chip.className = 'condition-chip'; 
+            chip.id = `cond-${cond.id}`; 
+            
+            // 🌟 核心修改：用 split 切割字串，只取空格前面的文字 (例如 "自摸 (1番)" 變成 "自摸")
+            chip.innerText = cond.label.split(' ')[0]; 
+            
             attachFastClick(chip, () => {
                 if (activeConditions.has(cond.id)) { 
                     activeConditions.delete(cond.id); 
@@ -179,18 +185,37 @@ function renderConditions() {
                 else { 
                     activeConditions.add(cond.id); 
                     
-                    // 🛡️ 防呆：槓上自摸必含自摸
+                    // 🛡️ 基礎防呆：槓上自摸必含自摸
                     if (cond.id === 'kongSelfDrawn' || cond.id === 'doubleKongSelfDrawn') { activeConditions.add('selfDrawn'); }
                     
-                    // 🛡️ 防呆邏輯 1：【天地不容 與 門前清】
-                    if (cond.id === 'heaven') { activeConditions.delete('earth'); activeConditions.delete('concealed'); }
-                    if (cond.id === 'earth') { activeConditions.delete('heaven'); activeConditions.delete('concealed'); }
-                    if (cond.id === 'concealed') { activeConditions.delete('heaven'); activeConditions.delete('earth'); }
+                    // 🛡️ 進階防呆 1：【天糊 / 地糊的「絕對清場領域」】
+                    if (cond.id === 'heaven' || cond.id === 'earth') {
+                        activeConditions.clear(); 
+                        activeConditions.add(cond.id); 
+                    } else {
+                        activeConditions.delete('heaven');
+                        activeConditions.delete('earth');
+                    }
 
-                    // 🛡️ 防呆邏輯 2：【槓與搶的矛盾】 + 【海底撈月】
-                    if (cond.id === 'robKong') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); }
-                    if (cond.id === 'kongSelfDrawn' || cond.id === 'doubleKongSelfDrawn') { activeConditions.delete('robKong'); activeConditions.delete('lastTile'); }
-                    if (cond.id === 'lastTile') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); }
+                    // 🛡️ 進階防呆 2：【自摸 vs 搶槓】
+                    if (cond.id === 'selfDrawn') activeConditions.delete('robKong');
+                    if (cond.id === 'robKong') activeConditions.delete('selfDrawn');
+
+                    // 🛡️ 進階防呆 3：【槓與搶的矛盾】 + 【海底撈月】
+                    if (cond.id === 'robKong') { 
+                        activeConditions.delete('kongSelfDrawn'); 
+                        activeConditions.delete('doubleKongSelfDrawn'); 
+                        activeConditions.delete('lastTile'); 
+                    }
+                    if (cond.id === 'kongSelfDrawn' || cond.id === 'doubleKongSelfDrawn') { 
+                        activeConditions.delete('robKong'); 
+                        activeConditions.delete('lastTile'); 
+                    }
+                    if (cond.id === 'lastTile') { 
+                        activeConditions.delete('kongSelfDrawn'); 
+                        activeConditions.delete('doubleKongSelfDrawn'); 
+                        activeConditions.delete('robKong');
+                    }
                     
                     // 🛡️ 防呆：單槓雙槓不共存
                     if (cond.id === 'kongSelfDrawn') activeConditions.delete('doubleKongSelfDrawn');
