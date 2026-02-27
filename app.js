@@ -1,4 +1,4 @@
-const APP_VERSION = "v2.8.27";
+const APP_VERSION = "v2.8.28";
 
 let newWorker;
 window.isUpdateReady = false;
@@ -157,14 +157,15 @@ function init() {
         }
     }, 'is-tapped-island');
 
-    document.querySelectorAll('#roundWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setRoundWind(i), 'is-tapped-chip'));
-    document.querySelectorAll('#seatWindSelector .wind-btn').forEach((btn, i) => attachFastClick(btn, () => setSeatWind(i), 'is-tapped-chip'));
+    // 🌟 更新綁定為 .wind-tab
+    document.querySelectorAll('#roundWindSelector .wind-tab').forEach((tab, i) => attachFastClick(tab, () => setRoundWind(i), 'is-tapped-chip'));
+    document.querySelectorAll('#seatWindSelector .wind-tab').forEach((tab, i) => attachFastClick(tab, () => setSeatWind(i), 'is-tapped-chip'));
     attachFastClick(document.getElementById('clearBtnId'), clearHand, 'is-tapped-chip');
     
     updateIslandSummary(); 
 }
 
-// 🌟 替換這整段 renderConditions 函數 (隱藏設定區番數 + 大師級防呆版)
+// 🌟 大師級防呆版 設定區
 function renderConditions() {
     const bar = document.getElementById('conditionsBar'); 
     if (bar.children.length === 0) {
@@ -173,22 +174,18 @@ function renderConditions() {
             chip.className = 'condition-chip'; 
             chip.id = `cond-${cond.id}`; 
             
-            // 🌟 核心修改：用 split 切割字串，只取空格前面的文字 (例如 "自摸 (1番)" 變成 "自摸")
             chip.innerText = cond.label.split(' ')[0]; 
             
             attachFastClick(chip, () => {
                 if (activeConditions.has(cond.id)) { 
                     activeConditions.delete(cond.id); 
-                    // 取消自摸時，連帶取消槓上自摸
                     if (cond.id === 'selfDrawn') { activeConditions.delete('kongSelfDrawn'); activeConditions.delete('doubleKongSelfDrawn'); } 
                 } 
                 else { 
                     activeConditions.add(cond.id); 
                     
-                    // 🛡️ 基礎防呆：槓上自摸必含自摸
                     if (cond.id === 'kongSelfDrawn' || cond.id === 'doubleKongSelfDrawn') { activeConditions.add('selfDrawn'); }
                     
-                    // 🛡️ 進階防呆 1：【天糊 / 地糊的「絕對清場領域」】
                     if (cond.id === 'heaven' || cond.id === 'earth') {
                         activeConditions.clear(); 
                         activeConditions.add(cond.id); 
@@ -197,11 +194,9 @@ function renderConditions() {
                         activeConditions.delete('earth');
                     }
 
-                    // 🛡️ 進階防呆 2：【自摸 vs 搶槓】
                     if (cond.id === 'selfDrawn') activeConditions.delete('robKong');
                     if (cond.id === 'robKong') activeConditions.delete('selfDrawn');
 
-                    // 🛡️ 進階防呆 3：【槓與搶的矛盾】 + 【海底撈月】
                     if (cond.id === 'robKong') { 
                         activeConditions.delete('kongSelfDrawn'); 
                         activeConditions.delete('doubleKongSelfDrawn'); 
@@ -217,7 +212,6 @@ function renderConditions() {
                         activeConditions.delete('robKong');
                     }
                     
-                    // 🛡️ 防呆：單槓雙槓不共存
                     if (cond.id === 'kongSelfDrawn') activeConditions.delete('doubleKongSelfDrawn');
                     if (cond.id === 'doubleKongSelfDrawn') activeConditions.delete('kongSelfDrawn');
                 }
@@ -245,7 +239,8 @@ function updateIslandSummary() {
     });
 
     const windNames = ['東', '南', '西', '北'];
-    if (roundWind !== 0 || seatWind !== 0) activeLabels.push(`${windNames[roundWind]}圈${windNames[seatWind]}位`);
+    activeLabels.push(`${windNames[roundWind]}圈${windNames[seatWind]}位`);
+    
     if (activeFlowers.size > 0) activeLabels.push(`${activeFlowers.size}花`);
 
     const title = document.getElementById('islandTitle');
@@ -268,15 +263,29 @@ function updateIslandSummary() {
     }
 }
 
+// 🌟 更新：支援玻璃滑塊的 setRoundWind
 function setRoundWind(index) { 
     roundWind = index; 
-    document.getElementById('roundWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); 
+    const container = document.getElementById('roundWindSelector');
+    container.querySelectorAll('.wind-tab').forEach((tab, i) => tab.className = `wind-tab ${i === index ? 'active' : ''}`); 
+    
+    // 計算滑塊的 X 軸位移 (每格 100% 自身的寬度)
+    const glider = container.querySelector('.glass-glider');
+    if (glider) glider.style.transform = `translateX(${index * 100}%)`;
+    
     updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
 }
 
+// 🌟 更新：支援玻璃滑塊的 setSeatWind
 function setSeatWind(index) { 
     seatWind = index; 
-    document.getElementById('seatWindSelector').querySelectorAll('.wind-btn').forEach((btn, i) => btn.className = `wind-btn ${i === index ? 'active' : ''}`); 
+    const container = document.getElementById('seatWindSelector');
+    container.querySelectorAll('.wind-tab').forEach((tab, i) => tab.className = `wind-tab ${i === index ? 'active' : ''}`); 
+    
+    // 計算滑塊的 X 軸位移
+    const glider = container.querySelector('.glass-glider');
+    if (glider) glider.style.transform = `translateX(${index * 100}%)`;
+    
     updateIslandSummary(); if (navigator.vibrate) navigator.vibrate([10]); checkAndRunEngine(); 
 }
 
@@ -346,7 +355,6 @@ function checkWinCondition(counts) {
     return false;
 }
 
-// ==== 狀態切換引擎 (全域高度鎖定版) ====
 function transitionToWaitState(defaultHtml) {
     displaySeq++; 
     const wasInResultMode = document.body.className.includes('mode');
@@ -364,7 +372,6 @@ function transitionToWaitState(defaultHtml) {
         scoreElement.innerText = '--';
         scoreElement.style.fontSize = '64px';
         
-        // 🌟 核心防護：清空時強制重置特效，並鎖定行高為 64px 避免塌陷
         scoreElement.classList.remove('heartbeat-pop', 'baau-pang-text');
         scoreElement.style.fontWeight = '300';
         scoreElement.style.lineHeight = '64px'; 
@@ -459,6 +466,7 @@ function renderHand() {
     lastMax = currentMax; checkAndRunEngine();
 }
 
+// 🌟 更新：支援玻璃滑塊復位的清空功能
 function clearHand() {
     if (window.isClearing) return; 
     if (hand.length === 0 && activeConditions.size === 0 && activeFlowers.size === 0 && roundWind === 0 && seatWind === 0) return;
@@ -482,8 +490,16 @@ function clearHand() {
     updateIslandSummary(); 
     
     document.querySelectorAll('.flower-tile.active').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('#roundWindSelector .wind-btn, #seatWindSelector .wind-btn').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('#roundWindSelector .wind-btn')[0].classList.add('active'); document.querySelectorAll('#seatWindSelector .wind-btn')[0].classList.add('active');
+    
+    // 🌟 將 .wind-tab 復位，並讓玻璃滑塊滑回 0%
+    document.querySelectorAll('#roundWindSelector .wind-tab, #seatWindSelector .wind-tab').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('#roundWindSelector .wind-tab')[0].classList.add('active'); 
+    document.querySelectorAll('#seatWindSelector .wind-tab')[0].classList.add('active');
+    
+    const roundGlider = document.querySelector('#roundWindSelector .glass-glider');
+    if (roundGlider) roundGlider.style.transform = `translateX(0%)`;
+    const seatGlider = document.querySelector('#seatWindSelector .glass-glider');
+    if (seatGlider) seatGlider.style.transform = `translateX(0%)`;
 
     hand = []; lastTagsHtml = '';
     
@@ -610,32 +626,27 @@ function evaluateStandardPatterns(breakdown, counts) {
     return { faan, tags }; 
 }
 
-// ==== ✨ v2.8.20 顯示引擎 (全域外框高度鎖定 + 稀有度標籤版) ====
 function displayResult(faan, tags, isWin) {
     displaySeq++;
     const seq = displaySeq; 
 
     const isZaWu = !isWin && hand.length === getCurrentMax(); 
     const isBaauPang = isWin && faan >= 13;
-    const isEpic = isBaauPang || tags.some(t => typeof t === 'object' && t.isHigh);
 
     const updateStatusDOM = () => {
         const statusCard = document.getElementById('statusCard');
         const titleElement = document.getElementById('statusTitle');
         
         statusCard.classList.remove('glow-normal', 'glow-epic', 'glow-fail');
+        
         if (isZaWu) {
             statusCard.classList.add('glow-fail');
             titleElement.innerText = '🚨 判定失敗 🚨';
             titleElement.style.color = '#ef4444';
-        } else if (isEpic) {
-            statusCard.classList.add('glow-epic');
-            titleElement.innerText = '✨ 極限爆棚 ✨';
-            titleElement.style.color = '#eab308';
         } else if (isWin) {
-            statusCard.classList.add('glow-normal');
-            titleElement.innerText = '計算完成';
-            titleElement.style.color = '#475569';
+            statusCard.classList.add('glow-normal'); 
+            titleElement.innerText = '⏳ 結算中...';
+            titleElement.style.color = '#64748b'; 
         }
 
         document.body.className = ''; 
@@ -646,7 +657,6 @@ function displayResult(faan, tags, isWin) {
         const scoreElement = document.getElementById('scoreValue');
         const faanUnit = scoreElement.nextElementSibling;
         
-        // 🌟 核心防護：每次重新計算時，鎖定行高為 64px
         scoreElement.classList.remove('heartbeat-pop', 'baau-pang-text');
         scoreElement.style.fontWeight = '300';
         scoreElement.style.lineHeight = '64px'; 
@@ -668,12 +678,10 @@ function displayResult(faan, tags, isWin) {
             
             const span = document.createElement('span');
             
-            // 🌟 提取番數數值
             const match = text.match(/\((\d+)番\)/);
             const faanValue = match ? parseInt(match[1]) : 0;
             span.dataset.stepFaan = faanValue;
             
-            // 🌟 根據番數自動賦予稀有度階級 (Tier)
             let tierClass = 'tier-common'; 
             if (faanValue >= 10) {
                 tierClass = 'tier-legendary';
@@ -701,6 +709,9 @@ function displayResult(faan, tags, isWin) {
         const scoreElement = document.getElementById('scoreValue');
         const faanUnit = scoreElement.nextElementSibling;
         const spans = document.getElementById('patternDisplay').querySelectorAll('.pattern-tag');
+        
+        const statusCard = document.getElementById('statusCard');
+        const titleElement = document.getElementById('statusTitle');
         let currentScore = 0;
 
         for (let i = 0; i < spans.length; i++) {
@@ -714,11 +725,31 @@ function displayResult(faan, tags, isWin) {
                 currentScore += parseInt(span.dataset.stepFaan || 0);
                 if (i === spans.length - 1) currentScore = faan; 
 
+                if (currentScore >= 13) {
+                    statusCard.classList.remove('glow-normal'); statusCard.classList.add('glow-epic');
+                    titleElement.innerText = '✨ 極限爆棚 ✨';
+                    titleElement.style.color = '#eab308';
+                } else if (currentScore >= 10) {
+                    statusCard.classList.remove('glow-normal'); statusCard.classList.add('glow-epic');
+                    titleElement.innerText = '🌟 傳說級牌型';
+                    titleElement.style.color = '#d97706';
+                } else if (currentScore >= 7) {
+                    statusCard.classList.remove('glow-normal'); statusCard.classList.add('glow-epic');
+                    titleElement.innerText = '🔮 史詩級大牌';
+                    titleElement.style.color = '#a855f7';
+                } else if (currentScore >= 3) {
+                    titleElement.innerText = '💎 稀有牌型';
+                    titleElement.style.color = '#0284c7';
+                } else {
+                    titleElement.innerText = '計算完成';
+                    titleElement.style.color = '#475569';
+                }
+
                 if (isBaauPang && i === spans.length - 1) {
                     scoreElement.innerText = '爆棚';
                     scoreElement.style.fontSize = '56px'; 
                     scoreElement.style.fontWeight = '600'; 
-                    scoreElement.style.lineHeight = '64px'; // 爆棚鎖定
+                    scoreElement.style.lineHeight = '64px'; 
                     if (faanUnit) faanUnit.style.display = 'none';
                 } else {
                     scoreElement.innerText = currentScore;
@@ -735,8 +766,8 @@ function displayResult(faan, tags, isWin) {
             scoreElement.innerText = '詐糊';
             scoreElement.style.fontSize = '50px';
             scoreElement.style.fontWeight = '600'; 
-            scoreElement.style.lineHeight = '64px'; // 詐糊鎖定
-            if (faanUnit) faanUnit.style.display = 'none'; // 隱藏番字
+            scoreElement.style.lineHeight = '64px'; 
+            if (faanUnit) faanUnit.style.display = 'none'; 
             
             if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
         } else {
@@ -751,7 +782,6 @@ function displayResult(faan, tags, isWin) {
     }, 300); 
 }
 
-// 🔥 v2.8.0 輕量級邊緣光暈引擎
 const topGlow = document.getElementById('topGlow');
 const bottomGlow = document.getElementById('bottomGlow');
 let edgeStartY = 0;

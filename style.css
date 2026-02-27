@@ -1,19 +1,14 @@
 /* ==== 核心環境設定 ==== */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; touch-action: manipulation; }
 
-/* 🔥 終極第一道防線：將根節點與 body 同時鎖死 */
 /* 🔥 終極第一道防線：鎖死邊界，並施展隱形捲軸魔法 */
 html, body {
     overscroll-behavior-y: none;
     overscroll-behavior-x: none;
-    
-    /* 隱藏 Firefox 的捲軸 */
     scrollbar-width: none; 
-    /* 隱藏 IE/Edge 的捲軸 */
     -ms-overflow-style: none; 
 }
 
-/* 隱藏 Chrome, Safari, Opera (包含 iOS/Android 預設瀏覽器) 的捲軸 */
 html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
@@ -23,10 +18,7 @@ body {
     color: #1e293b; 
     display: flex; justify-content: center; min-height: 100vh; position: relative; 
     padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px; 
-    
-    /* 🔥 核心修改：將底部的安全距離收縮到最極限的貼合狀態 */
     padding-bottom: max(8px, env(safe-area-inset-bottom)); 
-    
     padding-left: 15px; 
     touch-action: pan-y; 
     -webkit-user-select: none; -moz-user-select: none; user-select: none; 
@@ -59,23 +51,16 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .status-header { text-align: center; }
 .status-title { font-size: 13px; opacity: 0.6; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; color: #64748b; }
 
-/* 🔥 修正 1：計分板水平基準線對齊 (Baseline Alignment) 解決圖四問題 */
 .score-display { 
     display: flex; align-items: baseline; justify-content: center; gap: 4px;
     font-size: 64px; font-weight: 300; line-height: 1; margin-bottom: 12px; color: #0f172a; text-shadow: 0 2px 10px rgba(0,0,0,0.05); font-variant-numeric: tabular-nums; 
 }
-.score-display span:last-child { margin-left: 0 !important; } /* 抵銷 HTML 裡的 margin，改用 flex gap */
+.score-display span:last-child { margin-left: 0 !important; }
 
 .heartbeat-pop { animation: heartbeat 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform; }
 @keyframes heartbeat { 0% { transform: scale(1); } 40% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
 .pattern-name { font-size: 15px; font-weight: 500; min-height: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;}
-
-.pattern-tag { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8); color: #334155; padding: 4px 12px; border-radius: 14px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: 600; opacity: 0; transform: scale(0.8) translateY(10px); animation: tagSpringIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
-@keyframes tagSpringIn { 100% { opacity: 1; transform: scale(1) translateY(0); } }
-.pattern-tag.highlight { background: rgba(250, 204, 21, 0.3); border-color: rgba(250, 204, 21, 0.6); color: #854d0e; }
-.pattern-tag.flower { background: rgba(244, 114, 182, 0.3); border-color: rgba(244, 114, 182, 0.6); color: #9d174d; }
-.pattern-tag.wind { background: rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 0.6); color: #0c4a6e; }
 
 .dynamic-island { 
     background: rgba(255, 255, 255, 0.7); 
@@ -91,11 +76,7 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     flex-direction: column; 
     overflow: hidden; 
     color: #334155;
-    
-    /* 🔥 優化 1：精準指定動畫屬性，絕對不用 all */
     transition: max-width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s ease, background 0.4s ease; 
-    
-    /* 🔥 優化 2：強制開啟獨立的 GPU 渲染層 */
     transform: translateZ(0); 
     will-change: max-width, border-radius, transform; 
 }
@@ -109,20 +90,13 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .island-chevron { font-size: 10px; opacity: 0.6; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); color: #64748b; }
 .dynamic-island.expanded .island-chevron { transform: rotate(-180deg); }
 
-/* 2. 放棄極耗 CPU 的 Grid 排版動畫，改用傳統且流暢的 max-height */
 .island-content-grid { 
-    display: block; /* 移除 display: grid */
-    max-height: 0;  /* 改用 max-height 隱藏 */
-    
-    /* 🔥 優化 3：使用對老手機最友善的 max-height 動畫 */
+    display: block; 
+    max-height: 0;  
     transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
     will-change: max-height;
 }
-
-/* 3. 展開時的狀態：給予足夠的高度 */
-.dynamic-island.expanded .island-content-grid { 
-    max-height: 480px; /* 給予足夠容納設定選項的高度 */
-}
+.dynamic-island.expanded .island-content-grid { max-height: 480px; }
 
 .island-content-inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 .island-section { padding: 0 16px 16px 16px; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -134,64 +108,21 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .dynamic-island.expanded .island-divider { opacity: 1; }
 .island-section-header { font-size: 12px; opacity: 0.8; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 700; color: #475569; letter-spacing: 1px; }
 
-/* 🔥 修正 2：加入 minmax(0, 1fr) 與溢出隱藏，解決圖二/圖三的版面撐破問題 */
 .conditions-wrapper { 
     display: grid; 
     grid-template-columns: repeat(6, minmax(0, 1fr)); 
     gap: 8px; 
 }
 
-/* ==== ✨ 1. 牌局設定標籤本體 (真・冰塊玻璃擬態) ==== */
-.condition-chip { 
-    padding: 8px 2px; 
-    border-radius: 20px; 
-    font-size: 11px; 
-    font-weight: 600; 
-    
-    /* 🌟 抽乾白色素：只保留 15% 的極致清透白底 */
-    background: rgba(255, 255, 255, 0.15); 
-    
-    /* 🌟 強化透視：提高飽和度，讓底下的漸層透上來更鮮豔 */
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    
-    /* 🌟 3D 邊緣高光：模擬頂部光源打在玻璃切邊上的反光 */
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-top: 1px solid rgba(255, 255, 255, 0.7); 
-    border-left: 1px solid rgba(255, 255, 255, 0.5); 
-    
-    /* 🌟 內部微光與外部陰影：拉開玻璃與底層的空間感 */
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(0, 0, 0, 0.05);
-    
-    /* 文字稍微加深一點點，確保在透明背景下的閱讀性 */
-    color: #475569; 
-    
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    text-align: center; 
-    white-space: nowrap; 
-    letter-spacing: -0.2px; 
-    grid-column: span 2; 
-    position: relative;
-    z-index: 1; 
-    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease, z-index 0s;
-    will-change: transform; 
-}
-
-/* ==== ✨ 牌局設定標籤本體 (加入毛玻璃濾鏡) ==== */
+/* ==== ✨ 牌局設定標籤本體 (毛玻璃濾鏡) ==== */
 .condition-chip { 
     padding: 8px 2px; 
     border-radius: 20px; 
     font-size: 11px; 
     font-weight: 600; 
     background: rgba(255, 255, 255, 0.5); 
-    
-    /* 🌟 新增：終極玻璃擬態濾鏡 */
     backdrop-filter: blur(10px) saturate(120%);
     -webkit-backdrop-filter: blur(10px) saturate(120%);
-    
     border: 1px solid rgba(255, 255, 255, 0.8); 
     color: #64748b; 
     cursor: pointer; 
@@ -200,7 +131,6 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     justify-content: center; 
     text-align: center; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-    
     white-space: nowrap; 
     letter-spacing: -0.2px; 
     grid-column: span 2; 
@@ -210,92 +140,134 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     will-change: transform; 
 }
 
-/* 1. 建立隱形的發光替身層 (純藍紫科技霓虹 - 內斂版) */
 .condition-chip::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: -1;
     border-radius: inherit;
-    
-    /* 🌟 原汁原味的藍紫漸層 */
     background: linear-gradient(135deg, #4da3ff 0%, #8b5cf6 100%);
-    
-    /* 🌟 核心收束：大幅降低光暈擴散範圍 (12px) 與透明度 (0.45)，保留頂部精緻微光 */
-    box-shadow: 
-        0 3px 12px rgba(139, 92, 246, 0.45), 
-        inset 0 1px 1px rgba(255, 255, 255, 0.4); 
-        
+    box-shadow: 0 3px 12px rgba(139, 92, 246, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4); 
     opacity: 0;
     will-change: opacity;
     transition: opacity 0.3s ease-in-out;
 }
 
-/* 2. 當被點擊 (Active) 時的本體變化 */
 .condition-chip.active {
     background-color: transparent !important; 
     border-color: transparent !important;
     box-shadow: none; 
-    
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    
-    /* 🌟 核心收束：微調放大比例，從 1.05 降為 1.02，保留實體回饋但不暴漲 */
     transform: scale(1.02); 
-    
-    /* 確保光暈在最上層，不會被鄰居切斷 */
     z-index: 10; 
 }
 
-/* 3. 喚醒發光替身層 */
-.condition-chip.active::before {
-    opacity: 1; 
-}
-
-/* 確保特定按鈕跨欄設定維持不變 */
+.condition-chip.active::before { opacity: 1; }
 .condition-chip:nth-child(7), .condition-chip:nth-child(8) { grid-column: span 3; }
 @media (max-width: 380px) { .condition-chip { font-size: 10px; letter-spacing: -0.5px; } }
 
-.winds-container { display: flex; gap: 15px; }
-.wind-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.wind-selector { display: flex; gap: 6px; }
-/* ==== ✨ 風位/圈位按鈕 (加入毛玻璃濾鏡) ==== */
-/* ==== ✨ 2. 風位/圈位按鈕 (真・冰塊玻璃擬態) ==== */
-.wind-btn { 
-    flex: 1; 
-    padding: 6px 0; 
-    text-align: center; 
-    border-radius: 8px; 
+/* ==== ✨ v2.8.28 極致玻璃擬態 (Glassmorphism) 滑塊 ==== */
+.wind-layout-container { 
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: space-between; 
+    gap: 12px; 
+    width: 100%; 
+    margin-top: 0; 
+}
+.wind-block { display: flex; flex-direction: column; flex: 1; gap: 6px; }
+
+/* 軌道 (凹槽) */
+.wind-segment-control { 
+    display: flex; 
+    position: relative; 
+    gap: 0; 
+    justify-content: space-between; 
+    background: rgba(241, 245, 249, 0.7); 
+    padding: 2px; 
+    border-radius: 99px; 
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(0, 0, 0, 0.02); 
+    overflow: hidden; 
+}
+
+/* 獨立的玻璃擬態漸變滑塊 */
+.glass-glider { 
+    position: absolute; 
+    top: 2px; 
+    left: 2px; 
+    width: calc(25% - 1px); 
+    height: calc(100% - 4px); 
+    border-radius: 99px; 
     
-    /* 🌟 抽乾白色素與強化透視 */
-    background: rgba(255, 255, 255, 0.15); 
+    /* 漸變邊框 + 玻璃擬態 雙重魔法 (Generate 風格) */
+    border: 2px solid transparent; 
+    background: 
+        linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)) padding-box, 
+        linear-gradient(to right, #00f2fe, #4facfe, #8b5cf6) border-box; 
+    
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     
-    /* 🌟 3D 邊緣高光與厚度陰影 */
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-top: 1px solid rgba(255, 255, 255, 0.7); 
-    border-left: 1px solid rgba(255, 255, 255, 0.5); 
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.8);
     
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    will-change: transform; 
+    z-index: 1; 
+}
+
+/* 按鈕文字本體 */
+.wind-tab { 
+    flex: 1; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 6px 0; 
+    background: transparent; 
+    border: none; 
+    box-shadow: none; 
     font-size: 13px; 
     cursor: pointer; 
-    color: #475569; 
+    color: #94a3b8; 
     font-weight: 600; 
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; 
+    position: relative; 
+    z-index: 2; 
+    transition: all 0.2s ease; 
     will-change: transform; 
 }
-.wind-btn.active { background: #ffffff; color: #0f172a; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #fff; }
+/* 選中狀態字體 */
+.wind-tab.active { 
+    color: #6366f1; /* 深藍紫，配合 Generate 風格 */
+    font-weight: 800; 
+}
 
+.wind-divider { width: 2px; height: 38px; background-color: #e2e8f0; border-radius: 2px; margin-bottom: 2px; }
+
+/* ==== ✨ 花牌按鈕 (極致玻璃擬態) ==== */
 .flower-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 6px 4px; }
-.flower-tile { position: relative; z-index: 1; aspect-ratio: 3/4; background-color: #fcfaf9; border-radius: 8px; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 1px rgba(0,0,0,0.05); background-size: 88%; background-position: center; background-repeat: no-repeat; overflow: hidden; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; will-change: transform, box-shadow, backdrop-filter; }
+.flower-tile { 
+    position: relative; z-index: 1; aspect-ratio: 3/4; 
+    background-size: 88%; background-position: center; background-repeat: no-repeat; overflow: hidden; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    will-change: transform, box-shadow, backdrop-filter; 
+    
+    background-color: rgba(255, 255, 255, 0.45); 
+    -webkit-backdrop-filter: blur(12px); 
+    backdrop-filter: blur(12px); 
+    border: 1px solid rgba(255, 255, 255, 0.6); 
+    border-bottom-color: rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
+    border-radius: 12px; 
+}
 .flower-tile.active { 
-    transform: scale(1.08) translate3d(0, -2px, 0); /* 加入 3D 加速 */
+    transform: scale(1.08) translate3d(0, -2px, 0); 
     z-index: 10; 
-    background-color: rgba(255,255,255,0.3); 
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #fcd34d; 
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15), inset 0 1px 2px rgba(255, 255, 255, 1); 
     backdrop-filter: blur(10px) saturate(180%); 
     -webkit-backdrop-filter: blur(10px) saturate(180%); 
-    box-shadow: inset 0 0 0 1px rgba(255,255,255, 0.9), inset 0 1px 3px rgba(255,255,255, 0.8), 0 12px 24px rgba(0,0,0,0.15); 
 }
 .flower-tile::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; mix-blend-mode: overlay; }
 .flower-tile.active::after { opacity: 1; }
@@ -310,26 +282,13 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 @keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
 .empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
 
-/* ✨ 退場果凍動畫 (極致絲滑版)：微蓄力後順暢吸入消失 */
 @keyframes popOut {
-    0% { 
-        opacity: 1; 
-        transform: scale(1) translateZ(0); 
-    }
-    20% { 
-        opacity: 1; 
-        /* 微微壓扁蓄力，幅度縮小，避免視覺上的抽搐感 */
-        transform: scaleX(1.05) scaleY(0.95) translateZ(0); 
-    }
-    100% { 
-        opacity: 0; 
-        /* 順暢無阻礙地縮小到 0 */
-        transform: scaleX(0) scaleY(0) translateZ(0); 
-    }
+    0% { opacity: 1; transform: scale(1) translateZ(0); }
+    20% { opacity: 1; transform: scaleX(1.05) scaleY(0.95) translateZ(0); }
+    100% { opacity: 0; transform: scaleX(0) scaleY(0) translateZ(0); }
 }
 
 .breathing { 
-    /* 視覺欺騙：只呼吸 4 次 (約 12 秒) 就會優雅地停留在原位，既保留了發牌時的生命力，又能讓手機進入省電休眠 */
     animation: floatBreathing 3s ease-in-out 4 alternate forwards; 
     will-change: transform; 
 }
@@ -338,49 +297,52 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
     100% { transform: translate3d(0, -3px, 0); } 
 }
 
-/* 🔥 修正 3：強制移除鍵盤上方空隙，解決圖一問題 */
-.keyboard { 
-    display: flex; flex-direction: column; gap: 8px; 
-    margin-top: 0 !important; /* 確保沒有任何多餘的 margin 將它推下去 */
-}
+.keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 0 !important; }
 .suit-row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
 
-.tile { aspect-ratio: 3/4; background-color: #fcfaf9; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1), inset 0 -2px 1px rgba(0,0,0,0.05); width: 100%; height: auto; background-size: 85%; background-position: center; background-repeat: no-repeat; color: #1e293b; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s; will-change: transform; }
+/* ==== ✨ 麻雀實體牌 (極致玻璃擬態) ==== */
+.tile { 
+    aspect-ratio: 3/4; width: 100%; height: auto; 
+    background-size: 85%; background-position: center; background-repeat: no-repeat; 
+    cursor: pointer; color: #1e293b; 
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s; 
+    will-change: transform; 
+    
+    background-color: rgba(255, 255, 255, 0.55); 
+    -webkit-backdrop-filter: blur(12px) saturate(110%); 
+    backdrop-filter: blur(12px) saturate(110%); 
+    border: 1px solid rgba(255, 255, 255, 0.7); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+    border-right: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.9); 
+    border-radius: 10px; 
+}
 .is-tapped-tile { animation: none !important; transform: translate3d(0, 2px, 0) scale(0.92) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.05) !important; transition: none !important; }
 .is-tapped-chip { transform: scale(0.92) !important; transition: none !important; opacity: 0.8; }
 .is-tapped-island { transform: scale(0.96) translateZ(0) !important; transition: none !important; }
 
-/* ==== ✨ 3. 暗牌區空槽 (真・冰塊下凹挖槽質感) ==== */
+/* ==== ✨ 暗牌區空槽 (極致玻璃擬態：凹陷柔和溝槽) ==== */
 .tile.empty { 
     background-image: none !important; 
-    
-    /* 🌟 極致清透，只留 10% 的白 */
-    background-color: rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(8px) saturate(120%);
-    -webkit-backdrop-filter: blur(8px) saturate(120%);
-    
-    /* 🌟 模擬物理下凹：邊框反轉，下方與右方受光，上方暗 */
-    border: 1px solid rgba(255, 255, 255, 0.15); 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5); 
-    border-right: 1px solid rgba(255, 255, 255, 0.3); 
-    
-    /* 🌟 內部陰影：營造凹陷感 */
-    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.05); 
     cursor: default; 
+    background-color: rgba(255, 255, 255, 0.15); 
+    -webkit-backdrop-filter: none; 
+    backdrop-filter: none; 
+    border: none; 
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.3); 
+    border-radius: 10px; 
+    opacity: 0.8; 
 }
 
-/* ==== ✨ 4. 清除按鈕 (真・冰塊玻璃擬態) ==== */
+/* ==== ✨ 清除按鈕 (真・冰塊玻璃擬態) ==== */
 .clear-btn { 
     background: rgba(255, 255, 255, 0.2) !important; 
     backdrop-filter: blur(16px) saturate(150%);
     -webkit-backdrop-filter: blur(16px) saturate(150%);
-    
-    /* 🌟 3D 邊緣高光 */
     border: 1px solid rgba(255, 255, 255, 0.2) !important; 
     border-top: 1px solid rgba(255, 255, 255, 0.8) !important; 
     border-left: 1px solid rgba(255, 255, 255, 0.5) !important; 
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.05) !important; 
-    
     border-radius: 20px !important; 
     color: #475569 !important; 
     padding: 5px 12px !important; 
@@ -396,262 +358,60 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .install-btn::before { content: ""; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: diamondShimmer 6s infinite; pointer-events: none; }
 @keyframes diamondShimmer { 0% { left: -150%; } 15% { left: 200%; } 100% { left: 200%; } }
 
-.footer-credit { 
-    text-align: center; 
-    font-size: 11px; 
-    font-weight: 400; 
-    color: #94a3b8; 
-    letter-spacing: 0.5px; 
-    
-    /* 🔥 核心修改：將版權文字下方的多餘空隙徹底移除 */
-    margin-bottom: 0px; 
-    
-    display: flex; 
-    flex-direction: column; 
-    gap: 4px; 
-    margin-top: 15px; 
-    padding-top: 5px; 
-}
-
+.footer-credit { text-align: center; font-size: 11px; font-weight: 400; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 0px; display: flex; flex-direction: column; gap: 4px; margin-top: 15px; padding-top: 5px; }
 .version-num { font-size: 10px; opacity: 0.8; }
 
-#statusCard::after { 
-    content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -2; pointer-events: none; 
-    /* 直接鎖定在光暈最漂亮、最飽滿的狀態，取消無限動畫 */
-    box-shadow: 0 0 25px rgba(125, 211, 252, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.6); 
-    opacity: 0.8; 
-    transition: opacity 0.8s ease; 
-}
-/* 刪除原有的 @keyframes ambientBreath 區塊 */
+#statusCard::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -2; pointer-events: none; box-shadow: 0 0 25px rgba(125, 211, 252, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.6); opacity: 0.8; transition: opacity 0.8s ease; }
 .jelly-squish { animation: jellySquish 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
 .jelly-stretch { animation: jellyStretch 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
 #keyboard.jelly-squish, #keyboard.jelly-stretch { animation-delay: 0.05s; }
 
-/* ==== ✨ v2.6.0：動態島「系統更新」狀態變身 ==== */
-.dynamic-island.update-ready {
-    border-color: rgba(234, 179, 8, 0.6); /* 變成柔和的金色邊框 */
-    /* 加入金色的待機呼吸光 */
-    animation: islandUpdateBreathe 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
+.dynamic-island.update-ready { border-color: rgba(234, 179, 8, 0.6); animation: islandUpdateBreathe 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate; }
+.dynamic-island.update-ready:not(.expanded) { max-width: 280px; }
+@keyframes islandUpdateBreathe { 0% { box-shadow: 0 8px 24px rgba(234, 179, 8, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); } 100% { box-shadow: 0 8px 36px rgba(234, 179, 8, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.8); } }
+
+.edge-glow { position: fixed; left: 0; width: 100%; height: 150px; pointer-events: none; opacity: 0; z-index: 9999; will-change: opacity, transform; transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+.edge-top { top: 0; background: radial-gradient(ellipse at top, rgba(255,255,255,0.6) 0%, transparent 70%); transform: scaleY(0.3) translateY(-20px); transform-origin: top; }
+.edge-bottom { bottom: 0; background: radial-gradient(ellipse at bottom, rgba(255,255,255,0.6) 0%, transparent 70%); transform: scaleY(0.3) translateY(20px); transform-origin: bottom; }
+.edge-glow.is-pulling { opacity: 1; transform: scaleY(1) translateY(0); }
+
+.baau-pang-text { position: relative; display: inline-block; background-image: linear-gradient(135deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0) 60%), linear-gradient(to bottom, #d97706, #92400e); background-size: 200% 200%, 100% 100%; background-position: 200% 200%, 0 0; background-repeat: no-repeat; color: transparent; -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.6)) drop-shadow(0px 0px 25px rgba(245, 158, 11, 0.8)); will-change: transform, background-position; animation: holyFloatSmooth 2.5s ease-in-out infinite alternate, glassGlareSweep 3s cubic-bezier(0.25, 0.1, 0.25, 1) infinite !important; }
+.baau-pang-text::before { content: '✦'; position: absolute; top: -15px; left: -20px; font-size: 28px; color: #fffbeb; text-shadow: 0 0 10px #fcd34d; z-index: 10; pointer-events: none; will-change: transform, opacity; animation: starTwinkleSmoothA 2s ease-in-out infinite alternate; }
+.baau-pang-text::after { content: '✦'; position: absolute; bottom: -5px; right: -15px; font-size: 20px; color: #ffffff; text-shadow: 0 0 8px #f59e0b; z-index: 10; pointer-events: none; will-change: transform, opacity; animation: starTwinkleSmoothB 2.5s ease-in-out infinite alternate-reverse; }
+
+@keyframes glassGlareSweep { 0% { background-position: 200% 200%, 0 0; } 35% { background-position: -100% -100%, 0 0; } 100% { background-position: -100% -100%, 0 0; } }
+@keyframes holyFloatSmooth { 0% { transform: scale(1) translateY(0) translateZ(0); } 100% { transform: scale(1.06) translateY(-3px) translateZ(0); } }
+@keyframes starTwinkleSmoothA { 0% { transform: scale(0.4) rotate(0deg) translateZ(0); opacity: 0.2; } 100% { transform: scale(1.1) rotate(45deg) translateZ(0); opacity: 1; } }
+@keyframes starTwinkleSmoothB { 0% { transform: scale(0.3) rotate(15deg) translateZ(0); opacity: 0.1; } 100% { transform: scale(1.3) rotate(-30deg) translateZ(0); opacity: 0.9; } }
+
+.pattern-tag { transition: all 0.3s ease; }
+.pattern-tag.tier-common { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; box-shadow: none; }
+.pattern-tag.tier-rare { background: linear-gradient(135deg, #0ea5e9, #2dd4bf); color: #ffffff; border: 1px solid transparent; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.pattern-tag.tier-epic { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #ffffff; border: 1px solid transparent; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6); text-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: 500; }
+.pattern-tag.tier-legendary { background: linear-gradient(to bottom, #d97706, #92400e); color: #fef3c7; border: 1px solid #fcd34d; box-shadow: 0 0 15px rgba(245, 158, 11, 0.8), inset 0 0 5px rgba(255, 255, 255, 0.2); text-shadow: 0 0 6px rgba(253, 230, 138, 0.6); font-weight: 600; }
+
+.pattern-tag.hide-tag { opacity: 0 !important; transform: translateY(20px) scale(0.8); pointer-events: none; }
+.pattern-tag.pop-in-tag { opacity: 1; transform: translateY(0) scale(1); animation: tagSpringUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.pattern-tag.tier-epic.pop-in-tag { animation: tagSpringUpEpic 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards; }
+.pattern-tag.tier-legendary.pop-in-tag { animation: tagSpringUpLegendary 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.8) forwards; }
+
+@keyframes tagSpringUp { 0% { opacity: 0; transform: translateY(20px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes tagSpringUpEpic { 0% { opacity: 0; transform: translateY(25px) scale(0.6); filter: brightness(2); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); } }
+@keyframes tagSpringUpLegendary { 0% { opacity: 0; transform: translateY(30px) scale(0.4); filter: brightness(3) drop-shadow(0 0 30px #fcd34d); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1) drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); } }
+
+/* ==== ✨ App 開場瀑布流漸顯動畫 (Cascading Fade-In) ==== */
+@keyframes appFadeInUp {
+    0% { opacity: 0; transform: translateY(20px) translateZ(0); }
+    100% { opacity: 1; transform: translateY(0) translateZ(0); }
 }
 
-/* ==== ✨ v2.6.2：動態島「系統更新」狀態的橫向彈性拉伸 ==== */
-.dynamic-island.update-ready:not(.expanded) {
-    max-width: 280px; /* 給予足夠的寬度，完美容納整句更新文字 */
-}
-
-@keyframes islandUpdateBreathe {
-    0% { box-shadow: 0 8px 24px rgba(234, 179, 8, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); }
-    100% { box-shadow: 0 8px 36px rgba(234, 179, 8, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.8); }
-}
-/* ==== ✨ v2.8.0：極致流暢的邊緣光暈回饋 ==== */
-.edge-glow {
-    position: fixed; left: 0; width: 100%; height: 150px;
-    pointer-events: none; opacity: 0; z-index: 9999;
-    will-change: opacity, transform; /* 強制開啟 GPU 硬體加速 */
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-.edge-top {
-    top: 0;
-    /* 柔和的頂部白光漸層 */
-    background: radial-gradient(ellipse at top, rgba(255,255,255,0.6) 0%, transparent 70%);
-    transform: scaleY(0.3) translateY(-20px);
-    transform-origin: top;
-}
-.edge-bottom {
-    bottom: 0;
-    /* 柔和的底部白光漸層 */
-    background: radial-gradient(ellipse at bottom, rgba(255,255,255,0.6) 0%, transparent 70%);
-    transform: scaleY(0.3) translateY(20px);
-    transform-origin: bottom;
-}
-/* 當被拉扯時觸發的狀態 */
-.edge-glow.is-pulling {
-    opacity: 1;
-    transform: scaleY(1) translateY(0);
-}
-
-/* ==== ✨ 爆棚專屬：深琥珀玻璃反光 SSR 特效 (極致絲滑 GPU 加速) ==== */
-.baau-pang-text {
-    position: relative;
-    display: inline-block;
-    
-    /* 1. 雙層背景：上層是傾斜白光，下層是深琥珀色底 */
-    background-image: 
-        /* 表層：傾斜 135 度的銳利白光 (模擬玻璃/壓克力反光) */
-        linear-gradient(
-            135deg, 
-            rgba(255, 255, 255, 0) 40%, 
-            rgba(255, 255, 255, 0.9) 50%, 
-            rgba(255, 255, 255, 0) 60%
-        ),
-        /* 底層：沉穩的深琥珀色 (加一點點極微弱的上下深淺變化，增加實體厚重感) */
-        linear-gradient(to bottom, #d97706, #92400e);
-        
-    /* 上層(白光)放大成 200% 方便產生滑動距離，下層(琥珀底)保持 100% 固定 */
-    background-size: 200% 200%, 100% 100%;
-    
-    /* 起始位置：白光在右下方外側，琥珀底固定在左上角 (0 0) */
-    background-position: 200% 200%, 0 0;
-    
-    background-repeat: no-repeat;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    /* 2. 靜態廣域柔和光暈 (保留外圍橘金色的神聖感) */
-    filter: 
-        drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.6)) 
-        drop-shadow(0px 0px 25px rgba(245, 158, 11, 0.8));
-        
-    /* 🌟 提前宣告 GPU 加速準備 */
-    will-change: transform, background-position;
-    
-    /* 啟動三重動畫：神聖懸浮呼吸 + 玻璃反光掃掠 */
-    animation: 
-        holyFloatSmooth 2.5s ease-in-out infinite alternate,
-        glassGlareSweep 3s cubic-bezier(0.25, 0.1, 0.25, 1) infinite !important;
-}
-
-/* 3. 十字星芒粒子 (左上角主星 - 保持不變) */
-.baau-pang-text::before {
-    content: '✦';
-    position: absolute;
-    top: -15px;
-    left: -20px;
-    font-size: 28px;
-    color: #fffbeb;
-    text-shadow: 0 0 10px #fcd34d;
-    z-index: 10;
-    pointer-events: none;
+#statusCard, #conditionsIsland, #handCard, #keyboard {
+    opacity: 0; 
+    animation: appFadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     will-change: transform, opacity;
-    animation: starTwinkleSmoothA 2s ease-in-out infinite alternate;
 }
 
-/* 3. 十字星芒粒子 (右下角副星 - 保持不變) */
-.baau-pang-text::after {
-    content: '✦';
-    position: absolute;
-    bottom: -5px;
-    right: -15px;
-    font-size: 20px;
-    color: #ffffff;
-    text-shadow: 0 0 8px #f59e0b;
-    z-index: 10;
-    pointer-events: none;
-    will-change: transform, opacity;
-    animation: starTwinkleSmoothB 2.5s ease-in-out infinite alternate-reverse;
-}
-
-/* ==== 🌟 動畫關鍵影格 ==== */
-
-/* 🌟 新增：玻璃反光掃掠動畫 (只移動上層白光，底色維持不動) */
-@keyframes glassGlareSweep {
-    0% { background-position: 200% 200%, 0 0; }
-    35% { background-position: -100% -100%, 0 0; } /* 白光迅速從右下角掃過左上角 */
-    100% { background-position: -100% -100%, 0 0; } /* 剩下的時間停頓，營造有節奏的反光感 */
-}
-
-/* 神聖懸浮 (保持不變) */
-@keyframes holyFloatSmooth {
-    0% { transform: scale(1) translateY(0) translateZ(0); }
-    100% { transform: scale(1.06) translateY(-3px) translateZ(0); }
-}
-
-/* 星芒閃爍旋轉 A (保持不變) */
-@keyframes starTwinkleSmoothA {
-    0% { transform: scale(0.4) rotate(0deg) translateZ(0); opacity: 0.2; }
-    100% { transform: scale(1.1) rotate(45deg) translateZ(0); opacity: 1; }
-}
-
-/* 星芒閃爍旋轉 B (保持不變) */
-@keyframes starTwinkleSmoothB {
-    0% { transform: scale(0.3) rotate(15deg) translateZ(0); opacity: 0.1; }
-    100% { transform: scale(1.3) rotate(-30deg) translateZ(0); opacity: 0.9; }
-}
-
-/* ==== ✨ 番數標籤稀有度系統 (Rarity Tiers) ==== */
-
-/* 確保基礎標籤有平滑過渡效果 */
-.pattern-tag {
-    transition: all 0.3s ease;
-}
-
-/* 🔘 階級 1：普通級 Common (1~2番) - 乾淨簡約 */
-.pattern-tag.tier-common {
-    background-color: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-    box-shadow: none;
-}
-
-/* 🔵 階級 2：稀有級 Rare (3~6番) - 精緻寶石漸層 */
-.pattern-tag.tier-rare {
-    background: linear-gradient(135deg, #0ea5e9, #2dd4bf);
-    color: #ffffff;
-    border: 1px solid transparent;
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-/* 🟣 階級 3：史詩級 Epic (7~9番) - 高階幻彩與霓虹發光 */
-.pattern-tag.tier-epic {
-    background: linear-gradient(135deg, #8b5cf6, #ec4899);
-    color: #ffffff;
-    border: 1px solid transparent;
-    box-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
-    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    font-weight: 500;
-}
-
-/* 🟡 階級 4：傳說級 Legendary (10番以上) - 神聖琥珀與黃金光暈 */
-.pattern-tag.tier-legendary {
-    background: linear-gradient(to bottom, #d97706, #92400e);
-    color: #fef3c7;
-    border: 1px solid #fcd34d;
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.8), inset 0 0 5px rgba(255, 255, 255, 0.2);
-    text-shadow: 0 0 6px rgba(253, 230, 138, 0.6);
-    font-weight: 600;
-}
-
-/* ==== ✨ 標籤進場動畫引擎 (逐一揭曉與彈性物理) ==== */
-
-/* 1. 潛伏預備狀態：隱藏、下沉、縮小 */
-.pattern-tag.hide-tag {
-    opacity: 0 !important;
-    transform: translateY(20px) scale(0.8);
-    pointer-events: none; /* 隱藏時不可點擊 */
-}
-
-/* 2. 基礎彈性進場：普通與稀有級標籤 (平滑 Q 彈) */
-.pattern-tag.pop-in-tag {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    /* 使用 cubic-bezier 創造超過 100% 再縮回來的彈簧物理效果 */
-    animation: tagSpringUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-/* 3. 史詩級震撼進場 (更誇張的彈跳 + 瞬間高光) */
-.pattern-tag.tier-epic.pop-in-tag {
-    animation: tagSpringUpEpic 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards;
-}
-
-/* 4. 傳說級霸氣進場 (極限彈跳 + 耀眼閃光) */
-.pattern-tag.tier-legendary.pop-in-tag {
-    animation: tagSpringUpLegendary 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.8) forwards;
-}
-
-/* ==== 動畫關鍵影格 ==== */
-@keyframes tagSpringUp {
-    0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes tagSpringUpEpic {
-    0% { opacity: 0; transform: translateY(25px) scale(0.6); filter: brightness(2); }
-    100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
-}
-
-@keyframes tagSpringUpLegendary {
-    0% { opacity: 0; transform: translateY(30px) scale(0.4); filter: brightness(3) drop-shadow(0 0 30px #fcd34d); }
-    100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1) drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); }
-}
+#statusCard { animation-delay: 0.05s; }
+#conditionsIsland { animation-delay: 0.15s; }
+#handCard { animation-delay: 0.25s; }
+#keyboard { animation-delay: 0.35s; }

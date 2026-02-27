@@ -45,23 +45,39 @@
                         <div class="island-section-header"><span>特殊牌型</span></div>
                         <div id="conditionsBar" class="conditions-wrapper"></div>
                     </div>
+                    
                     <div class="island-divider"></div>
+                    
                     <div class="island-section">
-                        <div class="island-section-header"><span>風圈與風位</span></div>
-                        <div class="winds-container">
-                            <div class="wind-group">
-                                <div class="wind-selector" id="roundWindSelector">
-                                    <div class="wind-btn active">東</div><div class="wind-btn">南</div><div class="wind-btn">西</div><div class="wind-btn">北</div>
+                        <div class="wind-layout-container">
+                            <div class="wind-block">
+                                <div class="island-section-header"><span>圈</span></div>
+                                <div id="roundWindSelector" class="wind-segment-control">
+                                    <div class="glass-glider" style="transform: translateX(0%);"></div>
+                                    <div class="wind-tab active">東</div>
+                                    <div class="wind-tab">南</div>
+                                    <div class="wind-tab">西</div>
+                                    <div class="wind-tab">北</div>
                                 </div>
                             </div>
-                            <div class="wind-group">
-                                <div class="wind-selector" id="seatWindSelector">
-                                    <div class="wind-btn active">東</div><div class="wind-btn">南</div><div class="wind-btn">西</div><div class="wind-btn">北</div>
+
+                            <div class="wind-divider"></div>
+
+                            <div class="wind-block">
+                                <div class="island-section-header"><span>位</span></div>
+                                <div id="seatWindSelector" class="wind-segment-control">
+                                    <div class="glass-glider" style="transform: translateX(0%);"></div>
+                                    <div class="wind-tab active">東</div>
+                                    <div class="wind-tab">南</div>
+                                    <div class="wind-tab">西</div>
+                                    <div class="wind-tab">北</div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="island-divider"></div>
+                    
                     <div class="island-section">
                         <div class="island-section-header"><span>花牌</span><span id="flowerCount">已選 0 隻</span></div>
                         <div id="flowerGrid" class="flower-grid"></div>
