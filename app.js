@@ -12,7 +12,7 @@
    ▶ 區塊六：個人中心與設定 (清除暫存、顯示版本號)
    ========================================== */
 
-const APP_VERSION = "v2.8.40";
+const APP_VERSION = "v2.8.41";
 
 let newWorker; window.isUpdateReady = false; let displaySeq = 0; let currentResultSnapshot = null;
 
