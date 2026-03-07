@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>香港麻雀計番神器</title>
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,93 +21,253 @@
     <div class="bg-layer bg-failure"></div>
 
     <div class="app-container">
-        
         <div id="topGlow" class="edge-glow edge-top"></div>
         <div id="bottomGlow" class="edge-glow edge-bottom"></div>
 
-        <div id="statusCard" class="glass-card">
-            <div class="status-header">
-                <div id="statusTitle" class="status-title">等待輸入手牌</div>
-                <div style="display: flex; justify-content: center; align-items: baseline; gap: 4px;">
-                    <div id="scoreValue" class="score-display">--</div>
-                    <div style="font-size: 24px; font-weight: 600; color: #475569; display: inline;">番</div>
+        <div id="page-input" class="page active">
+            <div id="actionBanner" class="glass-card action-banner">
+                <div id="actionText" class="action-text">請選取 14 張牌</div>
+                <button id="calcBtn" class="calc-btn" style="display: none;">✨ 開始結算</button>
+            </div>
+            <div id="conditionsIsland" class="dynamic-island">
+                <div id="islandHeaderBtn" class="island-header"><div id="islandTitle" class="island-title">✦ 牌局設定</div><div class="island-chevron">▼</div></div>
+                <div class="island-content-grid"><div class="island-content-inner"><div class="island-section"><div class="island-section-header"><span>特殊牌型</span></div><div id="conditionsBar" class="conditions-wrapper"></div></div><div class="island-divider"></div><div class="island-section"><div class="wind-layout-container"><div class="wind-block"><div class="island-section-header"><span>圈</span></div><div id="roundWindSelector" class="wind-segment-control"><div class="glass-glider" style="transform: translateX(0%);"></div><div class="wind-tab active">東</div><div class="wind-tab">南</div><div class="wind-tab">西</div><div class="wind-tab">北</div></div></div><div class="wind-divider"></div><div class="wind-block"><div class="island-section-header"><span>位</span></div><div id="seatWindSelector" class="wind-segment-control"><div class="glass-glider" style="transform: translateX(0%);"></div><div class="wind-tab active">東</div><div class="wind-tab">南</div><div class="wind-tab">西</div><div class="wind-tab">北</div></div></div></div></div><div class="island-divider"></div><div class="island-section"><div class="island-section-header"><span>花牌</span><span id="flowerCount">已選 0 隻</span></div><div id="flowerGrid" class="flower-grid"></div></div></div></div>
+            </div>
+            <div id="handCard" class="glass-card hand-container">
+                <div class="hand-header"><span id="tileCount">暗牌已選 0 / 14</span><button id="clearBtnId" class="clear-btn">清空</button></div>
+                <div id="handGrid" class="tiles-grid"></div>
+            </div>
+            <div id="keyboard" class="glass-card keyboard"></div>
+            <button id="installBtn" class="install-btn">💎 安裝神器到桌面</button>
+        </div>
+
+        <div id="page-result" class="page">
+            <div id="resultHeroCard" class="glass-card result-hero">
+                <div id="heroBg" class="hero-bg"></div>
+                <div class="hero-content relative z-10">
+                    <div class="hero-header"><span id="resultBadge" class="result-badge">等待中</span></div>
+                    <div class="hero-score-area">
+                        <div class="hero-label">總番數</div>
+                        <div class="hero-score-display"><span id="heroScoreValue" style="font-size: 56px; font-weight: 700; line-height: 1;">--</span><span id="heroScoreUnit" class="hero-unit">番</span></div>
+                    </div>
+                    <div class="hero-divider"></div>
+                    <div class="hero-main-pattern"><span class="main-pattern-label">主要役種</span><span id="heroMainPatternName" class="main-pattern-name">--</span></div>
                 </div>
             </div>
-            <div id="patternDisplay" class="pattern-name">
-                <span class="pattern-tag" style="opacity: 1; transform: none; animation: none;">請選取 14 張牌</span>
+            <div class="status-grid">
+                <div class="status-box glass-card"><div class="status-box-label">圈風</div><div id="resRoundWind" class="status-box-value">--</div></div>
+                <div class="status-box glass-card"><div class="status-box-label">位風</div><div id="resSeatWind" class="status-box-value">--</div></div>
+                <div class="status-box glass-card"><div class="status-box-label">花牌</div><div id="resFlowers" class="status-box-value">--</div></div>
+            </div>
+            <div class="detail-list-container">
+                <div class="detail-list-title">▍ 番數詳情</div>
+                <div id="detailList" class="detail-list">
+                    <div class="detail-empty">尚未結算</div>
+                </div>
+            </div>
+            <div class="result-actions glass-card">
+                <button id="backToInputBtn" class="action-btn back-btn">🔙 返回修改</button>
+                <button id="saveHistoryBtn" class="action-btn save-btn">💾 儲存戰績</button>
             </div>
         </div>
 
-        <div id="conditionsIsland" class="dynamic-island">
-            <div id="islandHeaderBtn" class="island-header">
-                <div id="islandTitle" class="island-title">✦ 牌局設定</div>
-                <div class="island-chevron">▼</div>
-            </div>
-            <div class="island-content-grid">
-                <div class="island-content-inner">
-                    <div class="island-section">
-                        <div class="island-section-header"><span>特殊牌型</span></div>
-                        <div id="conditionsBar" class="conditions-wrapper"></div>
+        <div id="page-history" class="page">
+            <div class="history-dashboard glass-card">
+                <div class="dashboard-title">生涯戰績</div>
+                <div class="win-rate-container">
+                    <div class="win-rate-header">
+                        <span class="win-rate-label">成功食糊勝率</span>
+                        <span class="win-rate-value" id="statWinRate">0%</span>
                     </div>
-                    
-                    <div class="island-divider"></div>
-                    
-                    <div class="island-section">
-                        <div class="wind-layout-container">
-                            <div class="wind-block">
-                                <div class="island-section-header"><span>圈</span></div>
-                                <div id="roundWindSelector" class="wind-segment-control">
-                                    <div class="glass-glider" style="transform: translateX(0%);"></div>
-                                    <div class="wind-tab active">東</div>
-                                    <div class="wind-tab">南</div>
-                                    <div class="wind-tab">西</div>
-                                    <div class="wind-tab">北</div>
-                                </div>
-                            </div>
+                    <div class="win-rate-bar-bg">
+                        <div class="win-rate-bar-fill" id="statWinRateBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box highlight"><div class="stat-label">最高番數</div><div class="stat-value"><span id="statMaxFaan">0</span><span class="stat-unit">番</span></div></div>
+                    <div class="stat-box"><div class="stat-label">總局數</div><div class="stat-value"><span id="statTotalGames">0</span><span class="stat-unit" style="font-size: 12px;">局</span></div></div>
+                </div>
+            </div>
+            <div class="history-list-container">
+                <div class="history-header"><div class="history-title">近期牌局</div><button id="clearHistoryBtn" class="clear-history-btn">清空紀錄</button></div>
+                <div id="historyList" class="history-list"><div class="history-empty">暫無戰績紀錄，快去胡一把大牌吧！</div></div>
+            </div>
+        </div>
 
-                            <div class="wind-divider"></div>
+        <div id="page-wiki" class="page">
+            <div class="wiki-top-panel glass-card">
+                <div class="wiki-search-box">
+                    <span>🔍</span><input type="text" id="wikiSearch" placeholder="搜尋番種 (如: 大三元、平糊...)">
+                </div>
+                <div class="wiki-filters">
+                    <div class="w-filter active" data-filter="all">全部</div>
+                    <div class="w-filter" data-filter="common">1-3 番</div>
+                    <div class="w-filter" data-filter="mid">4-9 番</div>
+                    <div class="w-filter" data-filter="limit">爆棚例牌</div>
+                </div>
+            </div>
 
-                            <div class="wind-block">
-                                <div class="island-section-header"><span>位</span></div>
-                                <div id="seatWindSelector" class="wind-segment-control">
-                                    <div class="glass-glider" style="transform: translateX(0%);"></div>
-                                    <div class="wind-tab active">東</div>
-                                    <div class="wind-tab">南</div>
-                                    <div class="wind-tab">西</div>
-                                    <div class="wind-tab">北</div>
-                                </div>
-                            </div>
+            <div class="wiki-section-header">💡 每日一役</div>
+            <div class="wiki-featured glass-card">
+                <div class="w-feat-badge">13 番 (爆棚)</div>
+                <div class="w-feat-title">大四喜</div>
+                <div class="w-feat-desc">由東、南、西、北四種風牌刻子組成的終極和牌。</div>
+                <div class="w-feat-tiles">
+                    <div class="w-tile" style="background-image: url('tiles/z1.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z1.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z1.svg')"></div>
+                    <div style="width: 4px;"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z2.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z2.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z2.svg')"></div>
+                    <div style="width: 4px;"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z3.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z3.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z3.svg')"></div>
+                </div>
+            </div>
+
+            <div class="wiki-section-header">📚 入門基礎</div>
+            <div class="wiki-basics-grid">
+                <div class="wiki-basic-card glass-card">
+                    <div class="w-basic-icon" style="color: #3b82f6; background: rgba(59,130,246,0.1);">📖</div>
+                    <div class="w-basic-text">
+                        <div class="w-basic-title">基本規則</div>
+                        <div class="w-basic-sub">流程與動作解析</div>
+                    </div>
+                </div>
+                <div class="wiki-basic-card glass-card">
+                    <div class="w-basic-icon" style="color: #a855f7; background: rgba(168,85,247,0.1);">🧮</div>
+                    <div class="w-basic-text">
+                        <div class="w-basic-title">計分原理</div>
+                        <div class="w-basic-sub">底台與番數計算</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wikiContentArea" class="wiki-content-area"></div>
+        </div>
+
+        <div id="page-wiki-detail" class="page">
+            
+            <button id="btnBackToWiki" class="floating-back-btn">
+                <span class="material-symbols-outlined" style="font-size: 28px; margin-right: 2px;">chevron_left</span>
+            </button>
+            
+            <div class="w-detail-hero">
+                <div class="w-detail-glow-bg"></div>
+                <h1 id="wdTitle" class="w-detail-title">對對糊</h1>
+                <div class="w-detail-badge"><span id="wdFaan">3 番</span></div>
+            </div>
+            
+            <div class="w-detail-preview glass-card" style="padding-bottom: 24px;">
+                <div class="wd-preview-tiles" id="wdPreviewTiles"></div>
+            </div>
+            
+            <div class="w-detail-section">
+                <div class="wd-sec-title" style="justify-content: flex-start;"><span class="wd-sec-dot"></span>說明</div>
+                <div class="wd-desc-card glass-card" id="wdDesc" style="text-align: left;"></div>
+            </div>
+            
+            <div class="w-detail-section" id="wdTipsSection">
+                <div class="wd-sec-title" style="justify-content: flex-start;"><span class="wd-sec-dot" style="background:#fbbf24; box-shadow:0 0 10px #fbbf24;"></span>實戰技巧</div>
+                <div class="wd-tips-card glass-card" id="wdTips" style="text-align: left;"></div>
+            </div>
+            
+            <div class="w-detail-section" id="wdVarsSection">
+                <div class="wd-sec-title">
+                    <div style="display:flex; align-items:center; gap:8px;"><span class="wd-sec-dot"></span>牌型變化</div>
+                    <span class="wd-sec-sub">向右滑動查看更多</span>
+                </div>
+                <div class="wd-vars-scroll hide-scrollbar" id="wdVars" style="text-align: left;"></div>
+            </div>
+            
+            <div style="height: 20px;"></div>
+        </div>
+
+        <div id="page-profile" class="page">
+            <div class="glass-card profile-hero">
+                <div class="prof-avatar-ring">
+                    <div class="prof-avatar">👤</div>
+                </div>
+                <div class="prof-info">
+                    <div class="prof-name">麻將大師 <span class="prof-id">#2941</span></div>
+                    <div class="prof-level">🏆 雀壇新星 LV.4</div>
+                </div>
+                <div class="prof-actions">
+                    <button class="p-btn-primary">💎 升級尊貴版</button>
+                    <button class="p-btn-secondary">📤 分享成就</button>
+                </div>
+            </div>
+
+            <div class="prof-stats-grid">
+                <div class="glass-card p-stat-box">
+                    <div class="p-stat-icon" style="color: #0ea5e9;">📊</div>
+                    <div class="p-stat-val" id="profTotalGamesVal">0</div>
+                    <div class="p-stat-label">累計計分局數</div>
+                </div>
+                <div class="glass-card p-stat-box">
+                    <div class="p-stat-icon" style="color: #f59e0b;">🏆</div>
+                    <div class="p-stat-val"><span id="profMaxFaanVal">0</span><span style="font-size:14px; margin-left:2px;">番</span></div>
+                    <div class="p-stat-label">個人最佳紀錄</div>
+                </div>
+            </div>
+
+            <div class="prof-section">
+                <div class="p-sec-header">▍ 最近獲得勳章</div>
+                <div class="medals-scroll-container">
+                    <div class="medal-item" id="medal-win"><div class="medal-icon glass-card" style="color: #ef4444;">🔥</div><div class="medal-name">胡牌開張</div></div>
+                    <div class="medal-item" id="medal-flower"><div class="medal-icon glass-card" style="color: #ec4899;">🌸</div><div class="medal-name">花胡達人</div></div>
+                    <div class="medal-item" id="medal-limit"><div class="medal-icon glass-card" style="color: #eab308;">✨</div><div class="medal-name">爆棚大師</div></div>
+                    <div class="medal-item" id="medal-legend"><div class="medal-icon glass-card" style="color: #8b5cf6;">🔮</div><div class="medal-name">傳說降臨</div></div>
+                </div>
+            </div>
+
+            <div class="prof-section">
+                <div class="p-sec-header">▍ 應用程式設定</div>
+                <div class="glass-card settings-list">
+                    <div class="setting-item" id="btnSystemClear">
+                        <div class="s-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">🗑️</div>
+                        <div class="s-text">清除系統暫存 (防卡頓)</div>
+                        <div class="s-arrow">›</div>
+                    </div>
+                    <div class="setting-item" id="btnToggleTheme">
+                        <div class="s-icon" style="background: rgba(19, 236, 91, 0.1); color: #13ec5b;">🌗</div>
+                        <div class="s-text">外觀模式 (深色/淺色)</div>
+                        <div class="s-arrow" id="themeStatusText" style="font-size: 14px; font-weight: 600;">淺色</div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="s-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">📏</div>
+                        <div class="s-text">
+                            <div>規則設定</div>
+                            <div style="font-size: 10px; color: #94a3b8; font-weight: normal;">香港麻將 (3番起糊)</div>
                         </div>
+                        <div class="s-arrow">›</div>
                     </div>
-
-                    <div class="island-divider"></div>
-                    
-                    <div class="island-section">
-                        <div class="island-section-header"><span>花牌</span><span id="flowerCount">已選 0 隻</span></div>
-                        <div id="flowerGrid" class="flower-grid"></div>
+                    <div class="setting-item">
+                        <div class="s-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">ℹ️</div>
+                        <div class="s-text">關於我們</div>
+                        <div class="s-arrow" id="appVersionProfile">v2.8.37</div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="handCard" class="glass-card hand-container">
-            <div class="hand-header">
-                <span id="tileCount">暗牌已選 0 / 14</span>
-                <button id="clearBtnId" class="clear-btn">清空</button>
+            
+            <div style="text-align: center; font-size: 11px; color: #94a3b8; margin-top: 20px; letter-spacing: 1px;">
+                Developed by Leo Lai
             </div>
-            <div id="handGrid" class="tiles-grid"></div>
         </div>
 
-        <div id="keyboard" class="glass-card keyboard"></div>
-
-        <div class="footer-credit">
-            <div>Developed by Leo Lai</div>
-            <div id="appVersion" class="version-num"></div>
-        </div>
-
-        <button id="installBtn" class="install-btn">💎 安裝神器到桌面</button>
     </div>
 
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-target="page-input"><div class="nav-icon">🀄</div><span>手牌</span></div>
+        <div class="nav-item" data-target="page-result"><div class="nav-icon">📊</div><span>結算</span></div>
+        <div class="nav-item" data-target="page-history"><div class="nav-icon">🏆</div><span>戰績</span></div>
+        <div class="nav-item" data-target="page-wiki"><div class="nav-icon">📖</div><span>百科</span></div>
+        <div class="nav-item" data-target="page-profile"><div class="nav-icon">👤</div><span>我的</span></div>
+    </nav>
+
+     <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

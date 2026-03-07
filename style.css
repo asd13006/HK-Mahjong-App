@@ -1,32 +1,36 @@
-/* ==== 核心環境設定 ==== */
+/* ==========================================
+   ✨ 香港麻雀計番神器 - 視覺外觀設定 (style.css)
+   ==========================================
+   【目錄導覽】
+   ▶ 區塊一：基礎設定 (字體、背景、毛玻璃共用樣式)
+   ▶ 區塊二：底部導航列 (切換頁面的按鈕)
+   ▶ 區塊三：手牌輸入頁 (麻將鍵盤、動態島設定)
+   ▶ 區塊四：結算與戰績頁 (大分數卡片、勝率進度條)
+   ▶ 區塊五：麻雀百科頁 (番種列表、分類按鈕)
+   ▶ 區塊六：百科詳情頁 (毛玻璃卡片、返回按鈕)
+   ▶ 區塊七：個人中心 (頭像、設定列表)
+   ========================================== */
+   
+/* ==== 核心環境設定 (Liquid Glass 基礎) ==== */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; touch-action: manipulation; }
 
-/* 🔥 終極第一道防線：鎖死邊界，並施展隱形捲軸魔法 */
-html, body {
-    overscroll-behavior-y: none;
-    overscroll-behavior-x: none;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
-}
-
-html::-webkit-scrollbar, body::-webkit-scrollbar {
-    display: none;
-}
+html, body { overscroll-behavior-y: none; overscroll-behavior-x: none; scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 
 body { 
-    background-color: #e0f2fe; 
+    /* 🌟 稍微加深背景色，讓前方的毛玻璃能透出更豐富的折射層次 */
+    background-color: #dbeafe; 
     color: #1e293b; 
     display: flex; justify-content: center; min-height: 100vh; position: relative; 
     padding-top: max(30px, env(safe-area-inset-top) + 10px); padding-right: 15px; 
-    padding-bottom: max(8px, env(safe-area-inset-bottom)); 
-    padding-left: 15px; 
+    padding-bottom: max(8px, env(safe-area-inset-bottom)); padding-left: 15px; 
     touch-action: pan-y; 
     -webkit-user-select: none; -moz-user-select: none; user-select: none; 
     -webkit-tap-highlight-color: transparent; 
     transition: color 0.8s ease; 
 }
 
-.bg-layer { position: fixed; inset: 0; z-index: -2; opacity: 0; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+.bg-layer { position: fixed; inset: 0; z-index: -2; opacity: 0; transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
 .bg-base { background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #fce7f3 100%); opacity: 1; }
 .bg-success { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
 .bg-limit { background: linear-gradient(135deg, #fef9c3 0%, #fde047 100%); }
@@ -38,23 +42,38 @@ body.failure-mode .bg-base { opacity: 0; } body.failure-mode .bg-failure { opaci
 
 .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; padding-bottom: 20px; flex: 1; }
 
-.glass-card { position: relative; backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%); border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 8px 32px rgba(31, 38, 135, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.8); padding: 20px; transform: translateZ(0); z-index: 1; transition: border-color 0.8s ease, box-shadow 0.8s ease, transform 0.3s ease; }
-.glass-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; background-color: rgba(255, 255, 255, 0.5); transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1); will-change: background-color; }
+/* ==== ✨ 1. 卡片底板：空間漫射與極致毛玻璃 ==== */
+.glass-card { 
+    position: relative; 
+    /* 極致透視：大幅提高模糊度與飽和度，降低實體白底 */
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(35px) saturate(200%); 
+    -webkit-backdrop-filter: blur(35px) saturate(200%); 
+    border-radius: 28px; 
+    /* 物理級 3D 折射邊緣：左上強光，右下融入 */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-top: 1px solid rgba(255, 255, 255, 0.7); 
+    border-left: 1px solid rgba(255, 255, 255, 0.5); 
+    /* 空間懸浮：去除死黑，改用超大範圍環境漫射光 */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
+    padding: 20px; 
+    transform: translateZ(0); 
+    z-index: 1; 
+    transition: border-color 0.8s ease, box-shadow 0.8s ease, transform 0.3s ease; 
+}
 
-body.success-mode #statusCard { border-color: rgba(147, 197, 253, 0.8); box-shadow: 0 12px 36px rgba(59, 130, 246, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5); } body.success-mode #statusCard::before { background-color: rgba(219, 234, 254, 0.7); }
-body.limit-mode #statusCard { border-color: rgba(253, 224, 71, 0.8); box-shadow: 0 12px 36px rgba(234, 179, 8, 0.2), inset 0 2px 15px rgba(250, 204, 21, 0.3); } body.limit-mode #statusCard::before { background-color: rgba(254, 249, 195, 0.7); }
-body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shadow: 0 12px 36px rgba(239, 68, 68, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.5); } body.failure-mode #statusCard::before { background-color: rgba(254, 226, 226, 0.7); }
+/* 狀態模式的環境光漫射 */
+body.success-mode #statusCard { border-color: rgba(147, 197, 253, 0.6); box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); } 
+body.limit-mode #statusCard { border-color: rgba(253, 224, 71, 0.6); box-shadow: 0 20px 50px rgba(234, 179, 8, 0.15), inset 0 2px 15px rgba(250, 204, 21, 0.2); } 
+body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.6); box-shadow: 0 20px 50px rgba(239, 68, 68, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); } 
 
 .status-title, .score-display, .pattern-name { transition: opacity 0.25s ease, transform 0.25s ease, color 0.3s ease; }
 .content-fade-out .status-title, .content-fade-out .score-display, .content-fade-out .pattern-name { opacity: 0; transform: scale(0.95); }
 
 .status-header { text-align: center; }
-.status-title { font-size: 13px; opacity: 0.6; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; color: #64748b; }
+.status-title { font-size: 13px; opacity: 0.7; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; color: #64748b; }
 
-.score-display { 
-    display: flex; align-items: baseline; justify-content: center; gap: 4px;
-    font-size: 64px; font-weight: 300; line-height: 1; margin-bottom: 12px; color: #0f172a; text-shadow: 0 2px 10px rgba(0,0,0,0.05); font-variant-numeric: tabular-nums; 
-}
+.score-display { display: flex; align-items: baseline; justify-content: center; gap: 4px; font-size: 64px; font-weight: 300; line-height: 1; margin-bottom: 12px; color: #0f172a; text-shadow: 0 4px 20px rgba(0,0,0,0.05); font-variant-numeric: tabular-nums; }
 .score-display span:last-child { margin-left: 0 !important; }
 
 .heartbeat-pop { animation: heartbeat 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform; }
@@ -62,297 +81,165 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 
 .pattern-name { font-size: 15px; font-weight: 500; min-height: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;}
 
+/* ==== ✨ 2. 動態島：無邊界漂浮 ==== */
 .dynamic-island { 
-    background: rgba(255, 255, 255, 0.7); 
-    backdrop-filter: blur(20px) saturate(150%); 
-    -webkit-backdrop-filter: blur(20px) saturate(150%); 
-    border: 1px solid rgba(255, 255, 255, 0.5); 
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
+    background: rgba(255, 255, 255, 0.3); 
+    backdrop-filter: blur(40px) saturate(200%); 
+    -webkit-backdrop-filter: blur(40px) saturate(200%); 
+    border: 1px solid rgba(255, 255, 255, 0.4); 
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9); 
     border-radius: 30px; 
-    margin: 0 auto; 
-    width: 100%; 
-    max-width: 180px; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden; 
-    color: #334155;
-    transition: max-width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s ease, background 0.4s ease; 
-    transform: translateZ(0); 
-    will-change: max-width, border-radius, transform; 
+    margin: 0 auto; width: 100%; max-width: 180px; display: flex; flex-direction: column; overflow: hidden; color: #334155;
+    transition: max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.5s ease, background 0.5s ease; 
+    transform: translateZ(0); will-change: max-width, border-radius, transform; 
 }
-.dynamic-island.expanded { max-width: 420px; border-radius: 28px; background: rgba(255, 255, 255, 0.6); }
+.dynamic-island.expanded { max-width: 420px; border-radius: 28px; background: rgba(255, 255, 255, 0.2); }
 .island-header { padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
 
 .island-title { font-size: 13px; font-weight: 700; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, color 0.3s ease; }
 .island-title.slide-out { transform: translateY(-10px); opacity: 0; transition: transform 0.2s ease-in, opacity 0.2s ease-in; }
 .island-title.slide-in { transform: translateY(10px); opacity: 0; transition: none; }
-
-.island-chevron { font-size: 10px; opacity: 0.6; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); color: #64748b; }
+.island-chevron { font-size: 10px; opacity: 0.6; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); color: #64748b; }
 .dynamic-island.expanded .island-chevron { transform: rotate(-180deg); }
 
-.island-content-grid { 
-    display: block; 
-    max-height: 0;  
-    transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    will-change: max-height;
-}
+.island-content-grid { display: block; max-height: 0; transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: max-height; }
 .dynamic-island.expanded .island-content-grid { max-height: 480px; }
-
 .island-content-inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
-.island-section { padding: 0 16px 16px 16px; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.island-section { padding: 0 16px 16px 16px; opacity: 0; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .dynamic-island.expanded .island-section { opacity: 1; transform: translateY(0); }
 .dynamic-island.expanded .island-section:nth-child(1) { transition-delay: 0.05s; }
 .dynamic-island.expanded .island-section:nth-child(3) { transition-delay: 0.10s; }
 .dynamic-island.expanded .island-section:nth-child(5) { transition-delay: 0.15s; }
-.island-divider { height: 1px; background: rgba(0, 0, 0, 0.06); margin: 0 16px 12px 16px; opacity: 0; transition: opacity 0.3s; }
+.island-divider { height: 1px; background: rgba(0, 0, 0, 0.04); margin: 0 16px 12px 16px; opacity: 0; transition: opacity 0.3s; }
 .dynamic-island.expanded .island-divider { opacity: 1; }
 .island-section-header { font-size: 12px; opacity: 0.8; margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 700; color: #475569; letter-spacing: 1px; }
 
-.conditions-wrapper { 
-    display: grid; 
-    grid-template-columns: repeat(6, minmax(0, 1fr)); 
-    gap: 8px; 
-}
+.conditions-wrapper { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
 
-/* ==== ✨ 牌局設定標籤本體 (毛玻璃濾鏡) ==== */
+/* ==== ✨ 3. 液態玻璃設定標籤：內發光膠囊 ==== */
 .condition-chip { 
-    padding: 8px 2px; 
-    border-radius: 20px; 
-    font-size: 11px; 
-    font-weight: 600; 
-    background: rgba(255, 255, 255, 0.5); 
-    backdrop-filter: blur(10px) saturate(120%);
-    -webkit-backdrop-filter: blur(10px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.8); 
-    color: #64748b; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    text-align: center; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-    white-space: nowrap; 
-    letter-spacing: -0.2px; 
-    grid-column: span 2; 
-    position: relative;
-    z-index: 1; 
-    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, z-index 0s;
-    will-change: transform; 
+    padding: 8px 2px; border-radius: 20px; font-size: 11px; font-weight: 600; 
+    /* 未選中：極度通透的薄玻璃片 */
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(15px) saturate(150%); -webkit-backdrop-filter: blur(15px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-top: 1px solid rgba(255, 255, 255, 0.6); /* 頂部微光 */
+    color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03), inset 0 1px 1px rgba(255,255,255,0.6); 
+    white-space: nowrap; letter-spacing: -0.2px; grid-column: span 2; position: relative; z-index: 1; 
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, box-shadow; 
 }
 
-.condition-chip::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: linear-gradient(135deg, #4da3ff 0%, #8b5cf6 100%);
-    box-shadow: 0 3px 12px rgba(139, 92, 246, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4); 
-    opacity: 0;
-    will-change: opacity;
-    transition: opacity 0.3s ease-in-out;
-}
-
+/* 選中狀態：液態霓虹內發光 */
 .condition-chip.active {
-    background-color: transparent !important; 
-    border-color: transparent !important;
-    box-shadow: none; 
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    transform: scale(1.02); 
+    background: rgba(255, 255, 255, 0.3); 
+    border-color: rgba(96, 165, 250, 0.4); /* 邊緣透藍光 */
+    color: #1d4ed8;
+    /* 核心魔法：內部深邃發光 + 外部浮空投影 */
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25), inset 0 0 15px rgba(255, 255, 255, 0.9), inset 0 0 5px rgba(96, 165, 250, 0.5); 
+    transform: scale(1.03); 
     z-index: 10; 
 }
-
-.condition-chip.active::before { opacity: 1; }
 .condition-chip:nth-child(7), .condition-chip:nth-child(8) { grid-column: span 3; }
 @media (max-width: 380px) { .condition-chip { font-size: 10px; letter-spacing: -0.5px; } }
 
-/* ==== ✨ v2.8.28 極致玻璃擬態 (Glassmorphism) 滑塊 ==== */
-.wind-layout-container { 
-    display: flex; 
-    align-items: flex-end; 
-    justify-content: space-between; 
-    gap: 12px; 
-    width: 100%; 
-    margin-top: 0; 
-}
+/* ==== ✨ 4. 風圈平面玻璃軌道與滑塊 ==== */
+.wind-layout-container { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; width: 100%; margin-top: 0; }
 .wind-block { display: flex; flex-direction: column; flex: 1; gap: 6px; }
 
-/* 軌道 (凹槽) */
+/* 平面玻璃軌道 */
 .wind-segment-control { 
-    display: flex; 
-    position: relative; 
-    gap: 0; 
-    justify-content: space-between; 
-    background: rgba(241, 245, 249, 0.7); 
-    padding: 2px; 
-    border-radius: 99px; 
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(0, 0, 0, 0.02); 
-    overflow: hidden; 
+    display: flex; position: relative; gap: 0; justify-content: space-between; 
+    background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3); padding: 2px; border-radius: 99px; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02); overflow: hidden; 
 }
 
-/* 獨立的玻璃擬態漸變滑塊 */
+/* 懸浮透明玻璃滑塊 */
 .glass-glider { 
-    position: absolute; 
-    top: 2px; 
-    left: 2px; 
-    width: calc(25% - 1px); 
-    height: calc(100% - 4px); 
-    border-radius: 99px; 
-    
-    /* 漸變邊框 + 玻璃擬態 雙重魔法 (Generate 風格) */
-    border: 2px solid transparent; 
-    background: 
-        linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)) padding-box, 
-        linear-gradient(to right, #00f2fe, #4facfe, #8b5cf6) border-box; 
-    
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.8);
-    
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    will-change: transform; 
-    z-index: 1; 
+    position: absolute; top: 2px; left: 2px; width: calc(25% - 1px); height: calc(100% - 4px); border-radius: 99px; 
+    background: rgba(255, 255, 255, 0.65); 
+    border: 1px solid rgba(255, 255, 255, 0.7); border-bottom: 1px solid rgba(255, 255, 255, 0.2); border-right: 1px solid rgba(255, 255, 255, 0.2); 
+    backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform; z-index: 1; 
 }
 
-/* 按鈕文字本體 */
-.wind-tab { 
-    flex: 1; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    padding: 6px 0; 
-    background: transparent; 
-    border: none; 
-    box-shadow: none; 
-    font-size: 13px; 
-    cursor: pointer; 
-    color: #94a3b8; 
-    font-weight: 600; 
-    position: relative; 
-    z-index: 2; 
-    transition: all 0.2s ease; 
-    will-change: transform; 
-}
-/* 選中狀態字體 */
-.wind-tab.active { 
-    color: #6366f1; /* 深藍紫，配合 Generate 風格 */
-    font-weight: 800; 
-}
+.wind-tab { flex: 1; display: flex; justify-content: center; align-items: center; padding: 6px 0; background: transparent; border: none; box-shadow: none; font-size: 13px; cursor: pointer; color: #94a3b8; font-weight: 600; position: relative; z-index: 2; transition: all 0.2s ease; will-change: transform; }
+/* 科技琉璃藍文字 */
+.wind-tab.active { background-image: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; font-weight: 900; text-shadow: 0 1px 2px rgba(37, 99, 235, 0.15); transform: scale(1.05); }
+.wind-divider { width: 2px; height: 38px; background-color: rgba(0,0,0,0.04); border-radius: 2px; margin-bottom: 2px; }
 
-.wind-divider { width: 2px; height: 38px; background-color: #e2e8f0; border-radius: 2px; margin-bottom: 2px; }
-
-/* ==== ✨ 花牌按鈕 (極致玻璃擬態) ==== */
+/* ==== ✨ 5. 液態麻雀與花牌：微距 3D 邊緣切割 ==== */
 .flower-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 6px 4px; }
 .flower-tile { 
-    position: relative; z-index: 1; aspect-ratio: 3/4; 
-    background-size: 88%; background-position: center; background-repeat: no-repeat; overflow: hidden; 
-    cursor: pointer; 
-    transition: all 0.2s ease; 
-    will-change: transform, box-shadow, backdrop-filter; 
-    
-    background-color: rgba(255, 255, 255, 0.45); 
-    -webkit-backdrop-filter: blur(12px); 
-    backdrop-filter: blur(12px); 
-    border: 1px solid rgba(255, 255, 255, 0.6); 
-    border-bottom-color: rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
-    border-radius: 12px; 
+    position: relative; z-index: 1; aspect-ratio: 3/4; background-size: 88%; background-position: center; background-repeat: no-repeat; overflow: hidden; cursor: pointer; 
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, box-shadow; 
+    /* 厚度玻璃塊 */
+    background-color: rgba(255, 255, 255, 0.35); 
+    backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.4); border-top: 1.5px solid rgba(255, 255, 255, 0.9); border-left: 1.5px solid rgba(255, 255, 255, 0.7); 
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.9); border-radius: 12px; 
 }
 .flower-tile.active { 
-    transform: scale(1.08) translate3d(0, -2px, 0); 
-    z-index: 10; 
-    background-color: rgba(255, 255, 255, 0.9); 
-    border: 1px solid #fcd34d; 
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15), inset 0 1px 2px rgba(255, 255, 255, 1); 
-    backdrop-filter: blur(10px) saturate(180%); 
-    -webkit-backdrop-filter: blur(10px) saturate(180%); 
+    transform: scale(1.08) translateY(-3px); z-index: 10; 
+    background-color: rgba(255, 255, 255, 0.7); border-color: #fcd34d; 
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2), inset 0 0 15px rgba(255, 255, 255, 1); 
 }
-.flower-tile::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; mix-blend-mode: overlay; }
-.flower-tile.active::after { opacity: 1; }
 
 .hand-container { min-height: 120px; }
 .hand-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; opacity: 0.8; margin-bottom: 12px; font-weight: 600; color: #475569; }
 .tiles-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .tiles-grid::after { content: ""; grid-column: 1; grid-row: 3; aspect-ratio: 3/4; pointer-events: none; visibility: hidden; }
 
-@keyframes popIn { 0% { opacity: 0; transform: scale(0.6) translate3d(0, 20px, 0); } 100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } }
-.enter-anim { animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
-@keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-.empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
-
-@keyframes popOut {
-    0% { opacity: 1; transform: scale(1) translateZ(0); }
-    20% { opacity: 1; transform: scaleX(1.05) scaleY(0.95) translateZ(0); }
-    100% { opacity: 0; transform: scaleX(0) scaleY(0) translateZ(0); }
-}
-
-.breathing { 
-    animation: floatBreathing 3s ease-in-out 4 alternate forwards; 
-    will-change: transform; 
-}
-@keyframes floatBreathing { 
-    0% { transform: translate3d(0, 0px, 0); } 
-    100% { transform: translate3d(0, -3px, 0); } 
-}
-
 .keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 0 !important; }
 .suit-row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
 
-/* ==== ✨ 麻雀實體牌 (極致玻璃擬態) ==== */
 .tile { 
-    aspect-ratio: 3/4; width: 100%; height: auto; 
-    background-size: 85%; background-position: center; background-repeat: no-repeat; 
-    cursor: pointer; color: #1e293b; 
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s; 
-    will-change: transform; 
-    
-    background-color: rgba(255, 255, 255, 0.55); 
-    -webkit-backdrop-filter: blur(12px) saturate(110%); 
-    backdrop-filter: blur(12px) saturate(110%); 
-    border: 1px solid rgba(255, 255, 255, 0.7); 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
-    border-right: 1px solid rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.9); 
-    border-radius: 10px; 
-}
-.is-tapped-tile { animation: none !important; transform: translate3d(0, 2px, 0) scale(0.92) !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.05) !important; transition: none !important; }
-.is-tapped-chip { transform: scale(0.92) !important; transition: none !important; opacity: 0.8; }
-.is-tapped-island { transform: scale(0.96) translateZ(0) !important; transition: none !important; }
-
-/* ==== ✨ 暗牌區空槽 (極致玻璃擬態：凹陷柔和溝槽) ==== */
-.tile.empty { 
-    background-image: none !important; 
-    cursor: default; 
-    background-color: rgba(255, 255, 255, 0.15); 
-    -webkit-backdrop-filter: none; 
-    backdrop-filter: none; 
-    border: none; 
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.3); 
-    border-radius: 10px; 
-    opacity: 0.8; 
+    aspect-ratio: 3/4; width: 100%; height: auto; background-size: 85%; background-position: center; background-repeat: no-repeat; cursor: pointer; color: #1e293b; 
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, box-shadow; 
+    /* 實體玻璃厚度 */
+    background-color: rgba(255, 255, 255, 0.45); 
+    backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.3); border-top: 1.5px solid rgba(255, 255, 255, 0.9); border-left: 1.5px solid rgba(255, 255, 255, 0.6); 
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.9); border-radius: 10px; 
 }
 
-/* ==== ✨ 清除按鈕 (真・冰塊玻璃擬態) ==== */
+/* ==== ✨ 6. 液態阻尼物理學 (Liquid Damping) ==== */
+/* 手指按壓時：深深陷進去液體的Ｑ彈感 */
+.is-tapped-tile { 
+    transform: scale(0.90) translateY(4px) !important; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05), inset 0 2px 8px rgba(0,0,0,0.1) !important; 
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s !important; 
+}
+.is-tapped-chip { 
+    transform: scale(0.90) !important; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05), inset 0 2px 8px rgba(0,0,0,0.1) !important; 
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s !important; opacity: 0.9; 
+}
+.is-tapped-island { transform: scale(0.96) translateZ(0) !important; transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+
+.tile.empty { background-image: none !important; cursor: default; background-color: rgba(255, 255, 255, 0.1); backdrop-filter: none; -webkit-backdrop-filter: none; border: none; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.2); border-radius: 10px; opacity: 0.8; }
+
+/* 液態清空按鈕 */
 .clear-btn { 
-    background: rgba(255, 255, 255, 0.2) !important; 
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.2) !important; 
-    border-top: 1px solid rgba(255, 255, 255, 0.8) !important; 
-    border-left: 1px solid rgba(255, 255, 255, 0.5) !important; 
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.05) !important; 
-    border-radius: 20px !important; 
-    color: #475569 !important; 
-    padding: 5px 12px !important; 
-    font-size: 12px !important; 
-    line-height: 1 !important; 
-    font-weight: 600 !important; 
-    cursor: pointer; 
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; 
-    will-change: transform; 
+    background: rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important; border-top: 1px solid rgba(255, 255, 255, 0.8) !important; border-left: 1px solid rgba(255, 255, 255, 0.5) !important; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important; 
+    border-radius: 20px !important; color: #475569 !important; padding: 5px 12px !important; font-size: 12px !important; line-height: 1 !important; font-weight: 600 !important; cursor: pointer; 
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s; will-change: transform; 
 }
+
+/* ==== 動畫與其他細節保持不變 ==== */
+.enter-anim { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.6) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.empty-enter-anim { animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; will-change: transform, opacity; }
+@keyframes slotExpand { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes popOut { 0% { opacity: 1; transform: scale(1); } 20% { opacity: 1; transform: scaleX(1.05) scaleY(0.95); } 100% { opacity: 0; transform: scale(0); } }
+
+.breathing { animation: floatBreathing 3s ease-in-out 4 alternate forwards; will-change: transform; }
+@keyframes floatBreathing { 0% { transform: translateY(0px); } 100% { transform: translateY(-4px); } }
 
 .install-btn { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; letter-spacing: 1px; cursor: pointer; display: none; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255,255,255,0.4); margin: 10px auto 0 auto; backdrop-filter: blur(10px); transition: transform 0.2s ease; position: relative; overflow: hidden; }
 .install-btn::before { content: ""; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: diamondShimmer 6s infinite; pointer-events: none; }
@@ -361,14 +248,13 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .footer-credit { text-align: center; font-size: 11px; font-weight: 400; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 0px; display: flex; flex-direction: column; gap: 4px; margin-top: 15px; padding-top: 5px; }
 .version-num { font-size: 10px; opacity: 0.8; }
 
-#statusCard::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -2; pointer-events: none; box-shadow: 0 0 25px rgba(125, 211, 252, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.6); opacity: 0.8; transition: opacity 0.8s ease; }
+#statusCard::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; z-index: -2; pointer-events: none; box-shadow: 0 0 35px rgba(125, 211, 252, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.6); opacity: 0.8; transition: opacity 0.8s ease; }
 .jelly-squish { animation: jellySquish 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
 .jelly-stretch { animation: jellyStretch 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: top center; }
-#keyboard.jelly-squish, #keyboard.jelly-stretch { animation-delay: 0.05s; }
 
 .dynamic-island.update-ready { border-color: rgba(234, 179, 8, 0.6); animation: islandUpdateBreathe 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate; }
 .dynamic-island.update-ready:not(.expanded) { max-width: 280px; }
-@keyframes islandUpdateBreathe { 0% { box-shadow: 0 8px 24px rgba(234, 179, 8, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); } 100% { box-shadow: 0 8px 36px rgba(234, 179, 8, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.8); } }
+@keyframes islandUpdateBreathe { 0% { box-shadow: 0 8px 30px rgba(234, 179, 8, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8); } 100% { box-shadow: 0 8px 45px rgba(234, 179, 8, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.8); } }
 
 .edge-glow { position: fixed; left: 0; width: 100%; height: 150px; pointer-events: none; opacity: 0; z-index: 9999; will-change: opacity, transform; transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
 .edge-top { top: 0; background: radial-gradient(ellipse at top, rgba(255,255,255,0.6) 0%, transparent 70%); transform: scaleY(0.3) translateY(-20px); transform-origin: top; }
@@ -380,15 +266,26 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 .baau-pang-text::after { content: '✦'; position: absolute; bottom: -5px; right: -15px; font-size: 20px; color: #ffffff; text-shadow: 0 0 8px #f59e0b; z-index: 10; pointer-events: none; will-change: transform, opacity; animation: starTwinkleSmoothB 2.5s ease-in-out infinite alternate-reverse; }
 
 @keyframes glassGlareSweep { 0% { background-position: 200% 200%, 0 0; } 35% { background-position: -100% -100%, 0 0; } 100% { background-position: -100% -100%, 0 0; } }
-@keyframes holyFloatSmooth { 0% { transform: scale(1) translateY(0) translateZ(0); } 100% { transform: scale(1.06) translateY(-3px) translateZ(0); } }
-@keyframes starTwinkleSmoothA { 0% { transform: scale(0.4) rotate(0deg) translateZ(0); opacity: 0.2; } 100% { transform: scale(1.1) rotate(45deg) translateZ(0); opacity: 1; } }
-@keyframes starTwinkleSmoothB { 0% { transform: scale(0.3) rotate(15deg) translateZ(0); opacity: 0.1; } 100% { transform: scale(1.3) rotate(-30deg) translateZ(0); opacity: 0.9; } }
+@keyframes holyFloatSmooth { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(1.06) translateY(-3px); } }
+@keyframes starTwinkleSmoothA { 0% { transform: scale(0.4) rotate(0deg); opacity: 0.2; } 100% { transform: scale(1.1) rotate(45deg); opacity: 1; } }
+@keyframes starTwinkleSmoothB { 0% { transform: scale(0.3) rotate(15deg); opacity: 0.1; } 100% { transform: scale(1.3) rotate(-30deg); opacity: 0.9; } }
 
-.pattern-tag { transition: all 0.3s ease; }
-.pattern-tag.tier-common { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; box-shadow: none; }
-.pattern-tag.tier-rare { background: linear-gradient(135deg, #0ea5e9, #2dd4bf); color: #ffffff; border: 1px solid transparent; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-.pattern-tag.tier-epic { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #ffffff; border: 1px solid transparent; box-shadow: 0 0 12px rgba(236, 72, 153, 0.6); text-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: 500; }
-.pattern-tag.tier-legendary { background: linear-gradient(to bottom, #d97706, #92400e); color: #fef3c7; border: 1px solid #fcd34d; box-shadow: 0 0 15px rgba(245, 158, 11, 0.8), inset 0 0 5px rgba(255, 255, 255, 0.2); text-shadow: 0 0 6px rgba(253, 230, 138, 0.6); font-weight: 600; }
+/* ==== ✨ v2.8.34 液態膠囊標籤修復 ==== */
+.pattern-tag { 
+    padding: 6px 14px; /* 🌟 呼吸空間：上下 6px，左右 14px */
+    border-radius: 99px; /* 🌟 完美液態膠囊圓角 */
+    display: inline-flex; /* 🌟 確保內容垂直置中，並支援彈性排列 */
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* 🌟 避免單個標籤內的文字被切斷換行 */
+    font-size: 13px; /* 🌟 統一精緻字體大小 */
+    letter-spacing: 0.5px; /* 稍微拉開字距增加高級感 */
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 配合整體液態動畫 */
+}
+.pattern-tag.tier-common { background-color: rgba(255,255,255,0.4); backdrop-filter: blur(10px); color: #475569; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.pattern-tag.tier-rare { background: linear-gradient(135deg, #0ea5e9, #2dd4bf); color: #ffffff; border: 1px solid transparent; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.pattern-tag.tier-epic { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #ffffff; border: 1px solid transparent; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); text-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: 500; }
+.pattern-tag.tier-legendary { background: linear-gradient(to bottom, #d97706, #92400e); color: #fef3c7; border: 1px solid #fcd34d; box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.3); text-shadow: 0 0 6px rgba(253, 230, 138, 0.6); font-weight: 600; }
 
 .pattern-tag.hide-tag { opacity: 0 !important; transform: translateY(20px) scale(0.8); pointer-events: none; }
 .pattern-tag.pop-in-tag { opacity: 1; transform: translateY(0) scale(1); animation: tagSpringUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
@@ -399,19 +296,564 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.8); box-shad
 @keyframes tagSpringUpEpic { 0% { opacity: 0; transform: translateY(25px) scale(0.6); filter: brightness(2); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); } }
 @keyframes tagSpringUpLegendary { 0% { opacity: 0; transform: translateY(30px) scale(0.4); filter: brightness(3) drop-shadow(0 0 30px #fcd34d); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1) drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); } }
 
-/* ==== ✨ App 開場瀑布流漸顯動畫 (Cascading Fade-In) ==== */
-@keyframes appFadeInUp {
-    0% { opacity: 0; transform: translateY(20px) translateZ(0); }
-    100% { opacity: 1; transform: translateY(0) translateZ(0); }
+@keyframes appFadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+#statusCard, #conditionsIsland, #handCard, #keyboard { opacity: 0; animation: appFadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+#statusCard { animation-delay: 0.05s; } #conditionsIsland { animation-delay: 0.15s; } #handCard { animation-delay: 0.25s; } #keyboard { animation-delay: 0.35s; }
+/* ==== ✨ 第一階段擴建：多頁面切換系統 ==== */
+
+/* 確保整個畫面底部有足夠空間，不會被導航列擋住鍵盤 */
+.app-container { padding-bottom: 95px; }
+
+/* 房間的隱形斗篷設定 */
+.page { 
+    display: none; /* 預設全部隱藏 */
+    flex-direction: column; 
+    gap: 18px; 
+    width: 100%; 
+    animation: appFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+}
+.page.active { 
+    display: flex; /* 只有被加上 active 的房間才會顯示 */
 }
 
-#statusCard, #conditionsIsland, #handCard, #keyboard {
-    opacity: 0; 
-    animation: appFadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    will-change: transform, opacity;
+/* 底部導航列 - 絕美液態玻璃造型 */
+.bottom-nav {
+    position: fixed;
+    bottom: max(15px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 30px);
+    max-width: 420px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 5px;
+    z-index: 1000;
+    
+    /* 複用頂級毛玻璃材質 */
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
-#statusCard { animation-delay: 0.05s; }
-#conditionsIsland { animation-delay: 0.15s; }
-#handCard { animation-delay: 0.25s; }
-#keyboard { animation-delay: 0.35s; }
+/* 導航按鈕樣式 */
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+.nav-item .nav-icon { font-size: 20px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.nav-item span { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; opacity: 0.8; }
+
+/* 點擊選中時的發光浮空狀態 */
+.nav-item.active {
+    color: #1d4ed8;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px) scale(1.05);
+}
+.nav-item.active .nav-icon { transform: scale(1.15) translateY(-2px); }
+
+/* ==== ✨ 第二階段擴建：結算按鈕與結果頁按鈕 ==== */
+.action-banner { display: flex; justify-content: center; align-items: center; min-height: 70px; padding: 15px; }
+.action-text { font-size: 15px; font-weight: 600; color: #64748b; letter-spacing: 1px; }
+
+/* 會呼吸的綠色大按鈕 */
+.calc-btn { 
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+    color: white; border: none; padding: 14px 30px; border-radius: 25px; 
+    font-size: 16px; font-weight: 700; letter-spacing: 1px; cursor: pointer; 
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4), inset 0 1px 2px rgba(255,255,255,0.4); 
+    animation: calcPulse 2s infinite cubic-bezier(0.66, 0, 0, 1); 
+    transition: transform 0.2s; width: 100%;
+}
+@keyframes calcPulse { 
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 
+    70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } 
+}
+
+/* 結果頁下方的兩顆按鈕 */
+.result-actions { display: flex; gap: 12px; margin-top: 5px; padding: 15px; }
+.action-btn { flex: 1; padding: 12px 0; border-radius: 15px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.back-btn { background: rgba(255,255,255,0.5); color: #475569; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.save-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); border: 1px solid rgba(255,255,255,0.2); }
+
+/* ==== ✨ 第三階段擴建：專業結算頁面排版 ==== */
+
+/* 1. 頂級主視覺卡片 */
+.result-hero { padding: 24px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; }
+.hero-header { display: flex; justify-content: flex-start; }
+.result-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.3); color: #475569; backdrop-filter: blur(10px); transition: all 0.3s ease; }
+.result-badge.epic { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+.result-badge.legendary { background: linear-gradient(135deg, #d97706, #b45309); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+.result-badge.fail { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+
+.hero-score-area { display: flex; flex-direction: column; gap: 4px; }
+.hero-label { font-size: 14px; color: #64748b; font-weight: 600; }
+.hero-score-display { display: flex; align-items: baseline; gap: 6px; color: #0f172a; }
+.hero-unit { font-size: 20px; font-weight: 600; color: #475569; }
+
+.hero-divider { height: 1px; background: rgba(0,0,0,0.06); width: 100%; margin: 4px 0; }
+.hero-main-pattern { display: flex; justify-content: space-between; align-items: center; }
+.main-pattern-label { font-size: 13px; color: #64748b; font-weight: 600; }
+.main-pattern-name { font-size: 18px; font-weight: 700; color: #10b981; }
+
+/* 2. 狀態三格面板 */
+.status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.status-box { padding: 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 20px; }
+.status-box-label { font-size: 12px; color: #64748b; font-weight: 600; }
+.status-box-value { font-size: 22px; font-weight: 700; color: #1e293b; }
+
+/* 3. 番數詳情列表 */
+.detail-list-container { display: flex; flex-direction: column; gap: 10px; }
+.detail-list-title { font-size: 14px; font-weight: 700; color: #059669; margin-left: 4px; letter-spacing: 1px; }
+.detail-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 0; }
+.detail-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.04); opacity: 0; animation: appFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.detail-item:last-child { border-bottom: none; }
+.detail-item-name { font-size: 15px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 10px; }
+.detail-item-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.5); }
+.detail-item-score { font-size: 15px; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); }
+.detail-empty { padding: 20px 0; text-align: center; color: #94a3b8; font-size: 14px; }
+/* ==== ✨ 第三階段擴建(戰績)：儀表板與卡片牆 ==== */
+.history-dashboard { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+.dashboard-title { font-size: 16px; font-weight: 700; color: #059669; letter-spacing: 1px; }
+
+.history-dashboard .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.history-dashboard .stat-box { background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5); padding: 15px; border-radius: 16px; display: flex; flex-direction: column; gap: 4px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.8); }
+.history-dashboard .stat-box.highlight { grid-column: span 2; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05)); border-color: rgba(16, 185, 129, 0.3); }
+
+.history-dashboard .stat-label { font-size: 13px; color: #64748b; font-weight: 600; }
+.history-dashboard .stat-value { font-size: 26px; font-weight: 700; color: #1e293b; display: flex; align-items: baseline; gap: 4px; }
+.history-dashboard .stat-box.highlight .stat-value { font-size: 40px; color: #10b981; }
+.history-dashboard .stat-unit { font-size: 14px; color: #64748b; font-weight: 600; }
+.history-dashboard .stat-box.highlight .stat-unit { font-size: 18px; color: #059669; }
+
+.history-header { display: flex; justify-content: space-between; align-items: flex-end; padding: 10px 4px; }
+.history-title { font-size: 15px; font-weight: 700; color: #334155; letter-spacing: 1px; }
+.clear-history-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+
+.history-list { display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; }
+.history-card { 
+    background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+    border: 1px solid rgba(255,255,255,0.6); border-top: 1px solid rgba(255,255,255,0.9);
+    border-radius: 18px; padding: 16px; display: flex; gap: 16px; align-items: center; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); opacity: 0; animation: appFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+}
+.history-card-badge { 
+    min-width: 55px; height: 55px; border-radius: 14px; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; color: white; line-height: 1.1; 
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.4); 
+}
+.history-card-badge .b-val { font-size: 22px; font-weight: 700; }
+.history-card-badge .b-unit { font-size: 11px; font-weight: 600; opacity: 0.9; }
+
+.bg-epic { background: linear-gradient(135deg, #10b981, #059669); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.bg-legendary { background: linear-gradient(135deg, #d97706, #b45309); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4), inset 0 1px 1px rgba(255,255,255,0.5); }
+.bg-rare { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.bg-fail { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+
+.history-card-info { flex: 1; display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
+.history-card-title { font-size: 16px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-card-sub { font-size: 13px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.history-card-time { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px; margin-top: 2px; font-weight: 600; }
+.history-empty { padding: 40px 20px; text-align: center; color: #94a3b8; font-size: 14px; background: rgba(255,255,255,0.2); border-radius: 16px; border: 1px dashed rgba(0,0,0,0.1); line-height: 1.6; }
+/* ==== ✨ 第四階段擴建：百科與個人中心 ==== */
+
+/* 百科頁面 (Wiki) */
+.wiki-header { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.wiki-search-box { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.05); padding: 10px 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.4); box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+.wiki-search-box input { flex: 1; background: transparent; border: none; outline: none; font-size: 14px; color: #1e293b; font-weight: 500; }
+.wiki-search-box input::placeholder { color: #94a3b8; }
+
+.wiki-filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    /* ✨ 關鍵修正：上下增加 padding 空間，讓光暈不會撞到隱形天花板或地板被切斷 */
+    padding: 8px 4px 16px 4px; 
+    margin: 0 -4px; 
+}
+
+.wiki-filters::-webkit-scrollbar { display: none; }
+.w-filter { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #64748b; background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5); white-space: nowrap; }
+.w-filter.active { background: #10b981; color: white; border-color: #059669; box-shadow: 0 4px 10px rgba(16,185,129,0.3); }
+.wiki-featured { padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05)); border-color: rgba(16, 185, 129, 0.3); position: relative; overflow: hidden; }
+.w-feat-badge { position: absolute; top: 16px; right: 16px; background: #10b981; color: white; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
+.w-feat-title { font-size: 24px; font-weight: 800; color: #064e3b; display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.w-feat-faan { font-size: 14px; color: #059669; font-weight: 700; }
+.w-feat-desc { font-size: 13px; color: #475569; line-height: 1.5; font-weight: 500; }
+.dict-desc { font-size: 11px; color: #94a3b8; font-weight: normal; margin-top: 2px; }
+
+/* 個人中心 (Profile) */
+.profile-hero { display: flex; flex-direction: column; align-items: center; padding: 24px 20px; gap: 12px; position: relative; overflow: hidden; }
+.prof-avatar-ring { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #3b82f6); padding: 3px; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); }
+.prof-avatar { width: 100%; height: 100%; border-radius: 50%; background: #e2e8f0; border: 2px solid white; display: flex; justify-content: center; align-items: center; font-size: 36px; }
+.prof-info { text-align: center; }
+.prof-name { font-size: 20px; font-weight: 800; color: #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.prof-id { font-size: 11px; font-family: monospace; color: #94a3b8; background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 6px; }
+.prof-level { font-size: 12px; font-weight: 700; color: #059669; margin-top: 4px; background: rgba(16, 185, 129, 0.1); display: inline-block; padding: 4px 12px; border-radius: 20px; }
+.prof-actions { display: flex; width: 100%; gap: 10px; margin-top: 8px; }
+.p-btn-primary, .p-btn-secondary { flex: 1; padding: 12px 0; border-radius: 16px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; }
+.p-btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+.p-btn-secondary { background: rgba(255,255,255,0.5); color: #475569; border: 1px solid rgba(255,255,255,0.6); }
+
+.prof-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.p-stat-box { padding: 16px; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden; }
+.p-stat-icon { position: absolute; right: -10px; top: -10px; font-size: 50px; opacity: 0.1; transform: rotate(15deg); }
+.p-stat-val { font-size: 28px; font-weight: 800; color: #1e293b; line-height: 1; }
+.p-stat-label { font-size: 11px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; }
+
+.prof-section { display: flex; flex-direction: column; gap: 10px; }
+.p-sec-header { font-size: 13px; font-weight: 700; color: #64748b; letter-spacing: 1px; margin-left: 4px; }
+.medals-scroll-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin: 0 -5px; padding-left: 5px; padding-right: 5px; }
+.medals-scroll-container::-webkit-scrollbar { display: none; }
+.medal-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; opacity: 0.4; filter: grayscale(1); transition: all 0.5s ease; cursor: default; }
+.medal-item.unlocked { opacity: 1; filter: grayscale(0); transform: translateY(-2px); }
+.medal-icon { width: 68px; height: 68px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.medal-name { font-size: 11px; font-weight: 700; color: #475569; }
+
+.settings-list { padding: 0; display: flex; flex-direction: column; }
+.setting-item { display: flex; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s; }
+.setting-item:last-child { border-bottom: none; }
+.setting-item:active { background: rgba(0,0,0,0.02); }
+.s-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 16px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.5); }
+.s-text { flex: 1; font-size: 14px; font-weight: 600; color: #334155; line-height: 1.3; }
+.s-arrow { font-size: 18px; color: #94a3b8; font-weight: 300; }
+/* ==== ✨ 百科頁面專屬樣式 (圖鑑版) ==== */
+.wiki-top-panel { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.wiki-search-box { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.04); padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+.wiki-search-box input { flex: 1; background: transparent; border: none; outline: none; font-size: 14px; color: #1e293b; font-weight: 600; }
+.wiki-search-box input::placeholder { color: #94a3b8; font-weight: 500; }
+.wiki-filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.wiki-filters::-webkit-scrollbar { display: none; }
+.w-filter { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #64748b; background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6); white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+.w-filter.active { background: linear-gradient(135deg, #10b981, #059669); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+
+.wiki-section-header { font-size: 14px; font-weight: 800; color: #334155; margin: 6px 0 -4px 6px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+
+/* 每日一役卡片 */
+.wiki-featured { padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(255, 255, 255, 0.4)); border-color: rgba(16, 185, 129, 0.3); position: relative; overflow: hidden; }
+.w-feat-badge { position: absolute; top: 16px; right: 16px; background: #10b981; color: white; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(16,185,129,0.3); }
+.w-feat-title { font-size: 26px; font-weight: 800; color: #064e3b; margin-bottom: 6px; }
+.w-feat-desc { font-size: 13px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 16px; width: 85%; }
+.w-feat-tiles { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 5px; }
+.w-tile { width: 32px; height: 44px; background-size: 85%; background-position: center; background-repeat: no-repeat; background-color: rgba(255,255,255,0.8); border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 8px rgba(0,0,0,0.05); flex-shrink: 0; }
+
+/* 入門基礎雙格 */
+.wiki-basics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.wiki-basic-card { padding: 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: transform 0.2s; }
+.wiki-basic-card:active { transform: scale(0.96); }
+.w-basic-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 20px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.6); }
+.w-basic-title { font-size: 15px; font-weight: 800; color: #1e293b; }
+.w-basic-sub { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px; }
+
+/* 列表區塊 */
+.wiki-content-area { display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
+.wiki-list-container { display: flex; flex-direction: column; gap: 8px; }
+.w-list-item { display: flex; gap: 14px; padding: 14px; align-items: center; cursor: pointer; transition: background 0.2s; }
+.w-list-item:active { background: rgba(255,255,255,0.6); }
+.w-item-icon-box { width: 48px; height: 48px; border-radius: 14px; background: rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.5); display: flex; justify-content: center; align-items: center; font-size: 24px; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+.w-item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+.w-item-header { display: flex; justify-content: space-between; align-items: center; }
+.w-item-title { font-size: 16px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w-item-badge { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 8px; }
+.badge-common { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.badge-mid { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.w-item-desc { font-size: 12px; color: #64748b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 爆棚大圖卡雙格 */
+.wiki-limit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.w-limit-card { padding: 12px; height: 110px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; cursor: pointer; }
+.w-limit-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.15; z-index: 0; filter: blur(1px); }
+.w-limit-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 80%); z-index: 1; }
+.w-limit-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 2px; }
+.w-limit-title { font-size: 16px; font-weight: 800; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.w-limit-badge { font-size: 11px; font-weight: 800; color: #fcd34d; }
+/* ==== ✨ 戰績頁面升級：勝率進度條與狀態標籤 ==== */
+.win-rate-container { margin-bottom: 16px; padding: 14px; background: rgba(255,255,255,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.5); box-shadow: inset 0 2px 4px rgba(255,255,255,0.8); }
+.win-rate-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+.win-rate-label { font-size: 12px; font-weight: 700; color: #475569; letter-spacing: 0.5px; }
+.win-rate-value { font-size: 24px; font-weight: 800; color: #10b981; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.win-rate-bar-bg { height: 8px; background: rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+.win-rate-bar-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); border-radius: 8px; box-shadow: 0 0 10px rgba(16,185,129,0.4); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* 卡片排版升級 */
+.history-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.history-card-type-badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: rgba(0,0,0,0.05); color: #64748b; border: 1px solid rgba(255,255,255,0.6); }
+.type-self { background: rgba(16, 185, 129, 0.15); color: #059669; border-color: rgba(16, 185, 129, 0.3); }
+.type-fail { background: rgba(239, 68, 68, 0.1); color: #dc2626; border-color: rgba(239, 68, 68, 0.2); }
+/* ==== ✨ 第五階段：百科詳情頁 (Wiki Detail) ==== */
+
+/* 📖 百科詳情頁頂部導航 (修復暈光被切斷 bug) */
+/* ✨ ✨ ✨ 修正：刪除原來的 w-detail-header 樣式 */
+.w-detail-top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: max(20px, env(safe-area-inset-top)) 16px 16px 16px; /* 適應安全區域 */
+    /* ❌ 修正：不使用 overflow: hidden 限制暈光 */
+}
+
+.w-detail-header-title {
+    color: #f8fafc;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.w-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #10b981;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: transparent;
+    transition: all 0.2s ease;
+    /* ✨ ✨ ✨ 修正：暈光效果（box-shadow）現在放在按鈕本身上，並能自然溢出 */
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.15); /* 軟性晕光 */
+}
+
+.w-back-btn:active {
+    background: rgba(16, 185, 129, 0.05);
+    transform: scale(0.95);
+    box-shadow: none; /* 點擊時暈光消失 */
+}
+
+.w-detail-hero { display: flex; flex-direction: column; align-items: center; padding: 20px 0 10px 0; position: relative; }
+.w-detail-glow-bg { position: absolute; top: 10px; width: 150px; height: 50px; background: rgba(16, 185, 129, 0.3); filter: blur(30px); border-radius: 50%; z-index: 0; }
+.w-detail-title { font-size: 42px; font-weight: 900; color: transparent; background-image: linear-gradient(135deg, #0f172a, #065f46); -webkit-background-clip: text; background-clip: text; position: relative; z-index: 1; text-shadow: 0 4px 20px rgba(16,185,129,0.2); letter-spacing: 2px; margin-bottom: 8px; }
+.w-detail-badge { position: relative; z-index: 1; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #059669; padding: 4px 16px; border-radius: 20px; font-size: 14px; font-weight: 800; box-shadow: 0 0 15px rgba(16,185,129,0.2); letter-spacing: 1px; }
+
+/* ==== ✨ 百科詳情頁：統一手牌頁毛玻璃 (保留原版文字顏色) ==== */
+
+/* ==== ✨ 百科詳情頁：統一手牌頁毛玻璃 (保留原版文字顏色) ==== */
+
+/* 預覽區：拔除多餘背景與邊框，完全交給 HTML 的 glass-card 處理 */
+.w-detail-preview { 
+    padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 16px; margin: 10px 0; 
+}
+.wd-preview-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; padding: 0 10px; }
+
+.w-detail-section { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+
+/* 區塊標題 (恢復上一個版本的深色) */
+.wd-sec-title { display: flex; justify-content: space-between; align-items: flex-end; font-size: 18px; font-weight: 800; color: #1e293b; letter-spacing: 1px; }
+.wd-sec-dot { display: inline-block; width: 4px; height: 20px; background: #10b981; border-radius: 4px; margin-right: 8px; box-shadow: 0 0 8px #10b981; }
+.wd-sec-sub { font-size: 11px; color: #10b981; font-weight: 600; }
+
+/* 說明卡片 (恢復上一個版本的文字顏色，拔除背景與邊框) */
+.wd-desc-card { 
+    padding: 20px; font-size: 14px; color: #334155; line-height: 1.6; font-weight: 500; 
+}
+
+/* 實戰技巧卡片 (拔除漸層背景與邊框，保留原版文字顏色) */
+.wd-tips-card { 
+    padding: 16px; display: flex; flex-direction: column; gap: 16px; 
+}
+.wd-tip-item { display: flex; gap: 12px; align-items: flex-start; }
+.wd-tip-icon { 
+    width: 28px; height: 28px; border-radius: 50%; background: rgba(251, 191, 36, 0.2); color: #d97706; 
+    display: flex; justify-content: center; align-items: center; font-size: 14px; flex-shrink: 0; border: 1px solid rgba(251, 191, 36, 0.3); margin-top: 2px; 
+}
+.wd-tip-content h4 { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+.wd-tip-content p { font-size: 12px; color: #475569; line-height: 1.5; }
+
+/* 牌型變化卡片 (拔除背景邊框，保留原版文字顏色) */
+.wd-vars-scroll { 
+    display: flex; 
+    gap: 12px; 
+    overflow-x: auto; 
+    /* ✨ 關鍵修正：增加下方空間 (padding-bottom: 24px)，釋放被裁切的毛玻璃陰影 */
+    padding-top: 10px;
+    padding-bottom: 24px; 
+    margin: 0 -15px; 
+    padding-left: 15px; 
+    padding-right: 15px; 
+    scroll-snap-type: x mandatory; 
+}
+.wd-var-card { 
+    width: 240px; flex-shrink: 0; scroll-snap-align: center; padding: 16px; display: flex; flex-direction: column; gap: 12px; 
+}
+.wd-var-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.wd-var-title { font-size: 15px; font-weight: 800; color: #1e293b; }
+.wd-var-badge { font-size: 11px; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); }
+.wd-var-img { height: 80px; border-radius: 10px; background-color: rgba(0,0,0,0.05); border: 1px inset rgba(255,255,255,0.5); display: flex; justify-content: center; align-items: center; font-size: 30px; opacity: 0.5; overflow: hidden; position: relative; }
+.wd-var-img::after { content:''; position:absolute; inset:0; background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 100%); }
+.wd-var-desc { font-size: 12px; color: #64748b; line-height: 1.4; font-weight: 500; }
+/* ==== ✨ 百科專屬微動畫 (Micro-animations) ==== */
+
+/* 1. 列表與圖卡的骨牌式滑入動畫 */
+@keyframes wikiFadeInUp {
+    0% { opacity: 0; transform: translateY(15px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.wiki-anim-item {
+    opacity: 0; /* 初始狀態隱藏，等待動畫觸發 */
+    animation: wikiFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 2. 每日一役徽章的呼吸燈特效 */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 4px 10px rgba(16,185,129,0.3); transform: scale(1); }
+    50% { box-shadow: 0 4px 20px rgba(16,185,129,0.7); transform: scale(1.02); }
+}
+.w-feat-badge {
+    animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+/* 3. 入門小卡圖示的輕巧懸浮 */
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+.wiki-basic-card:active .w-basic-icon,
+.wiki-basic-card:hover .w-basic-icon {
+    animation: floatIcon 1s ease-in-out infinite;
+}
+
+/* ==== ✨ 百科詳情頁：區塊接力滑入動畫 ==== */
+@keyframes detailFadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.wd-anim-item {
+    opacity: 0; /* 預設隱藏，等待動畫觸發 */
+    animation: detailFadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ==== ✨ 詳情頁懸浮返回按鈕 (完美置中圖示版) ==== */
+.floating-back-btn {
+    position: sticky;
+    top: 24px; 
+    z-index: 999;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    color: #10b981;
+    
+    /* 使用 Flexbox 讓圖示絕對置中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    /* 排版微調 */
+    margin-top: 24px;
+    margin-left: 16px;
+    margin-bottom: -64px; 
+}
+
+.floating-back-btn:active {
+    transform: scale(0.85);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.w-detail-hero {
+    padding-top: 60px !important; 
+}
+/* ==== ✨ v2.8.38 終極暈光修復 (隱形氣墊與最高權限覆蓋法) ==== */
+
+/* 1. 給「全部」等分類按鈕穿上隱形防撞衣 */
+.wiki-filters {
+    padding: 10px 16px !important; 
+    overflow: visible !important; /* 強制放下剪刀 */
+}
+.w-filter {
+    margin: 8px 6px !important; /* ✨ 隱形氣墊在這裡！為按鈕周圍撐開空間給暈光 */
+}
+
+/* 2. 給「無花平糊」等牌型變化卡片穿上隱形防撞衣 */
+.wd-vars-scroll {
+    padding: 15px 20px 30px 20px !important; 
+    overflow: visible !important; /* 強制放下剪刀 */
+}
+.wd-var-card {
+    margin: 10px 8px !important; /* ✨ 隱形氣墊！為卡片周圍撐開空間給暈光 */
+}
+/* ==== ✨ v2.8.41 深色模式 (專屬深綠美學) ==== */
+/* 1. 極致深綠底色 (#102216) 與 模擬您代碼中的光暈 */
+body.dark-mode .bg-base {
+    background: #102216 !important;
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(19, 236, 91, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(5, 150, 105, 0.12) 0%, transparent 60%) !important;
+    opacity: 1 !important;
+}
+
+/* 2. 毛玻璃卡片 (#1a2c20 / 60% 透明度) */
+body.dark-mode .glass-card, 
+body.dark-mode .dynamic-island, 
+body.dark-mode .bottom-nav {
+    background: rgba(26, 44, 32, 0.6) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 3. 標題與重點文字 (亮白色) */
+body.dark-mode, body.dark-mode .w-item-title, body.dark-mode .wd-var-title, 
+body.dark-mode .prof-name, body.dark-mode .history-card-title, 
+body.dark-mode .w-basic-title, body.dark-mode .s-text, 
+body.dark-mode .wiki-section-header, body.dark-mode .wd-sec-title,
+body.dark-mode .history-title, body.dark-mode .detail-list-title,
+body.dark-mode .dashboard-title, body.dark-mode .island-title,
+body.dark-mode .stat-value, body.dark-mode .action-text {
+    color: #ffffff !important;
+}
+
+/* 4. 次要說明文字 (淺灰 slate-400) */
+body.dark-mode .w-item-desc, body.dark-mode .wd-var-desc, 
+body.dark-mode .history-card-sub, body.dark-mode .prof-id, 
+body.dark-mode .w-basic-sub, body.dark-mode .s-arrow,
+body.dark-mode .stat-label, body.dark-mode .p-sec-header,
+body.dark-mode .history-empty, body.dark-mode .nav-item {
+    color: #94a3b8 !important;
+}
+
+/* 5. 螢光綠強調色 (#13ec5b) */
+body.dark-mode .nav-item.active {
+    color: #13ec5b !important; 
+    background: rgba(19, 236, 91, 0.1) !important; 
+    border-color: rgba(19, 236, 91, 0.2) !important;
+}
+body.dark-mode .nav-item.active .nav-icon {
+    filter: drop-shadow(0 0 8px rgba(19, 236, 91, 0.5));
+}
+body.dark-mode .w-feat-faan, body.dark-mode .wd-sec-sub, 
+body.dark-mode .prof-level, body.dark-mode .win-rate-value,
+body.dark-mode .stat-unit, body.dark-mode .w-detail-badge {
+    color: #13ec5b !important;
+}
+body.dark-mode .w-detail-title {
+    background-image: linear-gradient(135deg, #ffffff, #13ec5b) !important;
+}
+
+/* 6. 輸入框與特殊元件調整 */
+body.dark-mode .wiki-search-box input { color: #ffffff !important; }
+body.dark-mode .condition-chip { background: rgba(26, 44, 32, 0.8) !important; border-color: rgba(255,255,255,0.1) !important; color: #94a3b8 !important; }
+body.dark-mode .condition-chip.active { background: rgba(19, 236, 91, 0.15) !important; border-color: #13ec5b !important; color: #13ec5b !important; box-shadow: 0 0 10px rgba(19,236,91,0.2) !important; }
