@@ -3133,3 +3133,38 @@ body.dark-mode .condition-chip.active {
 .island-chevron {
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, color 0.3s ease !important;
 }
+
+/* ==== ✨ Safari 終極救星 (原版推擠保留)：魔法結界與排版凍結 ==== */
+
+/* 1. 為下方被推擠的兩大區塊施加「魔法結界」 (CSS Containment) */
+/* 告訴 Safari：手牌和鍵盤被往下推時，裡面的麻雀牌沒有變，請直接把它們當作「截圖圖層」整塊平移！ */
+#handCard,
+#keyboard {
+    contain: layout paint style;
+    -webkit-transform: translateZ(0);
+    /* 強制把它們變成獨立的顯示卡圖層 */
+    transform: translateZ(0);
+    will-change: transform;
+    /* 提早告訴顯示卡：這個區塊會整塊移動 */
+}
+
+/* 2. 凍結動態島內部的寬度 (防止展開時，裡面的字和按鈕瘋狂擠壓重算) */
+.island-content-inner {
+    /* 強制將內部寬度固定為最終展開的大小 (約 390px)。
+       這會讓動態島展開時像「拉開窗簾」一樣露出裡面的東西，而不是邊展開邊把字排版。 */
+    width: 100vw;
+    max-width: 390px;
+}
+
+/* 3. 把原汁原味的 Q 彈果凍回彈加回來，並給動態島也套上結界 */
+.dynamic-island {
+    transition: max-width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s ease, background 0.4s ease !important;
+    contain: layout;
+    /* 防止動態島的變形干擾到外部整體的排版規則 */
+}
+
+.island-content-grid {
+    transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    will-change: auto !important;
+    /* 避免 Safari 記憶體錯亂 */
+}
