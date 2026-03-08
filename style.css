@@ -3106,3 +3106,30 @@ body.dark-mode .condition-chip.active {
 .nav-item {
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s, background-color 0.3s, box-shadow 0.3s !important;
 }
+
+/* ==== ✨ Safari 終極救星 (動態島排毒)：拔除果凍回彈與記憶體錯亂 ==== */
+
+/* 1. 動態島外殼：改用 iOS 原生的平滑展開 (ease-out)，並拔除有毒的 will-change: max-width */
+.dynamic-island {
+    transition: max-width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-radius 0.4s ease, background 0.4s ease !important;
+    will-change: transform !important;
+    /* 只保留安全的 transform，其餘全部拔除 */
+}
+
+/* 2. 內部內容網格：拔除高度的果凍回彈與 will-change: max-height */
+.island-content-grid {
+    transition: max-height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    will-change: auto !important;
+    /* 釋放 Safari 的記憶體 */
+}
+
+/* 3. 內部區塊 (設定標籤/花牌)：拔除滑入時的果凍回彈 */
+.island-section {
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+/* 4. 頂部標題與箭頭：拔除旋轉與位移的果凍回彈 */
+.island-title,
+.island-chevron {
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, color 0.3s ease !important;
+}
