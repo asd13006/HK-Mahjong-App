@@ -3015,18 +3015,31 @@ body.dark-mode .condition-chip.active {
         background-color: rgba(26, 44, 32, 0.95) !important;
     }
 }
-/* ==== ✨ 動態島動畫期間的「偷天換日」效能替身 ==== */
-.dynamic-island.animating-no-blur {
-    /* 瞬間拔掉最吃效能的毛玻璃 */
+
+/* ==== ✨ Safari 終極救星：動態島動畫期間的「全域」偷天換日 ==== */
+
+/* 1. 全域封殺：不只動態島，連同裡面「所有」的按鈕、軌道、花牌，毛玻璃瞬間全部消失！ */
+.dynamic-island.animating-no-blur,
+.dynamic-island.animating-no-blur * {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    /* 換成極度不透明的底色，掩飾毛玻璃消失的瞬間 */
-    background: rgba(255, 255, 255, 0.98) !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* 確保深色模式下，替身也是好看的深綠色 */
+/* 2. 減輕負擔：Safari 算大陰影非常慢，動畫期間把陰影縮到最小 */
+.dynamic-island.animating-no-blur {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 深色模式的替身 */
 body.dark-mode .dynamic-island.animating-no-blur {
     background: rgba(26, 44, 32, 0.98) !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 3. 強制硬體加速：逼迫 Safari 為這塊內容分配「獨立顯示卡圖層」 */
+.island-content-grid {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: max-height;
 }
