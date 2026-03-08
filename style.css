@@ -3089,3 +3089,20 @@ body.dark-mode .tile.empty {
 body.dark-mode .condition-chip.active {
     background-color: rgba(19, 236, 91, 0.2) !important;
 }
+
+/* ==== ✨ Safari 效能大解救 (方案 C)：精準綁定動畫，禁用 transition: all ==== */
+.tile {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s !important;
+}
+
+.flower-tile {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, background-color 0.3s, border-color 0.3s !important;
+}
+
+.condition-chip {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, background-color 0.3s, border-color 0.3s, color 0.3s !important;
+}
+
+.nav-item {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s, background-color 0.3s, box-shadow 0.3s !important;
+}

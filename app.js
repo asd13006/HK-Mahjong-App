@@ -12,18 +12,29 @@
    ▶ 區塊六：個人中心與設定 (清除暫存、顯示版本號)
    ========================================== */
 
-const APP_VERSION = "v2.8.45";
+const APP_VERSION = "v2.8.46";
 
 let newWorker; window.isUpdateReady = false; let displaySeq = 0; let currentResultSnapshot = null;
 
+// ✨ 新版原生點擊機制 (釋放 CPU 效能，解決滑動卡頓)
 function attachFastClick(el, action, tapClass = '') {
     if (el._hasFastClick) { el._action = action; return; }
-    el._action = action; el._hasFastClick = true; let touchHandled = false; let isScrolling = false; let startX = 0; let startY = 0;
-    el.addEventListener('touchstart', (e) => { touchHandled = true; isScrolling = false; startX = e.touches[0].clientX; startY = e.touches[0].clientY; if (tapClass) el.classList.add(tapClass); }, { passive: true });
-    el.addEventListener('touchmove', (e) => { if (!touchHandled) return; let moveX = Math.abs(e.touches[0].clientX - startX); let moveY = Math.abs(e.touches[0].clientY - startY); if (moveX > 10 || moveY > 10) { isScrolling = true; if (tapClass) el.classList.remove(tapClass); } }, { passive: true });
-    el.addEventListener('touchend', (e) => { if (tapClass) el.classList.remove(tapClass); if (touchHandled && !isScrolling) { if (el._action) el._action(e); } setTimeout(() => { touchHandled = false; }, 400); });
-    el.addEventListener('mousedown', (e) => { if (e.button !== 0) return; if (!touchHandled) { if (tapClass) { el.classList.add(tapClass); setTimeout(() => el.classList.remove(tapClass), 100); } if (el._action) el._action(e); } });
-    el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); });
+    el._action = action;
+    el._hasFastClick = true;
+
+    // 使用最新的 Pointer Events 處理按壓的視覺果凍回饋，完全不干擾滑動
+    if (tapClass) {
+        el.addEventListener('pointerdown', () => el.classList.add(tapClass), { passive: true });
+        el.addEventListener('pointerup', () => el.classList.remove(tapClass), { passive: true });
+        el.addEventListener('pointercancel', () => el.classList.remove(tapClass), { passive: true });
+    }
+
+    // 使用原生 click (現代手機已無 300ms 延遲，原生 click 最順暢)
+    el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (el._action) el._action(e);
+    });
 }
 
 function smoothHeightUpdate(elementId, updateDOM) {
@@ -151,7 +162,7 @@ function checkAndRunEngine() { let currentMax = getCurrentMax(); const actionTex
 function addTile(id) { let count = hand.filter(t => t.id === id).length; if (count >= 4) return; hand.push({ id: id, key: tileKeyCounter++ }); let projectedMax = getCurrentMax(); if (hand.length > projectedMax) { hand.pop(); tileKeyCounter--; return; } hand.sort((a, b) => a.id - b.id); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 function removeTile(index) { hand.splice(index, 1); if (navigator.vibrate) navigator.vibrate([8]); renderHand(); }
 function renderHand() {
-    const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {}; grid.querySelectorAll('.tile[data-key]').forEach(el => { oldPos[el.dataset.key] = el.getBoundingClientRect(); el.classList.remove('breathing'); }); const updateGridDOM = () => { const existingTiles = new Map(); grid.querySelectorAll('.tile[data-key]').forEach(el => { existingTiles.set(el.dataset.key, el); }); grid.querySelectorAll('.tile.empty').forEach(el => el.remove()); hand.forEach((item) => { let el = existingTiles.get(String(item.key)); if (!el) { const info = getTileInfo(item.id); el = document.createElement('div'); el.className = `tile ${info.type} enter-anim`; el.dataset.key = item.key; let imgNum = info.num; if (info.type === 'z') { const zNames = ['東', '南', '西', '北', '中', '發', '白']; imgNum = zNames.indexOf(info.num) + 1; } el.style.backgroundImage = `url('tiles/${info.type}${imgNum}.svg')`; } attachFastClick(el, () => { const currentIdx = hand.findIndex(t => t.key === item.key); if (currentIdx > -1) removeTile(currentIdx); }, 'is-tapped-tile'); grid.appendChild(el); }); existingTiles.forEach((el, key) => { if (!hand.find(t => String(t.key) === key)) el.remove(); }); for (let i = hand.length; i < currentMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; if (i >= lastMax && currentMax > lastMax) { empty.classList.add('empty-enter-anim'); } grid.appendChild(empty); } document.getElementById('tileCount').innerText = `暗牌已選 ${hand.length} / ${currentMax}`; }; if (lastMax !== currentMax) smoothHeightUpdate('handCard', updateGridDOM); else updateGridDOM(); grid.querySelectorAll('.tile[data-key]').forEach(el => { const key = el.dataset.key; if (oldPos[key]) { el.classList.remove('enter-anim'); const newRect = el.getBoundingClientRect(); const oldRect = oldPos[key]; const dx = oldRect.left - newRect.left; const dy = oldRect.top - newRect.top; if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) { el.style.transition = 'none'; el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`; el.offsetHeight; el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'; el.style.transform = 'translate3d(0,0,0)'; setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, 250); } else { el.style.transition = ''; el.style.transform = ''; } } }); setTimeout(() => { grid.querySelectorAll('.tile[data-key]').forEach((el, index) => { el.style.animationDelay = `${index * 0.15}s`; el.classList.add('breathing'); }); }, 300);
+    const grid = document.getElementById('handGrid'); let currentMax = getCurrentMax(); const oldPos = {}; grid.querySelectorAll('.tile[data-key]').forEach(el => { oldPos[el.dataset.key] = el.getBoundingClientRect(); el.classList.remove('breathing'); }); const updateGridDOM = () => { const existingTiles = new Map(); grid.querySelectorAll('.tile[data-key]').forEach(el => { existingTiles.set(el.dataset.key, el); }); grid.querySelectorAll('.tile.empty').forEach(el => el.remove()); hand.forEach((item) => { let el = existingTiles.get(String(item.key)); if (!el) { const info = getTileInfo(item.id); el = document.createElement('div'); el.className = `tile ${info.type} enter-anim`; el.dataset.key = item.key; let imgNum = info.num; if (info.type === 'z') { const zNames = ['東', '南', '西', '北', '中', '發', '白']; imgNum = zNames.indexOf(info.num) + 1; } el.style.backgroundImage = `url('tiles/${info.type}${imgNum}.svg')`; } attachFastClick(el, () => { const currentIdx = hand.findIndex(t => t.key === item.key); if (currentIdx > -1) removeTile(currentIdx); }, 'is-tapped-tile'); grid.appendChild(el); }); existingTiles.forEach((el, key) => { if (!hand.find(t => String(t.key) === key)) el.remove(); }); for (let i = hand.length; i < currentMax; i++) { const empty = document.createElement('div'); empty.className = 'tile empty'; if (i >= lastMax && currentMax > lastMax) { empty.classList.add('empty-enter-anim'); } grid.appendChild(empty); } document.getElementById('tileCount').innerText = `暗牌已選 ${hand.length} / ${currentMax}`; }; if (lastMax !== currentMax) smoothHeightUpdate('handCard', updateGridDOM); else updateGridDOM(); grid.querySelectorAll('.tile[data-key]').forEach(el => { const key = el.dataset.key; if (oldPos[key]) { el.classList.remove('enter-anim'); const newRect = el.getBoundingClientRect(); const oldRect = oldPos[key]; const dx = oldRect.left - newRect.left; const dy = oldRect.top - newRect.top; if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) { el.style.transition = 'none'; el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`; el.offsetHeight; el.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'; el.style.transform = 'translate3d(0,0,0)'; setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, 250); } else { el.style.transition = ''; el.style.transform = ''; } } });
     lastMax = currentMax;
     checkAndRunEngine();
     updateKeyboardState(); // ✨ 新增這行：更新鍵盤按鈕防呆狀態
