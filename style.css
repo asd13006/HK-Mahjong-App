@@ -3043,3 +3043,49 @@ body.dark-mode .dynamic-island.animating-no-blur {
     -webkit-transform: translateZ(0);
     will-change: max-height;
 }
+
+/* ==== ✨ Safari 效能大解救 (方案 A)：拔除所有小元件的毛玻璃 ==== */
+
+/* 1. 針對麻雀牌、設定標籤、花牌、風圈滑塊、清空按鈕 */
+.condition-chip,
+.glass-glider,
+.flower-tile,
+.tile,
+.clear-btn {
+    /* 拔除最容易讓 Safari 當機的特效 */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* 稍微加深不透明度，補償失去毛玻璃後的實體感 */
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 2. 針對沒選中時的「空麻雀牌」特別處理 (讓它保持微透) */
+.tile.empty {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 3. 選中狀態的標籤與花牌 (讓它更亮一點) */
+.condition-chip.active {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.flower-tile.active {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 4. 🌙 深色模式下的補償顏色 (深色石板灰) */
+body.dark-mode .condition-chip,
+body.dark-mode .glass-glider,
+body.dark-mode .flower-tile,
+body.dark-mode .tile,
+body.dark-mode .clear-btn {
+    background-color: rgba(30, 41, 59, 0.85) !important;
+}
+
+body.dark-mode .tile.empty {
+    background-color: rgba(30, 41, 59, 0.4) !important;
+}
+
+body.dark-mode .condition-chip.active {
+    background-color: rgba(19, 236, 91, 0.2) !important;
+}
