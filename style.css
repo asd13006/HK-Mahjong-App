@@ -45,20 +45,20 @@ body.failure-mode .bg-base { opacity: 0; } body.failure-mode .bg-failure { opaci
 /* ==== ✨ 1. 卡片底板：空間漫射與極致毛玻璃 ==== */
 .glass-card { 
     position: relative; 
-    /* 極致透視：大幅提高模糊度與飽和度，降低實體白底 */
     background: rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(35px) saturate(200%); 
-    -webkit-backdrop-filter: blur(35px) saturate(200%); 
+    /* ✨ 最佳化：將 blur 改為 16px，saturate 改為 150% */
+    backdrop-filter: blur(16px) saturate(150%); 
+    -webkit-backdrop-filter: blur(16px) saturate(150%); 
     border-radius: 28px; 
-    /* 物理級 3D 折射邊緣：左上強光，右下融入 */
     border: 1px solid rgba(255, 255, 255, 0.2); 
     border-top: 1px solid rgba(255, 255, 255, 0.7); 
     border-left: 1px solid rgba(255, 255, 255, 0.5); 
-    /* 空間懸浮：去除死黑，改用超大範圍環境漫射光 */
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8); 
     padding: 20px; 
     transform: translateZ(0); 
     z-index: 1; 
+    /* ✨ 最佳化：加上 will-change 強制手機啟用 GPU 硬體加速 */
+    will-change: transform, backdrop-filter;
     transition: border-color 0.8s ease, box-shadow 0.8s ease, transform 0.3s ease; 
 }
 
@@ -84,15 +84,17 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.6); box-shad
 /* ==== ✨ 2. 動態島：無邊界漂浮 ==== */
 .dynamic-island { 
     background: rgba(255, 255, 255, 0.3); 
-    backdrop-filter: blur(40px) saturate(200%); 
-    -webkit-backdrop-filter: blur(40px) saturate(200%); 
+    /* ✨ 最佳化：將 blur 從 40px 降到 20px */
+    backdrop-filter: blur(20px) saturate(150%); 
+    -webkit-backdrop-filter: blur(20px) saturate(150%); 
     border: 1px solid rgba(255, 255, 255, 0.4); 
     border-top: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9); 
     border-radius: 30px; 
     margin: 0 auto; width: 100%; max-width: 180px; display: flex; flex-direction: column; overflow: hidden; color: #334155;
     transition: max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.5s ease, background 0.5s ease; 
-    transform: translateZ(0); will-change: max-width, border-radius, transform; 
+    transform: translateZ(0); 
+    will-change: max-width, border-radius, transform, backdrop-filter; /* ✨ 補上 backdrop-filter */
 }
 .dynamic-island.expanded { max-width: 420px; border-radius: 28px; background: rgba(255, 255, 255, 0.2); }
 .island-header { padding: 12px 20px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
@@ -330,10 +332,10 @@ body.failure-mode #statusCard { border-color: rgba(252, 165, 165, 0.6); box-shad
     padding: 8px 5px;
     z-index: 1000;
     
-    /* 複用頂級毛玻璃材質 */
     background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(35px) saturate(200%);
-    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    /* ✨ 最佳化：將 blur 改為 16px */
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
     border-radius: 28px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-top: 1px solid rgba(255, 255, 255, 0.8);
@@ -857,3 +859,43 @@ body.dark-mode .w-detail-title {
 body.dark-mode .wiki-search-box input { color: #ffffff !important; }
 body.dark-mode .condition-chip { background: rgba(26, 44, 32, 0.8) !important; border-color: rgba(255,255,255,0.1) !important; color: #94a3b8 !important; }
 body.dark-mode .condition-chip.active { background: rgba(19, 236, 91, 0.15) !important; border-color: #13ec5b !important; color: #13ec5b !important; box-shadow: 0 0 10px rgba(19,236,91,0.2) !important; }
+
+/* ==== ✨ 新增：鍵盤防呆變暗狀態 ==== */
+.tile.disabled-tile {
+    opacity: 0.3 !important;
+    filter: grayscale(80%);
+    pointer-events: none; /* 禁止點擊與觸控 */
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+/* ==== ✨ 第二層防禦：系統級自動效能最佳化 (尊重手機的減少透明度設定) ==== */
+@media (prefers-reduced-transparency: reduce) {
+    /* 針對所有使用了毛玻璃的元件 */
+    .glass-card,
+    .dynamic-island,
+    .bottom-nav,
+    .condition-chip,
+    .glass-glider,
+    .flower-tile,
+    .tile,
+    .history-card {
+        /* 徹底拔除極度耗能的濾鏡 */
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        /* 因為變透明了字會看不清楚，所以換上幾乎不透明的白色底色 */
+        background-color: rgba(255, 255, 255, 0.95) !important; 
+    }
+
+    /* 確保深色模式下，關閉透明度後依然是好看的深綠色 */
+    body.dark-mode .glass-card,
+    body.dark-mode .dynamic-island,
+    body.dark-mode .bottom-nav,
+    body.dark-mode .condition-chip,
+    body.dark-mode .flower-tile,
+    body.dark-mode .tile,
+    body.dark-mode .history-card {
+        background-color: rgba(26, 44, 32, 0.95) !important;
+    }
+}
