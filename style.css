@@ -20,6 +20,17 @@
     touch-action: manipulation;
 }
 
+
+:root {
+    /* 🎯 統一動畫曲線與時間 */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --dur-fast: 0.15s;
+    --dur-normal: 0.25s;
+    --dur-slow: 0.4s;
+}
+
 html,
 body {
     overscroll-behavior-y: none;
@@ -209,7 +220,7 @@ body.failure-mode #statusCard {
 }
 
 .heartbeat-pop {
-    animation: heartbeat 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: heartbeat 0.5s var(--ease-spring) forwards;
     will-change: transform;
 }
 
@@ -254,7 +265,7 @@ body.failure-mode #statusCard {
     flex-direction: column;
     overflow: hidden;
     color: #334155;
-    transition: max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.5s ease, background 0.5s ease;
+    transition: max-width 0.5s var(--ease-spring), border-radius 0.5s ease, background 0.5s ease;
     transform: translateZ(0);
     will-change: max-width, border-radius, transform, backdrop-filter;
     /* ✨ 補上 backdrop-filter */
@@ -286,7 +297,7 @@ body.failure-mode #statusCard {
     overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, color 0.3s ease;
+    transition: transform 0.4s var(--ease-spring), opacity 0.3s ease, color 0.3s ease;
 }
 
 .island-title.slide-out {
@@ -304,7 +315,7 @@ body.failure-mode #statusCard {
 .island-chevron {
     font-size: 10px;
     opacity: 0.6;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.5s var(--ease-spring);
     color: #64748b;
 }
 
@@ -315,7 +326,7 @@ body.failure-mode #statusCard {
 .island-content-grid {
     display: block;
     max-height: 0;
-    transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: max-height 0.5s var(--ease-spring);
     will-change: max-height;
 }
 
@@ -334,7 +345,7 @@ body.failure-mode #statusCard {
     padding: 0 16px 16px 16px;
     opacity: 0;
     transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.3s ease, transform 0.4s var(--ease-spring);
 }
 
 .dynamic-island.expanded .island-section {
@@ -408,7 +419,7 @@ body.failure-mode #statusCard {
     grid-column: span 2;
     position: relative;
     z-index: 1;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: background var(--dur-normal) var(--ease-spring), color var(--dur-normal), border-color var(--dur-normal), box-shadow var(--dur-normal), transform var(--dur-normal) var(--ease-spring);
     will-change: transform, box-shadow;
 }
 
@@ -484,7 +495,7 @@ body.failure-mode #statusCard {
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.3s var(--ease-spring);
     will-change: transform;
     z-index: 1;
 }
@@ -545,7 +556,7 @@ body.failure-mode #statusCard {
     background-repeat: no-repeat;
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s var(--ease-spring);
     will-change: transform, box-shadow;
     /* 厚度玻璃塊 */
     background-color: rgba(255, 255, 255, 0.35);
@@ -618,7 +629,7 @@ body.failure-mode #statusCard {
     background-repeat: no-repeat;
     cursor: pointer;
     color: #1e293b;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s var(--ease-spring);
     will-change: transform, box-shadow;
     /* 實體玻璃厚度 */
     background-color: rgba(255, 255, 255, 0.45);
@@ -636,19 +647,19 @@ body.failure-mode #statusCard {
 .is-tapped-tile {
     transform: scale(0.90) translateY(4px) !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s !important;
+    transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) var(--ease-spring) !important;
 }
 
 .is-tapped-chip {
     transform: scale(0.90) !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s !important;
+    transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) var(--ease-spring) !important;
     opacity: 0.9;
 }
 
 .is-tapped-island {
     transform: scale(0.96) translateZ(0) !important;
-    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transition: transform 0.15s var(--ease-spring) !important;
 }
 
 .tile.empty {
@@ -662,6 +673,18 @@ body.failure-mode #statusCard {
     border-radius: 10px;
     opacity: 0.8;
 }
+
+/* ==== ✨ 效能優化：鍵盤區的牠只用半透明底色，不用 backdrop-filter ==== */
+#keyboard .tile {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode #keyboard .tile {
+    background-color: rgba(30, 50, 35, 0.8);
+}
+
 
 /* 液態清空按鈕 */
 .clear-btn {
@@ -679,13 +702,13 @@ body.failure-mode #statusCard {
     line-height: 1 !important;
     font-weight: 600 !important;
     cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
     will-change: transform;
 }
 
 /* ==== 動畫與其他細節保持不變 ==== */
 .enter-anim {
-    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: popIn 0.3s var(--ease-spring) forwards;
     will-change: transform, opacity;
 }
 
@@ -702,7 +725,7 @@ body.failure-mode #statusCard {
 }
 
 .empty-enter-anim {
-    animation: slotExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: slotExpand 0.3s var(--ease-spring) forwards;
     will-change: transform, opacity;
 }
 
@@ -828,12 +851,12 @@ body.failure-mode #statusCard {
 }
 
 .jelly-squish {
-    animation: jellySquish 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: jellySquish 0.4s var(--ease-spring);
     transform-origin: top center;
 }
 
 .jelly-stretch {
-    animation: jellyStretch 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: jellyStretch 0.4s var(--ease-spring);
     transform-origin: top center;
 }
 
@@ -994,7 +1017,7 @@ body.failure-mode #statusCard {
     /* 🌟 統一精緻字體大小 */
     letter-spacing: 0.5px;
     /* 稍微拉開字距增加高級感 */
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s var(--ease-spring);
     /* 配合整體液態動畫 */
 }
 
@@ -1104,30 +1127,7 @@ body.failure-mode #statusCard {
     }
 }
 
-#statusCard,
-#conditionsIsland,
-#handCard,
-#keyboard {
-    opacity: 0;
-    animation: appFadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    will-change: transform, opacity;
-}
-
-#statusCard {
-    animation-delay: 0.05s;
-}
-
-#conditionsIsland {
-    animation-delay: 0.15s;
-}
-
-#handCard {
-    animation-delay: 0.25s;
-}
-
-#keyboard {
-    animation-delay: 0.35s;
-}
+/* (舊的個別元素動畫已移除 — 統一由 .page-block-enter 處理) */
 
 /* ==== ✨ 第一階段擴建：多頁面切換系統 ==== */
 
@@ -1143,12 +1143,19 @@ body.failure-mode #statusCard {
     flex-direction: column;
     gap: 18px;
     width: 100%;
-    animation: appFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    /* 頁面本身不做動畫，由子區塊各自進場 */
 }
 
 .page.active {
     display: flex;
     /* 只有被加上 active 的房間才會顯示 */
+}
+
+/* 統一頁面子區塊進場動畫 */
+.page-block-enter {
+    opacity: 0;
+    animation: appFadeInUp 0.55s var(--ease-spring) forwards;
+    will-change: transform, opacity;
 }
 
 /* 底部導航列 - 絕美液態玻璃造型 */
@@ -1185,13 +1192,13 @@ body.failure-mode #statusCard {
     border-radius: 20px;
     color: #64748b;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: color var(--dur-normal) var(--ease-spring), transform var(--dur-normal) var(--ease-spring);
     -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item .nav-icon {
     font-size: 20px;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.3s var(--ease-spring);
 }
 
 .nav-item span {
@@ -1243,7 +1250,7 @@ body.failure-mode #statusCard {
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
     animation: calcPulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
-    transition: transform 0.2s;
+    transition: transform var(--dur-normal) var(--ease-spring);
     width: 100%;
 }
 
@@ -1319,7 +1326,7 @@ body.failure-mode #statusCard {
     background: rgba(255, 255, 255, 0.3);
     color: #475569;
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    transition: background var(--dur-normal) var(--ease-spring), color var(--dur-normal), border-color var(--dur-normal), box-shadow var(--dur-normal);
 }
 
 .result-badge.epic {
@@ -1448,7 +1455,7 @@ body.failure-mode #statusCard {
     padding: 14px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     opacity: 0;
-    animation: appFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: appFadeInUp 0.4s var(--ease-spring) forwards;
 }
 
 .detail-item:last-child {
@@ -1586,7 +1593,7 @@ body.failure-mode #statusCard {
     padding: 6px 12px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background var(--dur-normal), color var(--dur-normal);
 }
 
 .history-list {
@@ -1609,7 +1616,7 @@ body.failure-mode #statusCard {
     align-items: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     opacity: 0;
-    animation: appFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: appFadeInUp 0.4s var(--ease-spring) forwards;
 }
 
 .history-card-badge {
@@ -1702,120 +1709,6 @@ body.failure-mode #statusCard {
 }
 
 /* ==== ✨ 第四階段擴建：百科與個人中心 ==== */
-
-/* 百科頁面 (Wiki) */
-.wiki-header {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.wiki-search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 10px 14px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
-}
-
-.wiki-search-box input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    color: #1e293b;
-    font-weight: 500;
-}
-
-.wiki-search-box input::placeholder {
-    color: #94a3b8;
-}
-
-.wiki-filters {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    /* ✨ 關鍵修正：上下增加 padding 空間，讓光暈不會撞到隱形天花板或地板被切斷 */
-    padding: 8px 4px 16px 4px;
-    margin: 0 -4px;
-}
-
-.wiki-filters::-webkit-scrollbar {
-    display: none;
-}
-
-.w-filter {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
-    background: rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    white-space: nowrap;
-}
-
-.w-filter.active {
-    background: #10b981;
-    color: white;
-    border-color: #059669;
-    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
-}
-
-.wiki-featured {
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05));
-    border-color: rgba(16, 185, 129, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.w-feat-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: #10b981;
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 12px;
-}
-
-.w-feat-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #064e3b;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-
-.w-feat-faan {
-    font-size: 14px;
-    color: #059669;
-    font-weight: 700;
-}
-
-.w-feat-desc {
-    font-size: 13px;
-    color: #475569;
-    line-height: 1.5;
-    font-weight: 500;
-}
-
-.dict-desc {
-    font-size: 11px;
-    color: #94a3b8;
-    font-weight: normal;
-    margin-top: 2px;
-}
 
 /* 個人中心 (Profile) */
 .profile-hero {
@@ -1987,7 +1880,7 @@ body.failure-mode #statusCard {
     flex-shrink: 0;
     opacity: 0.4;
     filter: grayscale(1);
-    transition: all 0.5s ease;
+    transition: opacity var(--dur-slow) var(--ease-spring), filter var(--dur-slow) var(--ease-spring), transform var(--dur-slow) var(--ease-spring);
     cursor: default;
 }
 
@@ -2027,7 +1920,7 @@ body.failure-mode #statusCard {
     padding: 16px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background var(--dur-normal) var(--ease-spring);
 }
 
 .setting-item:last-child {
@@ -2118,7 +2011,7 @@ body.failure-mode #statusCard {
     border: 1px solid rgba(255, 255, 255, 0.6);
     white-space: nowrap;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background var(--dur-normal) var(--ease-spring), color var(--dur-normal), border-color var(--dur-normal), box-shadow var(--dur-normal);
 }
 
 .w-filter.active {
@@ -2210,7 +2103,7 @@ body.failure-mode #statusCard {
     flex-direction: column;
     gap: 12px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform var(--dur-normal) var(--ease-spring);
 }
 
 .wiki-basic-card:active {
@@ -2261,7 +2154,7 @@ body.failure-mode #statusCard {
     padding: 14px;
     align-items: center;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background var(--dur-normal) var(--ease-spring);
 }
 
 .w-list-item:active {
@@ -2433,7 +2326,7 @@ body.failure-mode #statusCard {
     background: linear-gradient(90deg, #34d399, #10b981);
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-    transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: width 1s var(--ease-spring);
 }
 
 /* 卡片排版升級 */
@@ -2741,23 +2634,12 @@ body.failure-mode #statusCard {
 
 /* ==== ✨ 百科專屬微動畫 (Micro-animations) ==== */
 
-/* 1. 列表與圖卡的骨牌式滑入動畫 */
-@keyframes wikiFadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(15px) scale(0.98);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
+/* (wikiFadeInUp removed - unified to appFadeInUp) */
 
 .wiki-anim-item {
     opacity: 0;
     /* 初始狀態隱藏，等待動畫觸發 */
-    animation: wikiFadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: appFadeInUp 0.4s var(--ease-spring) forwards;
 }
 
 /* 2. 每日一役徽章的呼吸燈特效 */
@@ -2797,23 +2679,12 @@ body.failure-mode #statusCard {
     animation: floatIcon 1s ease-in-out infinite;
 }
 
-/* ==== ✨ 百科詳情頁：區塊接力滑入動畫 ==== */
-@keyframes detailFadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* (detailFadeInUp removed - unified to appFadeInUp) */
 
 .wd-anim-item {
     opacity: 0;
     /* 預設隱藏，等待動畫觸發 */
-    animation: detailFadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: appFadeInUp 0.4s var(--ease-spring) forwards;
 }
 
 /* ==== ✨ 詳情頁懸浮返回按鈕 (完美置中圖示版) ==== */
@@ -2837,7 +2708,7 @@ body.failure-mode #statusCard {
     align-items: center;
 
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s var(--ease-spring);
 
     /* 排版微調 */
     margin-top: 24px;
@@ -2985,6 +2856,382 @@ body.dark-mode .condition-chip.active {
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
+/* ==== 🌙 深色模式 (Dark Mode) ==== */
+body.dark-mode {
+    background-color: #0f1a12;
+    color: #e2e8f0;
+}
+
+body.dark-mode .bg-base {
+    background: linear-gradient(135deg, #0a1f0f 0%, #112211 50%, #0d1b0d 100%);
+}
+
+body.dark-mode .bg-success {
+    background: linear-gradient(135deg, #0a1f0f 0%, #113322 100%);
+}
+
+body.dark-mode .bg-limit {
+    background: linear-gradient(135deg, #1a1a00 0%, #332b00 100%);
+}
+
+body.dark-mode .bg-failure {
+    background: linear-gradient(135deg, #1a0505 0%, #2a0a0a 100%);
+}
+
+body.dark-mode.success-mode {
+    color: #bbf7d0;
+}
+
+body.dark-mode.limit-mode {
+    color: #fef08a;
+}
+
+body.dark-mode.failure-mode {
+    color: #fecaca;
+}
+
+/* 毛玻璃卡片 */
+body.dark-mode .glass-card {
+    background: rgba(20, 40, 25, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+/* 動態島 */
+body.dark-mode .dynamic-island {
+    background: rgba(15, 30, 18, 0.7);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .island-title {
+    color: #94a3b8;
+}
+
+body.dark-mode .island-title span {
+    color: #94a3b8;
+}
+
+/* 條件 chips */
+body.dark-mode .condition-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+body.dark-mode .condition-chip.active {
+    background: rgba(16, 185, 129, 0.25);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #6ee7b7;
+}
+
+/* 風位選擇器 */
+body.dark-mode .wind-tab {
+    color: #94a3b8;
+}
+
+body.dark-mode .wind-tab.active {
+    color: #e2e8f0;
+}
+
+body.dark-mode .glass-glider {
+    background: rgba(16, 185, 129, 0.3);
+}
+
+/* 花牌 */
+body.dark-mode .flower-tile {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .flower-tile.active {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.15);
+}
+
+/* 麻將牌（鍵盤 + 手牌） */
+body.dark-mode .tile {
+    background-color: rgba(30, 50, 35, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .tile.empty {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .tile.disabled-tile {
+    opacity: 0.25;
+}
+
+/* 底部導航 */
+body.dark-mode .bottom-nav {
+    background: rgba(15, 25, 18, 0.85);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .nav-item {
+    color: #64748b;
+}
+
+body.dark-mode .nav-item.active {
+    color: #6ee7b7;
+}
+
+/* 計算按鈕 */
+body.dark-mode .calc-btn {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+}
+
+/* 結算頁面 */
+body.dark-mode .result-hero {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .result-badge {
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+}
+
+body.dark-mode .result-badge.epic {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+}
+
+body.dark-mode .result-badge.legendary {
+    background: rgba(234, 179, 8, 0.15);
+    color: #fde047;
+}
+
+body.dark-mode .result-badge.fail {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+body.dark-mode .hero-score-value {
+    color: #e2e8f0;
+}
+
+body.dark-mode .hero-main-pattern {
+    color: #6ee7b7 !important;
+}
+
+body.dark-mode .detail-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .detail-item-name {
+    color: #cbd5e1;
+}
+
+body.dark-mode .detail-item-score {
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* 戰績頁面 */
+body.dark-mode .history-card {
+    background: rgba(20, 40, 25, 0.4);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .history-card-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .history-card-sub {
+    color: #94a3b8;
+}
+
+body.dark-mode .history-card-time {
+    color: #64748b;
+}
+
+body.dark-mode .history-empty {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: #64748b;
+}
+
+body.dark-mode .stat-card {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* 百科頁面 */
+body.dark-mode .wiki-search-box {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .wiki-search-box input {
+    color: #e2e8f0;
+}
+
+body.dark-mode .wiki-search-box input::placeholder {
+    color: #64748b;
+}
+
+body.dark-mode .w-filter {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+body.dark-mode .w-filter.active {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+}
+
+body.dark-mode .wiki-section-header {
+    color: #cbd5e1;
+}
+
+body.dark-mode .w-item-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .w-item-desc {
+    color: #94a3b8;
+}
+
+body.dark-mode .wiki-featured {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(15, 30, 20, 0.4));
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+body.dark-mode .w-feat-title {
+    color: #6ee7b7;
+}
+
+body.dark-mode .w-feat-desc {
+    color: #94a3b8;
+}
+
+/* 百科詳情頁 */
+body.dark-mode .w-detail-hero {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(15, 30, 20, 0.3));
+}
+
+body.dark-mode .wd-tip-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .wd-tip-content h4 {
+    color: #e2e8f0;
+}
+
+body.dark-mode .wd-tip-content p {
+    color: #94a3b8;
+}
+
+body.dark-mode .wd-var-card {
+    background: rgba(20, 40, 25, 0.4);
+}
+
+body.dark-mode .wd-var-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .wd-var-desc {
+    color: #94a3b8;
+}
+
+/* 個人中心 */
+body.dark-mode .prof-name {
+    color: #e2e8f0;
+}
+
+body.dark-mode .prof-id {
+    background: rgba(255, 255, 255, 0.06);
+    color: #64748b;
+}
+
+body.dark-mode .prof-level {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+}
+
+body.dark-mode .p-btn-primary {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+body.dark-mode .p-btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .p-stat-val {
+    color: #e2e8f0;
+}
+
+body.dark-mode .p-stat-label {
+    color: #64748b;
+}
+
+body.dark-mode .p-sec-header {
+    color: #94a3b8;
+}
+
+body.dark-mode .medal-name {
+    color: #94a3b8;
+}
+
+body.dark-mode .setting-item {
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+body.dark-mode .s-text {
+    color: #cbd5e1;
+}
+
+body.dark-mode .s-arrow {
+    color: #64748b;
+}
+
+/* 通用文字覆蓋 */
+body.dark-mode .section-title,
+body.dark-mode .card-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .section-sub,
+body.dark-mode .card-sub {
+    color: #94a3b8;
+}
+
+/* 手牌計數文字 */
+body.dark-mode #tileCount,
+body.dark-mode #flowerCount {
+    color: #94a3b8;
+}
+
+/* 動作文字 */
+body.dark-mode #actionText {
+    color: #64748b;
+}
+
+/* 結算頁環境光漫射 (深色模式) */
+body.dark-mode.success-mode .glass-card {
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 20px 50px rgba(16, 185, 129, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode.limit-mode .glass-card {
+    border-color: rgba(234, 179, 8, 0.3);
+    box-shadow: 0 20px 50px rgba(234, 179, 8, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode.failure-mode .glass-card {
+    border-color: rgba(239, 68, 68, 0.2);
+    box-shadow: 0 20px 50px rgba(239, 68, 68, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
 /* ==== ✨ 第二層防禦：系統級自動效能最佳化 (尊重手機的減少透明度設定) ==== */
 @media (prefers-reduced-transparency: reduce) {
 
@@ -3014,157 +3261,4 @@ body.dark-mode .condition-chip.active {
     body.dark-mode .history-card {
         background-color: rgba(26, 44, 32, 0.95) !important;
     }
-}
-
-/* ==== ✨ Safari 終極救星：動態島動畫期間的「全域」偷天換日 ==== */
-
-/* 1. 全域封殺：不只動態島，連同裡面「所有」的按鈕、軌道、花牌，毛玻璃瞬間全部消失！ */
-.dynamic-island.animating-no-blur,
-.dynamic-island.animating-no-blur * {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-}
-
-/* 2. 減輕負擔：Safari 算大陰影非常慢，動畫期間把陰影縮到最小 */
-.dynamic-island.animating-no-blur {
-    background: rgba(255, 255, 255, 0.98) !important;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* 深色模式的替身 */
-body.dark-mode .dynamic-island.animating-no-blur {
-    background: rgba(26, 44, 32, 0.98) !important;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* 3. 強制硬體加速：逼迫 Safari 為這塊內容分配「獨立顯示卡圖層」 */
-.island-content-grid {
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: max-height;
-}
-
-/* ==== ✨ Safari 效能大解救 (方案 A)：拔除所有小元件的毛玻璃 ==== */
-
-/* 1. 針對麻雀牌、設定標籤、花牌、風圈滑塊、清空按鈕 */
-.condition-chip,
-.glass-glider,
-.flower-tile,
-.tile,
-.clear-btn {
-    /* 拔除最容易讓 Safari 當機的特效 */
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    /* 稍微加深不透明度，補償失去毛玻璃後的實體感 */
-    background-color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* 2. 針對沒選中時的「空麻雀牌」特別處理 (讓它保持微透) */
-.tile.empty {
-    background-color: rgba(255, 255, 255, 0.3) !important;
-}
-
-/* 3. 選中狀態的標籤與花牌 (讓它更亮一點) */
-.condition-chip.active {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-.flower-tile.active {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-}
-
-/* 4. 🌙 深色模式下的補償顏色 (深色石板灰) */
-body.dark-mode .condition-chip,
-body.dark-mode .glass-glider,
-body.dark-mode .flower-tile,
-body.dark-mode .tile,
-body.dark-mode .clear-btn {
-    background-color: rgba(30, 41, 59, 0.85) !important;
-}
-
-body.dark-mode .tile.empty {
-    background-color: rgba(30, 41, 59, 0.4) !important;
-}
-
-body.dark-mode .condition-chip.active {
-    background-color: rgba(19, 236, 91, 0.2) !important;
-}
-
-/* ==== ✨ Safari 效能大解救 (方案 C)：精準綁定動畫，禁用 transition: all ==== */
-.tile {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s !important;
-}
-
-.flower-tile {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, background-color 0.3s, border-color 0.3s !important;
-}
-
-.condition-chip {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, background-color 0.3s, border-color 0.3s, color 0.3s !important;
-}
-
-.nav-item {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s, background-color 0.3s, box-shadow 0.3s !important;
-}
-
-/* ==== ✨ Safari 終極救星 (動態島排毒)：拔除果凍回彈與記憶體錯亂 ==== */
-
-/* 1. 動態島外殼：改用 iOS 原生的平滑展開 (ease-out)，並拔除有毒的 will-change: max-width */
-.dynamic-island {
-    transition: max-width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-radius 0.4s ease, background 0.4s ease !important;
-    will-change: transform !important;
-    /* 只保留安全的 transform，其餘全部拔除 */
-}
-
-/* 2. 內部內容網格：拔除高度的果凍回彈與 will-change: max-height */
-.island-content-grid {
-    transition: max-height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-    will-change: auto !important;
-    /* 釋放 Safari 的記憶體 */
-}
-
-/* 3. 內部區塊 (設定標籤/花牌)：拔除滑入時的果凍回彈 */
-.island-section {
-    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
-}
-
-/* 4. 頂部標題與箭頭：拔除旋轉與位移的果凍回彈 */
-.island-title,
-.island-chevron {
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, color 0.3s ease !important;
-}
-
-/* ==== ✨ Safari 終極救星 (原版推擠保留)：魔法結界與排版凍結 ==== */
-
-/* 1. 為下方被推擠的兩大區塊施加「魔法結界」 (CSS Containment) */
-/* 告訴 Safari：手牌和鍵盤被往下推時，裡面的麻雀牌沒有變，請直接把它們當作「截圖圖層」整塊平移！ */
-#handCard,
-#keyboard {
-    contain: layout paint style;
-    -webkit-transform: translateZ(0);
-    /* 強制把它們變成獨立的顯示卡圖層 */
-    transform: translateZ(0);
-    will-change: transform;
-    /* 提早告訴顯示卡：這個區塊會整塊移動 */
-}
-
-/* 2. 凍結動態島內部的寬度 (防止展開時，裡面的字和按鈕瘋狂擠壓重算) */
-.island-content-inner {
-    /* 強制將內部寬度固定為最終展開的大小 (約 390px)。
-       這會讓動態島展開時像「拉開窗簾」一樣露出裡面的東西，而不是邊展開邊把字排版。 */
-    width: 100vw;
-    max-width: 390px;
-}
-
-/* 3. 把原汁原味的 Q 彈果凍回彈加回來，並給動態島也套上結界 */
-.dynamic-island {
-    transition: max-width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.4s ease, background 0.4s ease !important;
-    contain: layout;
-    /* 防止動態島的變形干擾到外部整體的排版規則 */
-}
-
-.island-content-grid {
-    transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-    will-change: auto !important;
-    /* 避免 Safari 記憶體錯亂 */
 }
