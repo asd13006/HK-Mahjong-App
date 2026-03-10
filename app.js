@@ -2,7 +2,7 @@
    🧠 香港麻雀計番神器 - 核心運作大腦 (app.js)
    ========================================== */
 
-const APP_VERSION = 'v2.8.49'; // 更新版號以重置快取
+const APP_VERSION = 'v2.8.50'; // 更新版號以重置快取
 
 let newWorker;
 window.isUpdateReady = false;
@@ -101,17 +101,12 @@ function animatePageBlocks(pageEl) {
     for (let i = 0; i < children.length; i++) {
         children[i].classList.remove('page-block-enter');
         children[i].style.animationDelay = '';
-        children[i].style.opacity = '0';
     }
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            for (let i = 0; i < children.length; i++) {
-                children[i].style.opacity = '';
-                children[i].style.animationDelay = `${i * 0.12}s`;
-                children[i].classList.add('page-block-enter');
-            }
-        });
-    });
+    void pageEl.offsetHeight;
+    for (let i = 0; i < children.length; i++) {
+        children[i].style.animationDelay = `${i * 0.12}s`;
+        children[i].classList.add('page-block-enter');
+    }
 }
 
 function switchPage(targetId) {
