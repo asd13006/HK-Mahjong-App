@@ -11,6 +11,7 @@ const urlsToCache = [
     // App 圖標
     './icon-48.png', './icon-72.png', './icon-96.png', './icon-128.png',
     './icon-144.png', './icon-192.png', './icon-256.png', './icon-384.png', './icon-512.png',
+    './icon-maskable-192.png', './icon-maskable-512.png',
     './privacy.html',
     // JS 模組
     './js/app.js',
