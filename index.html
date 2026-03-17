@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>香港麻雀計番神器</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#f1f5f9">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="48x48" href="icon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="bg-layer bg-base"></div>
+    <div class="bg-layer bg-success"></div>
+    <div class="bg-layer bg-limit"></div>
+    <div class="bg-layer bg-failure"></div>
+
+    <div class="app-container">
+
+        <div id="page-input" class="page active" role="tabpanel" aria-label="手牌選擇">
+            <div id="actionBanner" class="glass-card action-banner">
+                <div id="actionText" class="action-text">請選取 14 張牌</div>
+                <button id="calcBtn" class="calc-btn" style="display: none;" aria-label="開始結算"><i
+                        class="ic">auto_awesome</i> 開始結算</button>
+            </div>
+            <div id="conditionsIsland" class="dynamic-island" role="region" aria-label="牌局設定">
+                <div id="islandHeaderBtn" class="island-header" role="button" aria-expanded="false"
+                    aria-controls="conditionsIsland" aria-label="展開牌局設定">
+                    <div id="islandTitle" class="island-title"><i class="ic">tune</i> 牌局設定</div>
+                    <div class="island-chevron"><i class="ic">expand_more</i></div>
+                </div>
+                <div class="island-content-grid">
+                    <div class="island-content-inner">
+                        <div class="island-section">
+                            <div class="island-section-header"><span>特殊牌型</span></div>
+                            <div id="conditionsBar" class="conditions-wrapper"></div>
+                        </div>
+                        <div class="island-divider"></div>
+                        <div class="island-section">
+                            <div class="wind-layout-container">
+                                <div class="wind-block">
+                                    <div class="island-section-header"><span>圈</span></div>
+                                    <div id="roundWindSelector" class="wind-segment-control" role="radiogroup"
+                                        aria-label="圈風選擇">
+                                        <div class="glass-glider" style="transform: translateX(0%);"></div>
+                                        <div class="wind-tab active">東</div>
+                                        <div class="wind-tab">南</div>
+                                        <div class="wind-tab">西</div>
+                                        <div class="wind-tab">北</div>
+                                    </div>
+                                </div>
+                                <div class="wind-divider"></div>
+                                <div class="wind-block">
+                                    <div class="island-section-header"><span>位</span></div>
+                                    <div id="seatWindSelector" class="wind-segment-control" role="radiogroup"
+                                        aria-label="位風選擇">
+                                        <div class="glass-glider" style="transform: translateX(0%);"></div>
+                                        <div class="wind-tab active">東</div>
+                                        <div class="wind-tab">南</div>
+                                        <div class="wind-tab">西</div>
+                                        <div class="wind-tab">北</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="island-divider"></div>
+                        <div class="island-section">
+                            <div class="island-section-header"><span>花牌</span><span id="flowerCount">已選 0 隻</span></div>
+                            <div id="flowerGrid" class="flower-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="handCard" class="glass-card hand-container">
+                <div class="hand-header"><span id="tileCount">暗牌已選 0 / 14</span><button id="clearBtnId"
+                        class="clear-btn">清空</button></div>
+                <div id="handGrid" class="tiles-grid"></div>
+            </div>
+            <div id="keyboard" class="glass-card keyboard" role="group" aria-label="選牌鍵盤"></div>
+        </div>
+
+        <div id="page-result" class="page" role="tabpanel" aria-label="結算結果">
+            <div id="resultHeroCard" class="glass-card result-hero">
+                <div class="hero-content">
+                    <div class="hero-header"><span id="resultBadge" class="result-badge">等待中</span></div>
+                    <div class="hero-score-area">
+                        <div class="hero-label">總番數</div>
+                        <div class="hero-score-display"><span id="heroScoreValue"
+                                class="hero-score-number">--</span><span id="heroScoreUnit" class="hero-unit">番</span>
+                        </div>
+                    </div>
+                    <div class="hero-divider"></div>
+                    <div class="hero-main-pattern"><span class="main-pattern-label">主要役種</span><span
+                            id="heroMainPatternName" class="main-pattern-name">--</span></div>
+                </div>
+            </div>
+            <div class="status-grid">
+                <div class="status-box glass-card">
+                    <div class="status-box-label">圈風</div>
+                    <div id="resRoundWind" class="status-box-value">--</div>
+                </div>
+                <div class="status-box glass-card">
+                    <div class="status-box-label">位風</div>
+                    <div id="resSeatWind" class="status-box-value">--</div>
+                </div>
+                <div class="status-box glass-card">
+                    <div class="status-box-label">花牌</div>
+                    <div id="resFlowers" class="status-box-value">--</div>
+                </div>
+            </div>
+            <div class="detail-list-container glass-card">
+                <div class="detail-list-title">番數詳情</div>
+                <div id="detailList" class="detail-list">
+                    <div class="detail-empty">尚未結算</div>
+                </div>
+            </div>
+            <div class="result-actions glass-card">
+                <button id="backToInputBtn" class="action-btn back-btn"><i class="ic">arrow_back</i> 返回修改</button>
+            </div>
+        </div>
+
+        <div id="page-history" class="page" role="tabpanel" aria-label="歷史戰績">
+            <div class="history-dashboard glass-card">
+                <div class="dashboard-title">生涯戰績</div>
+                <div class="win-rate-container">
+                    <div class="win-rate-header">
+                        <span class="win-rate-label">成功食糊勝率</span>
+                        <span class="win-rate-value" id="statWinRate">0%</span>
+                    </div>
+                    <div class="win-rate-bar-bg">
+                        <div class="win-rate-bar-fill" id="statWinRateBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box highlight">
+                        <div class="stat-label">最高番數</div>
+                        <div class="stat-value"><span id="statMaxFaan">0</span><span class="stat-unit">番</span></div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">總局數</div>
+                        <div class="stat-value"><span id="statTotalGames">0</span><span
+                                class="stat-unit stat-unit-sm">局</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="history-list-container">
+                <div class="history-header">
+                    <div class="history-title">近期牌局</div><button id="clearHistoryBtn"
+                        class="clear-history-btn">清空紀錄</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <div class="history-empty">暫無戰績紀錄，快去胡一把大牌吧！</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-wiki" class="page" role="tabpanel" aria-label="牌型百科">
+            <div class="wiki-top-panel glass-card">
+                <div class="wiki-search-box">
+                    <i class="ic">search</i><input type="text" id="wikiSearch" placeholder="搜尋番種 (如: 大三元、平糊...)"
+                        aria-label="搜尋番種">
+                </div>
+                <div class="wiki-filters">
+                    <div class="w-filter active" data-filter="all">全部</div>
+                    <div class="w-filter" data-filter="common">1-3 番</div>
+                    <div class="w-filter" data-filter="mid">4-9 番</div>
+                    <div class="w-filter" data-filter="limit">爆棚例牌</div>
+                </div>
+            </div>
+
+            <div class="wiki-section-header"><i class="ic">tips_and_updates</i> 每日一役</div>
+            <div class="wiki-featured glass-card">
+                <div class="w-feat-badge">13 番 (爆棚)</div>
+                <div class="w-feat-title">大四喜</div>
+                <div class="w-feat-desc">由東、南、西、北四種風牌刻子組成的終極和牌。</div>
+                <div class="w-feat-tiles">
+                    <div class="w-tile" style="background-image: url('tiles/z1.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z1.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z1.svg')"></div>
+                    <div style="width: 4px;"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z2.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z2.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z2.svg')"></div>
+                    <div style="width: 4px;"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z3.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z3.svg')"></div>
+                    <div class="w-tile" style="background-image: url('tiles/z3.svg')"></div>
+                </div>
+            </div>
+
+            <div class="wiki-section-header"><i class="ic">local_library</i> 入門基礎</div>
+            <div class="wiki-basics-grid">
+                <div class="wiki-basic-card glass-card">
+                    <div class="w-basic-icon w-basic-icon--blue"><i class="ic">menu_book</i></div>
+                    <div class="w-basic-text">
+                        <div class="w-basic-title">基本規則</div>
+                        <div class="w-basic-sub">流程與動作解析</div>
+                    </div>
+                </div>
+                <div class="wiki-basic-card glass-card">
+                    <div class="w-basic-icon w-basic-icon--purple"><i class="ic">calculate</i></div>
+                    <div class="w-basic-text">
+                        <div class="w-basic-title">計分原理</div>
+                        <div class="w-basic-sub">底台與番數計算</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wikiContentArea" class="wiki-content-area"></div>
+        </div>
+
+        <div id="page-wiki-detail" class="page" role="tabpanel" aria-label="牌型詳情">
+
+            <button id="btnBackToWiki" class="floating-back-btn">
+                <span class="ic ic-back">chevron_left</span>
+            </button>
+
+            <div class="w-detail-hero">
+                <div class="w-detail-glow-bg"></div>
+                <h1 id="wdTitle" class="w-detail-title">對對糊</h1>
+                <div class="w-detail-badge"><span id="wdFaan">3 番</span></div>
+            </div>
+
+            <div class="w-detail-preview glass-card">
+                <div class="wd-preview-tiles" id="wdPreviewTiles"></div>
+            </div>
+
+            <div class="w-detail-section">
+                <div class="wd-sec-title"><span class="wd-sec-dot"></span>說明</div>
+                <div class="wd-desc-card glass-card" id="wdDesc"></div>
+            </div>
+
+            <div class="w-detail-section" id="wdTipsSection">
+                <div class="wd-sec-title"><span class="wd-sec-dot dot-yellow"></span>實戰技巧</div>
+                <div class="wd-tips-card glass-card" id="wdTips"></div>
+            </div>
+
+            <div class="w-detail-section" id="wdVarsSection">
+                <div class="wd-sec-title wd-sec-title--spread">
+                    <div class="wd-sec-title-inner"><span class="wd-sec-dot"></span>牌型變化</div>
+                    <span class="wd-sec-sub">向右滑動查看更多</span>
+                </div>
+                <div class="wd-vars-scroll" id="wdVars"></div>
+            </div>
+
+            <div class="spacer-md"></div>
+        </div>
+
+        <div id="page-profile" class="page" role="tabpanel" aria-label="個人檔案">
+            <div class="glass-card profile-hero">
+                <div class="prof-avatar-ring">
+                    <div class="prof-avatar"><i class="ic">person</i></div>
+                </div>
+                <div class="prof-info">
+                    <div class="prof-name">雀神大師</div>
+                    <div class="prof-level" id="profLevelText"><i class="ic">emoji_events</i> 雀壇新星 LV.1</div>
+                </div>
+                <div class="prof-actions">
+                    <button class="p-btn-primary" disabled><i class="ic">diamond</i> 升級尊貴版</button>
+                    <button class="p-btn-secondary" disabled><i class="ic">ios_share</i> 分享成就</button>
+                </div>
+            </div>
+
+            <div class="prof-stats-grid">
+                <div class="glass-card p-stat-box">
+                    <div class="p-stat-icon p-stat-icon--blue"><i class="ic">bar_chart</i></div>
+                    <div class="p-stat-val" id="profTotalGamesVal">0</div>
+                    <div class="p-stat-label">累計計分局數</div>
+                </div>
+                <div class="glass-card p-stat-box">
+                    <div class="p-stat-icon p-stat-icon--amber"><i class="ic">emoji_events</i></div>
+                    <div class="p-stat-val"><span id="profMaxFaanVal">0</span><span class="p-stat-unit">番</span></div>
+                    <div class="p-stat-label">個人最佳紀錄</div>
+                </div>
+            </div>
+
+            <div class="prof-section">
+                <div class="p-sec-header">最近獲得勳章</div>
+                <div class="medals-scroll-container">
+                    <div class="medal-item" id="medal-win">
+                        <div class="medal-icon glass-card medal-icon--red"><i class="ic">local_fire_department</i></div>
+                        <div class="medal-name">胡牌開張</div>
+                    </div>
+                    <div class="medal-item" id="medal-flower">
+                        <div class="medal-icon glass-card medal-icon--pink"><i class="ic">local_florist</i></div>
+                        <div class="medal-name">花胡達人</div>
+                    </div>
+                    <div class="medal-item" id="medal-limit">
+                        <div class="medal-icon glass-card medal-icon--yellow"><i class="ic">star</i></div>
+                        <div class="medal-name">爆棚大師</div>
+                    </div>
+                    <div class="medal-item" id="medal-legend">
+                        <div class="medal-icon glass-card medal-icon--purple"><i class="ic">auto_fix_high</i></div>
+                        <div class="medal-name">傳說降臨</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prof-section">
+                <div class="p-sec-header">應用程式設定</div>
+                <div class="glass-card settings-list">
+                    <div class="setting-item" id="btnSystemClear">
+                        <div class="s-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i
+                                class="ic">delete</i></div>
+                        <div class="s-text">清除系統暫存 (防卡頓)</div>
+                        <div class="s-arrow"><i class="ic">chevron_right</i></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="s-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i
+                                class="ic">straighten</i></div>
+                        <div class="s-text">
+                            <div>規則設定</div>
+                            <div class="s-text-sub">香港麻將 (3番起糊)</div>
+                        </div>
+                        <div class="s-arrow"><i class="ic">chevron_right</i></div>
+                    </div>
+                    <div class="setting-item" onclick="window.open('privacy.html','_blank')">
+                        <div class="s-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i
+                                class="ic">shield</i></div>
+                        <div class="s-text">隱私權政策</div>
+                        <div class="s-arrow"><i class="ic">chevron_right</i></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="s-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;"><i
+                                class="ic">info</i></div>
+                        <div class="s-text">關於我們</div>
+                        <div class="s-arrow" id="appVersionProfile">v2.8.37</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-footer">Developed by Leo Lai</div>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav" role="tablist" aria-label="主要導航">
+        <div class="nav-item active" data-target="page-input" role="tab" aria-selected="true" aria-label="手牌">
+            <div class="nav-icon"><i class="ic">playing_cards</i></div><span>手牌</span>
+        </div>
+        <div class="nav-item" data-target="page-history" role="tab" aria-selected="false" aria-label="戰績">
+            <div class="nav-icon"><i class="ic">emoji_events</i></div><span>戰績</span>
+        </div>
+        <div class="nav-item" data-target="page-wiki" role="tab" aria-selected="false" aria-label="百科">
+            <div class="nav-icon"><i class="ic">auto_stories</i></div><span>百科</span>
+        </div>
+        <div class="nav-item" data-target="page-profile" role="tab" aria-selected="false" aria-label="我的">
+            <div class="nav-icon"><i class="ic">person</i></div><span>我的</span>
+        </div>
+    </nav>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
