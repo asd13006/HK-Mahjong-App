@@ -1,5 +1,5 @@
 // 🔥 黃金法則：每次發布新版本，一定要手動修改這裡的版號！(例如下一次改為 v2.8.5)
-const APP_VERSION = "v2.10.3";
+const APP_VERSION = "v2.10.4";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [
