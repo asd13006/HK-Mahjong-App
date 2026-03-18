@@ -817,14 +817,16 @@ body.failure-mode {
 /* 導航按鈕樣式 */
 .nav-item {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: center;
     gap: 4px;
     padding: 6px 14px;
     border-radius: 20px;
+    border: 1px solid transparent;
     color: #64748b;
     cursor: pointer;
-    transition: color var(--dur-normal) var(--ease-smooth), transform var(--dur-normal) var(--ease-smooth);
+    transition: color var(--dur-normal) var(--ease-smooth), background var(--dur-normal) var(--ease-smooth), border-color var(--dur-normal) var(--ease-smooth);
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -847,12 +849,16 @@ body.failure-mode {
 }
 
 .nav-item.active span {
-    font-weight: 700;
     opacity: 1;
 }
 
 .nav-item.active .nav-icon {
     transform: none;
+}
+
+/* 導航按鈕按壓回饋 - 比一般按鈕更柔和 */
+.nav-item.is-tapped-chip {
+    transform: scale(0.95) !important;
 }
 
 /* ==== 結算按鈕與結果頁按鈕 ==== */
