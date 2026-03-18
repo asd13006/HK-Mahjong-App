@@ -11,6 +11,7 @@ export const state = {
     tileKeyCounter: 0,
     lastMax: 14,
     wikiScrollPos: 0,
+    inputScrollPos: 0,
     wikiDetailTransitioning: false,
     currentResultSnapshot: null,
     isClearing: false,

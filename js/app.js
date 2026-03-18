@@ -169,6 +169,45 @@ function init() {
     setupWikiFilters();
     renderHistory();
     populateWiki();
+
+    // Bug #5: Android 返回鍵支援
+    history.replaceState({ page: 'page-input' }, '');
+    window.addEventListener('popstate', (e) => {
+        const targetId = e.state && e.state.page ? e.state.page : 'page-input';
+        // 離開結果頁時重置
+        const currentPage = document.querySelector('.page.active');
+        if (currentPage && currentPage.id === 'page-result') {
+            resetResultCard();
+        }
+        // 直接切換頁面，不再 pushState (避免無限迴圈)
+        document.body.className = '';
+        document.querySelectorAll('body > .tile').forEach((el) => el.remove());
+        document.querySelectorAll('.nav-item').forEach((nav) => {
+            nav.classList.remove('active');
+            nav.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
+        const targetNav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+        if (targetNav) {
+            targetNav.classList.add('active');
+            targetNav.setAttribute('aria-selected', 'true');
+        } else {
+            const inputNav = document.querySelector('.nav-item[data-target="page-input"]');
+            if (inputNav) {
+                inputNav.classList.add('active');
+                inputNav.setAttribute('aria-selected', 'true');
+            }
+        }
+        const pageEl = document.getElementById(targetId);
+        pageEl.classList.add('active');
+        const container = document.querySelector('.app-container');
+        if (targetId === 'page-input') {
+            container.scrollTo({ top: state.inputScrollPos, behavior: 'instant' });
+        } else {
+            container.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        if (targetId === 'page-profile') updateProfileData();
+    });
 }
 
 init();

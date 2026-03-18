@@ -142,8 +142,7 @@ function getExtras(counts) {
             if (
                 cond.id === 'selfDrawn' &&
                 (state.activeConditions.has('kongSelfDrawn') ||
-                    state.activeConditions.has('doubleKongSelfDrawn') ||
-                    state.activeConditions.has('lastTile'))
+                    state.activeConditions.has('doubleKongSelfDrawn'))
             )
                 return;
             condFaan += cond.faan;

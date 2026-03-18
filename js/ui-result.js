@@ -103,14 +103,23 @@ function displayResult(faan, tags, isWin) {
         timestamp: new Date().getTime(),
     };
 
-    // 自動儲存戰績
+    // 自動儲存戰績 (防止重複儲存)
     if (state.currentResultSnapshot) {
         let history = safeGetHistory();
-        history.unshift(state.currentResultSnapshot);
-        if (history.length > 50) history.pop();
-        safeSaveHistory(history);
-        renderHistory();
-        updateProfileData();
+        const last = history[0];
+        const snap = state.currentResultSnapshot;
+        const isDuplicate = last &&
+            last.faan === snap.faan &&
+            last.mainPattern === snap.mainPattern &&
+            last.subPatterns === snap.subPatterns &&
+            Math.abs(last.timestamp - snap.timestamp) < 5000;
+        if (!isDuplicate) {
+            history.unshift(snap);
+            if (history.length > 50) history.pop();
+            safeSaveHistory(history);
+            renderHistory();
+            updateProfileData();
+        }
     }
 
     tags.forEach((t, index) => {

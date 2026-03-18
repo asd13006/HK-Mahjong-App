@@ -1,5 +1,5 @@
 // 🔥 黃金法則：每次發布新版本，一定要手動修改這裡的版號！(例如下一次改為 v2.8.5)
-const APP_VERSION = "v2.11.2";
+const APP_VERSION = "v2.12.0";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [
@@ -46,19 +46,35 @@ const urlsToCache = [
 self.addEventListener('install', (e) => {
     console.log('[SW] 安裝新版本:', CACHE_NAME);
     e.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            // 🌟 核心修復：在網址後面加上隨機時間戳，強迫伺服器給我們「最新」的檔案
-            return Promise.all(
-                urlsToCache.map((url) => {
-                    const request = new Request(`${url}?_bust=${Date.now()}`, { cache: 'no-store' });
-                    return fetch(request).then((response) => {
-                        if (!response.ok) throw new Error(`Network error for ${url}`);
-                        // 抓到最新檔案後，把它存回原本乾淨的 URL 鍵值中 (例如 './app.js')
-                        return cache.put(url, response);
-                    });
-                })
-            );
-        })
+        Promise.all([
+            caches.open(CACHE_NAME).then((cache) => {
+                // 🌟 核心修復：在網址後面加上隨機時間戳，強迫伺服器給我們「最新」的檔案
+                return Promise.all(
+                    urlsToCache.map((url) => {
+                        const request = new Request(`${url}?_bust=${Date.now()}`, { cache: 'no-store' });
+                        return fetch(request).then((response) => {
+                            if (!response.ok) throw new Error(`Network error for ${url}`);
+                            // 抓到最新檔案後，把它存回原本乾淨的 URL 鍵值中 (例如 './app.js')
+                            return cache.put(url, response);
+                        });
+                    })
+                );
+            }),
+            // Bug #8: 預先快取 Google Fonts CSS，確保離線時圖標字型可用
+            caches.open('google-fonts').then((cache) => {
+                const fontUrls = [
+                    'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;600;700;800&display=swap',
+                    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap',
+                ];
+                return Promise.all(
+                    fontUrls.map((url) =>
+                        fetch(url).then((res) => {
+                            if (res.ok) return cache.put(url, res);
+                        }).catch(() => { /* 字型快取失敗不阻擋安裝 */ })
+                    )
+                );
+            }),
+        ])
     );
 });
 

@@ -156,6 +156,7 @@ export function renderKeyboard() {
         const row = document.createElement('div');
         row.className = 'suit-row';
         const limit = def.names ? def.names.length : def.count;
+        if (def.names) row.classList.add('suit-row-zi');
         for (let i = 0; i < limit; i++) {
             const id = def.startId + i;
             const btn = document.createElement('div');
@@ -352,7 +353,7 @@ export function clearHand() {
     document.getElementById('flowerCount').innerText = `已選 0 隻`;
     const grid = document.getElementById('handGrid');
     grid.innerHTML = '';
-    for (let i = 0; i < oldMax; i++) {
+    for (let i = 0; i < 14; i++) {
         const empty = document.createElement('div');
         empty.className = 'tile empty';
         grid.appendChild(empty);
@@ -360,7 +361,7 @@ export function clearHand() {
     document.getElementById('tileCount').innerText = `暗牌已選 0 / 14`;
     setTimeout(
         () => {
-            state.lastMax = oldMax;
+            state.lastMax = 14;
             renderHand();
             state.isClearing = false;
         },

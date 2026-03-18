@@ -3,12 +3,19 @@
    ========================================== */
 
 import { STAGGER_BLOCK } from './constants.js';
+import { state } from './state.js';
+
+let _smoothHeightTimer = null;
 
 export function smoothHeightUpdate(elementId, updateDOM) {
     const el = document.getElementById(elementId);
     if (!el) {
         updateDOM();
         return;
+    }
+    if (_smoothHeightTimer) {
+        clearTimeout(_smoothHeightTimer);
+        _smoothHeightTimer = null;
     }
     const oldHeight = el.offsetHeight;
     updateDOM();
@@ -22,7 +29,8 @@ export function smoothHeightUpdate(elementId, updateDOM) {
         el.offsetHeight;
         el.style.transition = 'height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
         el.style.height = newHeight + 'px';
-        setTimeout(() => {
+        _smoothHeightTimer = setTimeout(() => {
+            _smoothHeightTimer = null;
             el.style.height = 'auto';
             el.style.transition = '';
             el.style.overflow = oldOverflow;
@@ -45,6 +53,19 @@ export function animatePageBlocks(pageEl) {
 }
 
 export function switchPage(targetId) {
+    // Bug #1: 離開結果頁時重置背景色
+    document.body.className = '';
+
+    // Bug #4: 離開手牌頁時記住捲動位置
+    const container = document.querySelector('.app-container');
+    const currentPage = document.querySelector('.page.active');
+    if (currentPage && currentPage.id === 'page-input') {
+        state.inputScrollPos = container.scrollTop;
+    }
+
+    // Bug #6: 清除殘留的清空動畫 clone
+    document.querySelectorAll('body > .tile').forEach((el) => el.remove());
+
     document.querySelectorAll('.nav-item').forEach((nav) => {
         nav.classList.remove('active');
         nav.setAttribute('aria-selected', 'false');
@@ -54,9 +75,24 @@ export function switchPage(targetId) {
     if (targetNav) {
         targetNav.classList.add('active');
         targetNav.setAttribute('aria-selected', 'true');
+    } else {
+        // Bug #3: 結果頁等無對應 nav 的頁面，保留手牌 tab 高亮
+        const inputNav = document.querySelector('.nav-item[data-target="page-input"]');
+        if (inputNav) {
+            inputNav.classList.add('active');
+            inputNav.setAttribute('aria-selected', 'true');
+        }
     }
     const pageEl = document.getElementById(targetId);
     pageEl.classList.add('active');
-    document.querySelector('.app-container').scrollTo({ top: 0, behavior: 'instant' });
+    // Bug #4: 回到手牌頁時恢復捲動位置
+    if (targetId === 'page-input') {
+        container.scrollTo({ top: state.inputScrollPos, behavior: 'instant' });
+    } else {
+        container.scrollTo({ top: 0, behavior: 'instant' });
+    }
     animatePageBlocks(pageEl);
+
+    // Bug #5: 推入瀏覽器歷史，讓 Android 返回鍵能回到上一頁
+    history.pushState({ page: targetId }, '');
 }

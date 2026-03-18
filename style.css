@@ -558,6 +558,11 @@ body.failure-mode {
     gap: 5px;
 }
 
+.suit-row-zi {
+    grid-template-columns: repeat(7, 1fr);
+    max-width: calc(7 / 9 * 100%);
+}
+
 .tile {
     aspect-ratio: 3/4;
     width: 100%;
@@ -1552,6 +1557,14 @@ body.failure-mode {
 
 .setting-item:active {
     background: rgba(0, 0, 0, 0.02);
+}
+
+.setting-item.setting-static {
+    cursor: default;
+}
+
+.setting-item.setting-static:active {
+    background: transparent;
 }
 
 .s-icon {
