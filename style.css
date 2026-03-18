@@ -115,11 +115,11 @@ body {
     /* 純淨灰藍色背景 */
     background-color: #f1f5f9;
     color: #1e293b;
-    height: 100vh;
+    position: fixed;
+    inset: 0;
     overflow: hidden;
     display: flex;
     justify-content: center;
-    position: relative;
     padding-top: max(30px, env(safe-area-inset-top) + 10px);
     padding-right: 15px;
     padding-bottom: max(8px, env(safe-area-inset-bottom));
