@@ -57,6 +57,6 @@ export function switchPage(targetId) {
     }
     const pageEl = document.getElementById(targetId);
     pageEl.classList.add('active');
-    document.querySelector('.app-container').scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
     animatePageBlocks(pageEl);
 }

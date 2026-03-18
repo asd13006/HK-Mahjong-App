@@ -135,7 +135,7 @@ function init() {
             document.getElementById('page-wiki').classList.add('active');
             state.wikiDetailTransitioning = true;
             setTimeout(() => { state.wikiDetailTransitioning = false; }, 500);
-            document.querySelector('.app-container').scrollTo({ top: state.wikiScrollPos, behavior: 'instant' });
+            window.scrollTo({ top: state.wikiScrollPos, behavior: 'instant' });
         },
         'is-tapped-chip',
     );

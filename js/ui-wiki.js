@@ -299,11 +299,11 @@ function openWikiDetail(item) {
         varsSec.style.display = 'none';
     }
 
-    state.wikiScrollPos = document.querySelector('.app-container').scrollTop;
+    state.wikiScrollPos = window.scrollY;
 
     document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
     document.getElementById('page-wiki-detail').classList.add('active');
-    document.querySelector('.app-container').scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
 
     const hero = document.querySelector('.w-detail-hero');
     const preview = document.querySelector('.w-detail-preview');

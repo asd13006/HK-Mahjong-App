@@ -97,14 +97,12 @@
 
 html,
 body {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-html::-webkit-scrollbar,
 body::-webkit-scrollbar {
     display: none;
 }
@@ -113,10 +111,14 @@ body {
     /* 純淨灰藍色背景 */
     background-color: #f1f5f9;
     color: #1e293b;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     position: relative;
-    padding: 0;
+    padding-top: max(30px, env(safe-area-inset-top) + 10px);
+    padding-right: 15px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    padding-left: 15px;
     touch-action: pan-y;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -195,21 +197,8 @@ body.failure-mode {
     gap: 18px;
     position: relative;
     z-index: 1;
-    padding-top: max(30px, env(safe-area-inset-top) + 10px);
-    padding-right: 15px;
-    padding-bottom: 18px;
-    padding-left: 15px;
+    padding-bottom: 20px;
     flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.app-container::-webkit-scrollbar {
-    display: none;
 }
 
 /* 卡片底板 */
@@ -770,7 +759,7 @@ body.failure-mode {
 
 /* 確保整個畫面底部有足夠空間，不會被導航列擋住鍵盤 */
 .app-container {
-    padding-bottom: calc(95px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 95px;
 }
 
 /* 房間的隱形斗篷設定 */
@@ -798,7 +787,7 @@ body.failure-mode {
 /* 底部導航列 */
 .bottom-nav {
     position: fixed;
-    bottom: 10px;
+    bottom: max(15px, env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
