@@ -95,6 +95,11 @@
     font-variation-settings: 'FILL' 1, 'wght' 400;
 }
 
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
 html,
 body {
     overscroll-behavior-y: none;
@@ -111,7 +116,10 @@ body {
     /* 純淨灰藍色背景 */
     background-color: #f1f5f9;
     color: #1e293b;
-    min-height: 100vh;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     display: flex;
     justify-content: center;
     position: relative;
