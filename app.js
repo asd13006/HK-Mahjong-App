@@ -9,7 +9,7 @@
        📦 全域狀態（封裝於 IIFE 內）
        ------------------------------------------ */
 
-    const APP_VERSION = 'v2.8.52'; // 更新版號以重置快取
+    const APP_VERSION = 'v2.9.3'; // 更新版號以重置快取
     let currentResultSnapshot = null;
     let isClearing = false;
 
