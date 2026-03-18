@@ -234,7 +234,6 @@ body.failure-mode {
     color: #334155;
     transition: max-width var(--dur-expand) var(--ease-spring), border-radius var(--dur-expand) var(--ease-smooth), background var(--dur-expand) var(--ease-smooth);
     transform: translateZ(0);
-    will-change: max-width, border-radius, transform;
     contain: layout;
 }
 
@@ -292,7 +291,6 @@ body.failure-mode {
     display: block;
     max-height: 0;
     transition: max-height var(--dur-expand) var(--ease-spring);
-    will-change: max-height;
 }
 
 .dynamic-island.expanded .island-content-grid {
@@ -344,7 +342,6 @@ body.failure-mode {
 
 .island-section-header {
     font-size: 12px;
-    opacity: 0.8;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
@@ -386,8 +383,6 @@ body.failure-mode {
     border-color: #059669;
     color: #fff;
     box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
-    transform: scale(1.02);
-    z-index: 10;
 }
 
 .condition-chip:nth-child(7),
@@ -459,18 +454,16 @@ body.failure-mode {
     font-size: 13px;
     cursor: pointer;
     color: #94a3b8;
-    font-weight: 600;
+    font-weight: 700;
     position: relative;
     z-index: 2;
-    transition: all 0.2s ease;
-    will-change: transform;
+    transition: color 0.2s ease;
 }
 
 /* 選中風圈文字 */
 .wind-tab.active {
     color: #059669;
     -webkit-text-fill-color: #059669;
-    font-weight: 800;
 }
 
 .wind-divider {
@@ -1638,7 +1631,7 @@ body.failure-mode {
 .w-filter.active {
     background: #10b981;
     color: white;
-    border-color: transparent;
+    border-color: #059669;
 }
 
 .wiki-section-header {
@@ -2328,8 +2321,6 @@ body.failure-mode {
     opacity: 0.3 !important;
     filter: grayscale(80%);
     pointer-events: none;
-    /* 禁止點擊與觸控 */
-    transform: scale(0.95);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
