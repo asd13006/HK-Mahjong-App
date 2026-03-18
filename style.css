@@ -96,8 +96,6 @@
 }
 
 html {
-    height: 100%;
-    overflow: hidden;
     background-color: #f1f5f9;
 }
 
@@ -116,14 +114,14 @@ body {
     /* 純淨灰藍色背景 */
     background-color: #f1f5f9;
     color: #1e293b;
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
     display: flex;
     justify-content: center;
     position: relative;
     padding-top: max(30px, env(safe-area-inset-top) + 10px);
     padding-right: 15px;
-    padding-bottom: 0;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
     padding-left: 15px;
     touch-action: pan-y;
     -webkit-user-select: none;
