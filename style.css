@@ -819,13 +819,6 @@ body.failure-mode {
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
-/* PWA 獨立模式：沒有瀏覽器工具列，需要避開 Home Indicator */
-@media (display-mode: standalone) {
-    .bottom-nav {
-        bottom: max(10px, env(safe-area-inset-bottom, 10px));
-    }
-}
-
 /* 導航按鈕樣式 */
 .nav-item {
     display: flex;
