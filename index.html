@@ -337,6 +337,12 @@
                         <div class="s-text">隱私權政策</div>
                         <div class="s-arrow"><i class="ic">chevron_right</i></div>
                     </div>
+                    <div class="setting-item" id="btnCheckUpdate">
+                        <div class="s-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i
+                                class="ic">system_update</i></div>
+                        <div class="s-text">檢查更新</div>
+                        <div class="s-arrow"><i class="ic">chevron_right</i></div>
+                    </div>
                     <div class="setting-item">
                         <div class="s-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;"><i
                                 class="ic">info</i></div>
@@ -372,6 +378,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
+                    // 將註冊儲存到全域，供手動檢查更新使用
+                    window.__swReg = reg;
                     // 每次打開 app 主動檢查更新
                     reg.update();
 

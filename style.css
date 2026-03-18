@@ -116,8 +116,7 @@ body {
     background-color: #f1f5f9;
     color: #1e293b;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
     position: relative;
     padding: 0;
     touch-action: pan-y;
@@ -773,7 +772,7 @@ body.failure-mode {
 
 /* 確保整個畫面底部有足夠空間，不會被導航列擋住鍵盤 */
 .app-container {
-    padding-bottom: 18px;
+    padding-bottom: calc(95px + env(safe-area-inset-bottom, 0px));
 }
 
 /* 房間的隱形斗篷設定 */
@@ -800,23 +799,24 @@ body.failure-mode {
 
 /* 底部導航列 */
 .bottom-nav {
-    flex-shrink: 0;
+    position: fixed;
+    bottom: max(15px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 420px;
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 8px 5px;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
     z-index: 1000;
 
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(12px) saturate(120%);
     -webkit-backdrop-filter: blur(12px) saturate(120%);
-    border-radius: 18px 18px 0 0;
+    border-radius: 18px;
     border: 1px solid rgba(0, 0, 0, 0.06);
-    border-bottom: none;
-    box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
 /* 導航按鈕樣式 */

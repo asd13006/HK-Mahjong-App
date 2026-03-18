@@ -86,6 +86,35 @@ function init() {
         'is-tapped-chip',
     );
 
+    // 檢查更新
+    attachFastClick(
+        document.getElementById('btnCheckUpdate'),
+        () => {
+            const statusEl = document.querySelector('#btnCheckUpdate .s-text');
+            const originalText = statusEl.textContent;
+            statusEl.textContent = '檢查中...';
+            if (window.__swReg) {
+                window.__swReg.update().then(() => {
+                    // 如果有新版 SW 正在安裝，updatefound 事件會自動處理
+                    const waiting = window.__swReg.waiting;
+                    if (waiting) {
+                        waiting.postMessage({ type: 'SKIP_WAITING' });
+                    } else {
+                        statusEl.textContent = '已是最新版本 ✅';
+                        setTimeout(() => { statusEl.textContent = originalText; }, 2000);
+                    }
+                }).catch(() => {
+                    statusEl.textContent = '檢查失敗，請確認網絡連線';
+                    setTimeout(() => { statusEl.textContent = originalText; }, 2000);
+                });
+            } else {
+                statusEl.textContent = '無法檢查 (Service Worker 未註冊)';
+                setTimeout(() => { statusEl.textContent = originalText; }, 2000);
+            }
+        },
+        'is-tapped-chip',
+    );
+
     // 清除系統暫存
     attachFastClick(
         document.getElementById('btnSystemClear'),
