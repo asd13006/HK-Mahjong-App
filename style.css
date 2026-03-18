@@ -97,6 +97,8 @@
 
 html,
 body {
+    height: 100%;
+    overflow: hidden;
     overscroll-behavior-y: none;
     overscroll-behavior-x: none;
     scrollbar-width: none;
@@ -114,7 +116,6 @@ body {
     color: #1e293b;
     display: flex;
     justify-content: center;
-    min-height: 100vh;
     position: relative;
     padding-top: max(30px, env(safe-area-inset-top) + 10px);
     padding-right: 15px;
@@ -200,6 +201,14 @@ body.failure-mode {
     z-index: 1;
     padding-bottom: 20px;
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.app-container::-webkit-scrollbar {
+    display: none;
 }
 
 /* 卡片底板 */
