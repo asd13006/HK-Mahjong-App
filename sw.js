@@ -1,5 +1,5 @@
 // 🔥 黃金法則：每次發布新版本，一定要手動修改這裡的版號！(例如下一次改為 v2.8.5)
-const APP_VERSION = "v2.9.4";
+const APP_VERSION = "v2.9.5";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [
@@ -68,7 +68,7 @@ self.addEventListener('activate', (e) => {
     e.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(keyList.map((key) => {
-                if (key !== CACHE_NAME) {
+                if (key !== CACHE_NAME && key !== 'google-fonts') {
                     console.log('[SW] 刪除舊快取:', key);
                     return caches.delete(key);
                 }
@@ -80,10 +80,28 @@ self.addEventListener('activate', (e) => {
     );
 });
 
-// 3. 攔截請求：維持 Cache First 策略
+// 3. 攔截請求：維持 Cache First 策略 + Google Fonts 動態快取
 self.addEventListener('fetch', (e) => {
     // 防呆機制：如果是帶有時間戳的安裝請求，直接放行不攔截
     if (e.request.url.includes('?_bust=')) return;
+
+    const url = e.request.url;
+
+    // Google Fonts (CSS + 字型檔) → Stale-While-Revalidate
+    if (url.startsWith('https://fonts.googleapis.com/') || url.startsWith('https://fonts.gstatic.com/')) {
+        e.respondWith(
+            caches.open('google-fonts').then((cache) =>
+                cache.match(e.request).then((cached) => {
+                    const fetched = fetch(e.request).then((res) => {
+                        if (res.ok) cache.put(e.request, res.clone());
+                        return res;
+                    }).catch(() => cached);
+                    return cached || fetched;
+                })
+            )
+        );
+        return;
+    }
 
     e.respondWith(
         caches.match(e.request).then((res) => {

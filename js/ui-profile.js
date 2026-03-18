@@ -2,7 +2,7 @@
    👤 個人檔案與勳章 (ui-profile.js)
    ========================================== */
 
-import { safeGetHistory, attachFastClick } from './utils.js';
+import { safeGetHistory } from './utils.js';
 
 export function updateProfileData() {
     let history = safeGetHistory();

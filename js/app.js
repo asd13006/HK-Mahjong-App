@@ -79,6 +79,13 @@ function init() {
         'is-tapped-chip',
     );
 
+    // 隱私權政策
+    attachFastClick(
+        document.getElementById('btnPrivacy'),
+        () => window.open('privacy.html', '_blank'),
+        'is-tapped-chip',
+    );
+
     // 清除系統暫存
     attachFastClick(
         document.getElementById('btnSystemClear'),
