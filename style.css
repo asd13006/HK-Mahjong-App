@@ -800,7 +800,7 @@ body.failure-mode {
 /* 底部導航列 */
 .bottom-nav {
     position: fixed;
-    bottom: max(15px, env(safe-area-inset-bottom));
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
@@ -817,6 +817,13 @@ body.failure-mode {
     border-radius: 18px;
     border: 1px solid rgba(0, 0, 0, 0.06);
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* PWA 獨立模式：沒有瀏覽器工具列，需要避開 Home Indicator */
+@media (display-mode: standalone) {
+    .bottom-nav {
+        bottom: max(10px, env(safe-area-inset-bottom, 10px));
+    }
 }
 
 /* 導航按鈕樣式 */
