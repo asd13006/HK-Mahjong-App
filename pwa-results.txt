@@ -1,0 +1,10 @@
+﻿MISS | installable-manifest
+MISS | service-worker
+MISS | themed-omnibox
+MISS | viewport
+MISS | apple-touch-icon
+MISS | maskable-icon
+MISS | splash-screen
+MISS | content-width
+---
+PWA score: 

@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>香港麻雀計番神器</title>
+    <meta name="description" content="香港麻雀計番工具，快速計算手牌番數、查閱番種百科、記錄戰績歷史。支援離線使用的 PWA 應用程式。">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f1f5f9">
@@ -29,7 +30,7 @@
     <div class="bg-layer bg-limit"></div>
     <div class="bg-layer bg-failure"></div>
 
-    <div class="app-container">
+    <main class="app-container">
 
         <div id="page-input" class="page active" role="tabpanel" aria-label="手牌選擇">
             <div id="actionBanner" class="glass-card action-banner">
@@ -39,7 +40,7 @@
             </div>
             <div id="conditionsIsland" class="dynamic-island" role="region" aria-label="牌局設定">
                 <div id="islandHeaderBtn" class="island-header" role="button" aria-expanded="false"
-                    aria-controls="conditionsIsland" aria-label="展開牌局設定">
+                    aria-controls="conditionsIsland">
                     <div id="islandTitle" class="island-title"><i class="ic">tune</i> 牌局設定</div>
                     <div class="island-chevron"><i class="ic">expand_more</i></div>
                 </div>
@@ -347,7 +348,7 @@
             <div class="app-footer">Developed by Leo Lai</div>
         </div>
 
-    </div>
+    </main>
 
     <nav class="bottom-nav" role="tablist" aria-label="主要導航">
         <div class="nav-item active" data-target="page-input" role="tab" aria-selected="true" aria-label="手牌">
