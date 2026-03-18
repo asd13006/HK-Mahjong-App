@@ -367,6 +367,37 @@
     </nav>
 
     <script type="module" src="js/app.js"></script>
+    <script>
+        // Service Worker 註冊與自動更新
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    // 每次打開 app 主動檢查更新
+                    reg.update();
+
+                    // 偵測新版 SW 安裝完成
+                    reg.addEventListener('updatefound', () => {
+                        const newSW = reg.installing;
+                        if (!newSW) return;
+                        newSW.addEventListener('statechange', () => {
+                            // 新 SW 已就緒，且目前有舊 SW 在控制頁面
+                            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                                newSW.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                        });
+                    });
+
+                    // SW 接管後自動重載，使用者看到最新版
+                    let refreshing = false;
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (refreshing) return;
+                        refreshing = true;
+                        window.location.reload();
+                    });
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
