@@ -199,6 +199,17 @@ body.failure-mode {
     z-index: 1;
     padding-bottom: 20px;
     flex: 1;
+    min-height: 0;
+    max-height: calc(100dvh - max(30px, env(safe-area-inset-top) + 10px) - max(8px, env(safe-area-inset-bottom)));
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.app-container::-webkit-scrollbar {
+    display: none;
 }
 
 /* 卡片底板 */
