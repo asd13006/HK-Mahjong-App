@@ -98,9 +98,9 @@
 html,
 body {
     height: 100%;
+    height: 100dvh;
     overflow: hidden;
-    overscroll-behavior-y: none;
-    overscroll-behavior-x: none;
+    overscroll-behavior: none;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -117,10 +117,7 @@ body {
     display: flex;
     justify-content: center;
     position: relative;
-    padding-top: max(30px, env(safe-area-inset-top) + 10px);
-    padding-right: 15px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-    padding-left: 15px;
+    padding: 0;
     touch-action: pan-y;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -199,9 +196,13 @@ body.failure-mode {
     gap: 18px;
     position: relative;
     z-index: 1;
+    padding-top: max(30px, env(safe-area-inset-top) + 10px);
+    padding-right: 15px;
     padding-bottom: 20px;
+    padding-left: 15px;
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -769,7 +770,7 @@ body.failure-mode {
 
 /* 確保整個畫面底部有足夠空間，不會被導航列擋住鍵盤 */
 .app-container {
-    padding-bottom: 95px;
+    padding-bottom: calc(95px + env(safe-area-inset-bottom, 0px));
 }
 
 /* 房間的隱形斗篷設定 */

@@ -2,7 +2,7 @@
    🀄 常數定義 (constants.js)
    ========================================== */
 
-export const APP_VERSION = 'v2.9.8';
+export const APP_VERSION = 'v2.9.9';
 
 export const TILE_DEFS = [
     { type: 'w', label: '萬', count: 9, startId: 0 },
