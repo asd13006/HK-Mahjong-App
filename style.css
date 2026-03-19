@@ -101,6 +101,8 @@ body {
     overscroll-behavior-x: none;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
 }
 
 body::-webkit-scrollbar {
