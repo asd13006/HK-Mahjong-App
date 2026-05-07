@@ -3,14 +3,48 @@
    ========================================== */
 
 import { APP_VERSION } from './constants.js';
+import { DICTIONARY } from '../data.js';
 import { state } from './state.js';
-import { attachFastClick, debounce } from './utils.js';
+import { attachFastClick, debounce, showConfirmModal, safeGetHistory, animateCount } from './utils.js';
 import { animatePageBlocks, switchPage } from './animation.js';
 import { renderConditions, renderFlowers, renderKeyboard, renderHand, clearHand, updateIslandSummary, setRoundWind, setSeatWind } from './ui-input.js';
 import { runEngine, resetResultCard } from './ui-result.js';
 import { renderHistory } from './ui-history.js';
 import { populateWiki, setupWikiFilters, populateDailyFeatured } from './ui-wiki.js';
 import { updateProfileData } from './ui-profile.js';
+
+function getDailyItem() {
+    const today = new Date();
+    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    return DICTIONARY[seed % DICTIONARY.length];
+}
+
+function updateHomePage() {
+    const history = safeGetHistory();
+    const total = history.length;
+    let wins = 0, max = 0;
+    history.forEach((r) => {
+        if (r.isWin) { wins++; if (r.faan > max) max = r.faan; }
+    });
+    const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
+
+    animateCount(document.getElementById('homeStatGames'), total, 500);
+    document.getElementById('homeStatWinRate').textContent = winRate + '%';
+    document.getElementById('homeStatMax').textContent = max >= 13 ? '13+' : max;
+
+    const item = getDailyItem();
+    document.getElementById('homeDailyName').textContent = item.name;
+    document.getElementById('homeDailyFaan').textContent = item.f >= 13 ? '13 番 (爆棚)' : item.f + ' 番';
+    document.getElementById('homeDailyDesc').textContent = item.d;
+    const tilesContainer = document.getElementById('homeDailyTiles');
+    tilesContainer.innerHTML = '';
+    (item.preview || []).forEach((t) => {
+        const tile = document.createElement('div');
+        tile.className = 'w-tile';
+        tile.style.backgroundImage = `url('tiles/${t}.svg')`;
+        tilesContainer.appendChild(tile);
+    });
+}
 
 function init() {
     renderConditions();
@@ -19,6 +53,26 @@ function init() {
     renderHand();
     document.getElementById('appVersionProfile').innerText = APP_VERSION;
     populateDailyFeatured();
+    updateHomePage();
+
+    // 首頁 CTA
+    attachFastClick(
+        document.getElementById('homeStartBtn'),
+        () => { if (navigator.vibrate) navigator.vibrate([10]); switchPage('page-input'); },
+        'is-tapped-chip',
+    );
+
+    // 首頁快速入口
+    attachFastClick(
+        document.getElementById('homeQuickWiki'),
+        () => { if (navigator.vibrate) navigator.vibrate([10]); switchPage('page-wiki'); },
+        'is-tapped-chip',
+    );
+    attachFastClick(
+        document.getElementById('homeQuickHistory'),
+        () => { if (navigator.vibrate) navigator.vibrate([10]); switchPage('page-history'); },
+        'is-tapped-chip',
+    );
 
     // 動態島展開/收合
     attachFastClick(
@@ -50,7 +104,8 @@ function init() {
         () => {
             if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
             switchPage('page-result');
-            runEngine();
+            // 等 page enter 動畫完成先 run engine（避免 DOM 未 ready）
+            setTimeout(() => runEngine(), 300);
         },
         'is-tapped-chip',
     );
@@ -70,11 +125,13 @@ function init() {
     attachFastClick(
         document.getElementById('clearHistoryBtn'),
         () => {
-            if (confirm('⚠️ 確定要清空所有生涯戰績嗎？這個動作無法復原喔！')) {
-                try { localStorage.removeItem('mahjongHistory'); } catch { }
-                renderHistory();
-                updateProfileData();
-            }
+            showConfirmModal('確定要清空所有生涯戰績嗎？這個動作無法復原喔！').then((ok) => {
+                if (ok) {
+                    try { localStorage.removeItem('mahjongHistory'); } catch { }
+                    renderHistory();
+                    updateProfileData();
+                }
+            });
         },
         'is-tapped-chip',
     );
@@ -82,9 +139,24 @@ function init() {
     // 隱私權政策
     attachFastClick(
         document.getElementById('btnPrivacy'),
-        () => window.open('privacy.html', '_blank'),
+        () => {
+            document.getElementById('privacySheet').style.display = 'flex';
+        },
         'is-tapped-chip',
     );
+
+    // 隱私權政策關閉
+    attachFastClick(
+        document.getElementById('privacyClose'),
+        () => {
+            document.getElementById('privacySheet').style.display = 'none';
+        },
+        'is-tapped-chip',
+    );
+    // 點擊 overlay 背景也可關閉
+    document.getElementById('privacySheet').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
 
     // 檢查更新
     attachFastClick(
@@ -119,9 +191,9 @@ function init() {
     attachFastClick(
         document.getElementById('btnSystemClear'),
         () => {
-            if (confirm('⚠️ 確定要清除系統暫存嗎？這會重置介面，但不會刪除戰績。')) {
-                window.location.reload(true);
-            }
+            showConfirmModal('確定要清除系統暫存嗎？這會重置介面，但不會刪除戰績。').then((ok) => {
+                if (ok) window.location.reload(true);
+            });
         },
         'is-tapped-chip',
     );
@@ -130,24 +202,54 @@ function init() {
     attachFastClick(
         document.getElementById('btnBackToWiki'),
         () => {
-            if (navigator.vibrate) navigator.vibrate([10]);
-            document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
-            document.getElementById('page-wiki').classList.add('active');
+            backToWiki();
             state.wikiDetailTransitioning = true;
             setTimeout(() => { state.wikiDetailTransitioning = false; }, 500);
-            document.querySelector('.app-container').scrollTo({ top: state.wikiScrollPos, behavior: 'instant' });
         },
         'is-tapped-chip',
     );
 
+    // 百科子頁面返回 wiki 共用函式
+    function backToWiki() {
+        if (navigator.vibrate) navigator.vibrate([10]);
+        switchPage('page-wiki');
+        document.querySelector('.app-container').scrollTo({ top: state.wikiScrollPos, behavior: 'instant' });
+    }
+
+    // 基本規則頁 (index 0 = 基本規則, index 1 = 計分原理)
+    document.querySelectorAll('.wiki-basic-card').forEach((card, i) => {
+        attachFastClick(card, () => {
+            if (navigator.vibrate) navigator.vibrate([10]);
+            switchPage(i === 0 ? 'page-basics-rules' : 'page-basics-scoring');
+        }, 'is-tapped-chip');
+    });
+
+    // 基本規則 / 計分原理 返回按鈕
+    document.querySelectorAll('.basics-back-btn').forEach((btn) => {
+        attachFastClick(btn, backToWiki, 'is-tapped-chip');
+    });
+
     // 百科搜尋
     const searchInput = document.getElementById('wikiSearch');
+    const searchClear = document.getElementById('wikiSearchClear');
     if (searchInput) {
         const debouncedSearch = debounce((value) => {
             const activeFilter = document.querySelector('.w-filter.active').getAttribute('data-filter');
             populateWiki(activeFilter, value);
         }, 200);
-        searchInput.addEventListener('input', (e) => debouncedSearch(e.target.value));
+        searchInput.addEventListener('input', (e) => {
+            debouncedSearch(e.target.value);
+            if (searchClear) searchClear.style.display = e.target.value ? 'flex' : 'none';
+        });
+    }
+    if (searchClear) {
+        attachFastClick(searchClear, () => {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            const activeFilter = document.querySelector('.w-filter.active').getAttribute('data-filter');
+            populateWiki(activeFilter, '');
+            searchInput.focus();
+        }, 'is-tapped-chip');
     }
 
     // 底部導覽
@@ -159,6 +261,7 @@ function init() {
                 if (navigator.vibrate) navigator.vibrate([10]);
                 const target = item.getAttribute('data-target');
                 switchPage(target);
+                if (target === 'page-home') updateHomePage();
                 if (target === 'page-profile') updateProfileData();
             },
             'is-tapped-chip',
@@ -171,45 +274,22 @@ function init() {
     populateWiki();
 
     // Bug #5: Android 返回鍵支援
-    history.replaceState({ page: 'page-input' }, '');
+    history.replaceState({ page: 'page-home' }, '');
     window.addEventListener('popstate', (e) => {
-        const targetId = e.state && e.state.page ? e.state.page : 'page-input';
+        const targetId = e.state && e.state.page ? e.state.page : 'page-home';
         // 離開結果頁時重置
         const currentPage = document.querySelector('.page.active');
         if (currentPage && currentPage.id === 'page-result') {
             resetResultCard();
         }
-        // 直接切換頁面，不再 pushState (避免無限迴圈)
-        document.body.className = '';
-        document.querySelectorAll('body > .tile').forEach((el) => el.remove());
-        document.querySelectorAll('.nav-item').forEach((nav) => {
-            nav.classList.remove('active');
-            nav.setAttribute('aria-selected', 'false');
-        });
-        document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
-        const targetNav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
-        if (targetNav) {
-            targetNav.classList.add('active');
-            targetNav.setAttribute('aria-selected', 'true');
-        } else {
-            const inputNav = document.querySelector('.nav-item[data-target="page-input"]');
-            if (inputNav) {
-                inputNav.classList.add('active');
-                inputNav.setAttribute('aria-selected', 'true');
-            }
-        }
-        const pageEl = document.getElementById(targetId);
-        pageEl.classList.add('active');
-        const container = document.querySelector('.app-container');
-        if (targetId === 'page-input') {
-            container.scrollTo({ top: state.inputScrollPos, behavior: 'instant' });
-        } else {
-            container.scrollTo({ top: 0, behavior: 'instant' });
-        }
+        state.isPopState = true;
+        switchPage(targetId);
+        state.isPopState = false;
+        if (targetId === 'page-home') updateHomePage();
         if (targetId === 'page-profile') updateProfileData();
     });
 }
 
 init();
-animatePageBlocks(document.getElementById('page-input'));
+animatePageBlocks(document.getElementById('page-home'));
 

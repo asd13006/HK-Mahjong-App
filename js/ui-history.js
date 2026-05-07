@@ -15,7 +15,7 @@ export function renderHistory() {
     const statWinRateBar = document.getElementById('statWinRateBar');
 
     if (history.length === 0) {
-        listContainer.innerHTML = '<div class="history-empty">暫無戰績紀錄，快去胡一把大牌吧！</div>';
+        listContainer.innerHTML = '<div class="history-empty">暫無戰績紀錄<br>快去胡一把大牌吧！<br><button class="history-empty-cta" onclick="document.querySelector(\'.nav-item[data-target=page-input]\').click()">開始計番</button></div>';
         statMax.innerText = '0';
         statTotal.innerText = '0';
         statWinRate.innerText = '0%';

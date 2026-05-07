@@ -1,5 +1,5 @@
 // 🔥 黃金法則：每次發布新版本，一定要手動修改這裡的版號！(例如下一次改為 v2.8.5)
-const APP_VERSION = "v2.12.0";
+const APP_VERSION = "v2.13.0";
 const CACHE_NAME = 'mahjong-cache-' + APP_VERSION;
 
 const urlsToCache = [
@@ -9,9 +9,9 @@ const urlsToCache = [
     './data.js',
     './manifest.json',
     // App 圖標
-    './icon-48.png', './icon-72.png', './icon-96.png', './icon-128.png',
-    './icon-144.png', './icon-192.png', './icon-256.png', './icon-384.png', './icon-512.png',
-    './icon-maskable-192.png', './icon-maskable-512.png',
+    './icons/icon-48.png', './icons/icon-72.png', './icons/icon-96.png', './icons/icon-128.png',
+    './icons/icon-144.png', './icons/icon-192.png', './icons/icon-256.png', './icons/icon-384.png', './icons/icon-512.png',
+    './icons/icon-maskable-192.png', './icons/icon-maskable-512.png',
     './privacy.html',
     // JS 模組
     './js/app.js',

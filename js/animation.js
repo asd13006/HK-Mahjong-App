@@ -53,46 +53,78 @@ export function animatePageBlocks(pageEl) {
 }
 
 export function switchPage(targetId) {
-    // Bug #1: 離開結果頁時重置背景色
     document.body.className = '';
 
-    // Bug #4: 離開手牌頁時記住捲動位置
     const container = document.querySelector('.app-container');
     const currentPage = document.querySelector('.page.active');
-    if (currentPage && currentPage.id === 'page-input') {
-        state.inputScrollPos = container.scrollTop;
+    if (currentPage) {
+        if (currentPage.id === 'page-input') state.inputScrollPos = container.scrollTop;
+        if (currentPage.id === 'page-wiki') state.wikiScrollPos = container.scrollTop;
     }
 
-    // Bug #6: 清除殘留的清空動畫 clone
     document.querySelectorAll('body > .tile').forEach((el) => el.remove());
 
+    // Nav update
     document.querySelectorAll('.nav-item').forEach((nav) => {
         nav.classList.remove('active');
         nav.setAttribute('aria-selected', 'false');
     });
-    document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
-    const targetNav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+    // 子頁面 → parent nav 映射
+    const parentNavMap = {
+        'page-result': 'page-input',
+        'page-wiki-detail': 'page-wiki',
+        'page-basics-rules': 'page-wiki',
+        'page-basics-scoring': 'page-wiki',
+    };
+
+    let navTargetId = targetId;
+    if (!document.querySelector(`.nav-item[data-target="${targetId}"]`)) {
+        navTargetId = parentNavMap[targetId] || 'page-home';
+    }
+
+    const targetNav = document.querySelector(`.nav-item[data-target="${navTargetId}"]`);
     if (targetNav) {
         targetNav.classList.add('active');
         targetNav.setAttribute('aria-selected', 'true');
-    } else {
-        // Bug #3: 結果頁等無對應 nav 的頁面，保留手牌 tab 高亮
-        const inputNav = document.querySelector('.nav-item[data-target="page-input"]');
-        if (inputNav) {
-            inputNav.classList.add('active');
-            inputNav.setAttribute('aria-selected', 'true');
-        }
     }
-    const pageEl = document.getElementById(targetId);
-    pageEl.classList.add('active');
-    // Bug #4: 回到手牌頁時恢復捲動位置
-    if (targetId === 'page-input') {
-        container.scrollTo({ top: state.inputScrollPos, behavior: 'instant' });
-    } else {
-        container.scrollTo({ top: 0, behavior: 'instant' });
-    }
-    animatePageBlocks(pageEl);
 
-    // Bug #5: 推入瀏覽器歷史，讓 Android 返回鍵能回到上一頁
-    history.pushState({ page: targetId }, '');
+    const pageEl = document.getElementById(targetId);
+    const exitingPage = currentPage && currentPage.id !== targetId ? currentPage : null;
+
+    if (exitingPage) {
+        exitingPage.classList.add('page-exit');
+        exitingPage.addEventListener('animationend', function handler() {
+            exitingPage.removeEventListener('animationend', handler);
+            exitingPage.classList.remove('active', 'page-exit');
+            showEnter();
+        }, { once: true });
+    } else {
+        // No page to exit from — remove all active and show immediately
+        document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+        showEnter();
+    }
+
+    function showEnter() {
+        document.querySelectorAll('.page').forEach((p) => {
+            if (p !== pageEl) p.classList.remove('active');
+        });
+        pageEl.classList.add('page-enter', 'active');
+        pageEl.addEventListener('animationend', function handler() {
+            pageEl.removeEventListener('animationend', handler);
+            pageEl.classList.remove('page-enter');
+        }, { once: true });
+
+        if (targetId === 'page-input') {
+            container.scrollTo({ top: state.inputScrollPos, behavior: 'instant' });
+        } else if (targetId === 'page-wiki' && state.wikiScrollPos > 0) {
+            container.scrollTo({ top: state.wikiScrollPos, behavior: 'instant' });
+        } else {
+            container.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        animatePageBlocks(pageEl);
+    }
+
+    if (!state.isPopState) {
+        history.pushState({ page: targetId }, '');
+    }
 }

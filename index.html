@@ -3,17 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>香港麻雀計番神器</title>
     <meta name="description" content="香港麻雀計番工具，快速計算手牌番數、查閱番種百科、記錄戰績歷史。支援離線使用的 PWA 應用程式。">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f1f5f9">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="48x48" href="icon-48.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="icons/icon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,14 +27,70 @@
 </head>
 
 <body>
-    <div class="bg-layer bg-base"></div>
-    <div class="bg-layer bg-success"></div>
-    <div class="bg-layer bg-limit"></div>
-    <div class="bg-layer bg-failure"></div>
-
     <main class="app-container">
 
-        <div id="page-input" class="page active" role="tabpanel" aria-label="手牌選擇">
+        <div id="page-home" class="page active" role="tabpanel" aria-label="首頁">
+            <div class="glass-card home-hero-card">
+                <div class="home-hero-top">
+                    <div class="home-seal">
+                        <span class="home-seal-char">中</span>
+                    </div>
+                    <div>
+                        <h1 class="home-title">香港麻雀計番神器</h1>
+                        <p class="home-subtitle">即時計番 · 番種百科 · 戰績紀錄</p>
+                    </div>
+                </div>
+                <button class="calc-btn home-cta" id="homeStartBtn">開始計番</button>
+            </div>
+
+            <div class="glass-card home-stats-card">
+                <div class="home-stats-row" id="homeStatsRow">
+                    <div class="home-stat">
+                        <span class="home-stat-val num" id="homeStatGames">0</span>
+                        <span class="home-stat-label">總局數</span>
+                    </div>
+                    <div class="home-stat-divider"></div>
+                    <div class="home-stat">
+                        <span class="home-stat-val num" id="homeStatWinRate">0%</span>
+                        <span class="home-stat-label">勝率</span>
+                    </div>
+                    <div class="home-stat-divider"></div>
+                    <div class="home-stat">
+                        <span class="home-stat-val num" id="homeStatMax">0</span>
+                        <span class="home-stat-label">最高番</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-daily glass-card" id="homeDailyCard">
+                <div class="home-daily-badge">每日一役</div>
+                <div class="home-daily-title" id="homeDailyName">大四喜</div>
+                <div class="home-daily-faan" id="homeDailyFaan">13 番</div>
+                <div class="home-daily-desc" id="homeDailyDesc">由東、南、西、北四種風牌刻子組成的終極和牌。</div>
+                <div class="home-daily-tiles" id="homeDailyTiles"></div>
+            </div>
+
+            <div class="home-quick-grid">
+                <div class="glass-card home-quick-card" id="homeQuickWiki">
+                    <div class="home-quick-icon" style="background:rgba(37,99,235,0.06);color:#2563eb;"><i class="ic">auto_stories</i></div>
+                    <div class="home-quick-text">
+                        <div class="home-quick-title">番種百科</div>
+                        <div class="home-quick-sub">查閱全部番種</div>
+                    </div>
+                    <i class="ic home-quick-arrow">chevron_right</i>
+                </div>
+                <div class="glass-card home-quick-card" id="homeQuickHistory">
+                    <div class="home-quick-icon" style="background:rgba(13,148,136,0.06);color:#0d9488;"><i class="ic">emoji_events</i></div>
+                    <div class="home-quick-text">
+                        <div class="home-quick-title">生涯戰績</div>
+                        <div class="home-quick-sub">回顧歷史牌局</div>
+                    </div>
+                    <i class="ic home-quick-arrow">chevron_right</i>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-input" class="page" role="tabpanel" aria-label="手牌選擇">
             <div id="actionBanner" class="glass-card action-banner">
                 <div id="actionText" class="action-text">請選取 14 張牌</div>
                 <button id="calcBtn" class="calc-btn" style="display: none;" aria-label="開始結算"><i
@@ -174,7 +231,7 @@
             <div class="wiki-top-panel glass-card">
                 <div class="wiki-search-box">
                     <i class="ic">search</i><input type="text" id="wikiSearch" placeholder="搜尋番種 (如: 大三元、平糊...)"
-                        aria-label="搜尋番種">
+                        aria-label="搜尋番種"><button class="wiki-search-clear" id="wikiSearchClear" style="display:none;" aria-label="清除搜尋"><i class="ic">close</i></button>
                 </div>
                 <div class="wiki-filters">
                     <div class="w-filter active" data-filter="all">全部</div>
@@ -232,7 +289,6 @@
             </button>
 
             <div class="w-detail-hero">
-                <div class="w-detail-glow-bg"></div>
                 <h1 id="wdTitle" class="w-detail-title">對對糊</h1>
                 <div class="w-detail-badge"><span id="wdFaan">3 番</span></div>
             </div>
@@ -262,6 +318,246 @@
             <div class="spacer-md"></div>
         </div>
 
+        <div id="page-basics-rules" class="page" role="tabpanel" aria-label="基本規則">
+            <button class="floating-back-btn basics-back-btn">
+                <span class="ic ic-back">chevron_left</span>
+            </button>
+            <div class="basics-hero">
+                <div class="basics-hero-icon basics-hero-icon--blue"><i class="ic">menu_book</i></div>
+                <h1 class="basics-title">基本規則</h1>
+                <p class="basics-subtitle">香港麻雀流程與動作解析</p>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>麻雀牌種</div>
+                <div class="glass-card basics-card">
+                    <div class="basics-tile-row">
+                        <div class="basics-tile-demo" style="background-image:url('tiles/w1.svg')"></div>
+                        <div class="basics-tile-demo" style="background-image:url('tiles/w9.svg')"></div>
+                        <span class="basics-tile-label">萬子 (1-9)</span>
+                    </div>
+                    <div class="basics-tile-row">
+                        <div class="basics-tile-demo" style="background-image:url('tiles/t1.svg')"></div>
+                        <div class="basics-tile-demo" style="background-image:url('tiles/t9.svg')"></div>
+                        <span class="basics-tile-label">筒子 (1-9)</span>
+                    </div>
+                    <div class="basics-tile-row">
+                        <div class="basics-tile-demo" style="background-image:url('tiles/s1.svg')"></div>
+                        <div class="basics-tile-demo" style="background-image:url('tiles/s9.svg')"></div>
+                        <span class="basics-tile-label">索子 (1-9)</span>
+                    </div>
+                    <div class="basics-tile-row">
+                        <div class="basics-tile-demo" style="background-image:url('tiles/z1.svg')"></div>
+                        <div class="basics-tile-demo" style="background-image:url('tiles/z7.svg')"></div>
+                        <span class="basics-tile-label">字牌 (東南西北中發白)</span>
+                    </div>
+                    <div class="basics-tile-row">
+                        <div class="basics-tile-demo" style="background-image:url('tiles/f1.svg')"></div>
+                        <div class="basics-tile-demo" style="background-image:url('tiles/f8.svg')"></div>
+                        <span class="basics-tile-label">花牌 (春夏秋冬梅蘭菊竹)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>牌型結構</div>
+                <div class="glass-card basics-card">
+                    <p class="basics-p">一副食糊手牌由 <strong>4 組搭子 + 1 對眼</strong> 組成，共 14 張牌。</p>
+                    <div class="basics-meld-demo">
+                        <div class="basics-meld-item">
+                            <div class="basics-meld-label">順子 (Chow)</div>
+                            <div class="basics-meld-tiles">
+                                <div class="basics-tile-demo" style="background-image:url('tiles/w1.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/w2.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/w3.svg')"></div>
+                            </div>
+                            <div class="basics-meld-desc">同花色連續三張</div>
+                        </div>
+                        <div class="basics-meld-item">
+                            <div class="basics-meld-label">刻子 (Pong)</div>
+                            <div class="basics-meld-tiles">
+                                <div class="basics-tile-demo" style="background-image:url('tiles/z5.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/z5.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/z5.svg')"></div>
+                            </div>
+                            <div class="basics-meld-desc">相同三張</div>
+                        </div>
+                        <div class="basics-meld-item">
+                            <div class="basics-meld-label">槓子 (Kong)</div>
+                            <div class="basics-meld-tiles">
+                                <div class="basics-tile-demo" style="background-image:url('tiles/t5.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/t5.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/t5.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/t5.svg')"></div>
+                            </div>
+                            <div class="basics-meld-desc">相同四張</div>
+                        </div>
+                        <div class="basics-meld-item">
+                            <div class="basics-meld-label">眼 (Eye)</div>
+                            <div class="basics-meld-tiles">
+                                <div class="basics-tile-demo" style="background-image:url('tiles/s2.svg')"></div>
+                                <div class="basics-tile-demo" style="background-image:url('tiles/s2.svg')"></div>
+                            </div>
+                            <div class="basics-meld-desc">相同兩張</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>遊戲流程</div>
+                <div class="glass-card basics-card">
+                    <ol class="basics-flow">
+                        <li><strong>洗牌砌牌</strong> — 將所有牌洗勻，砌成四道牌牆</li>
+                        <li><strong>擲骰取牌</strong> — 莊家擲骰決定開牌位置，每人取 13 張（莊家 14 張）</li>
+                        <li><strong>摸牌</strong> — 每回合從牌牆摸一張牌</li>
+                        <li><strong>打牌</strong> — 摸牌後必須打出一張牌</li>
+                        <li><strong>食糊</strong> — 當手牌符合糊牌條件（4 搭 + 1 眼），即可宣告食糊</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>基本動作</div>
+                <div class="glass-card basics-card">
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="ic">touch_app</i></div>
+                        <div class="basics-action-text">
+                            <strong>碰 (Pong)</strong>
+                            <span>別人打出與你手牌中相同的一對牌時，可宣告碰牌，將三張牌亮出。</span>
+                        </div>
+                    </div>
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="ic">swap_horiz</i></div>
+                        <div class="basics-action-text">
+                            <strong>上 (Chow)</strong>
+                            <span>上家打出與你手牌可組成順子的牌時，可宣告上牌（只限上家）。</span>
+                        </div>
+                    </div>
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(245,158,11,0.1);color:#d97706;"><i class="ic">layers</i></div>
+                        <div class="basics-action-text">
+                            <strong>槓 (Kong)</strong>
+                            <span>四張相同牌可宣告槓牌。明槓（碰後加槓）、暗槓（手牌四張）、加槓（碰後補第四張）。槓後補牌一張。</span>
+                        </div>
+                    </div>
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;"><i class="ic">celebration</i></div>
+                        <div class="basics-action-text">
+                            <strong>食糊 (Win)</strong>
+                            <span>手牌組成 4 搭 + 1 眼時即可食糊。自摸（自己摸到）或出銃（食別人打出的牌）。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spacer-md"></div>
+        </div>
+
+        <div id="page-basics-scoring" class="page" role="tabpanel" aria-label="計分原理">
+            <button class="floating-back-btn basics-back-btn">
+                <span class="ic ic-back">chevron_left</span>
+            </button>
+            <div class="basics-hero">
+                <div class="basics-hero-icon basics-hero-icon--purple"><i class="ic">calculate</i></div>
+                <h1 class="basics-title">計分原理</h1>
+                <p class="basics-subtitle">底台與番數計算邏輯</p>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>番數制基礎</div>
+                <div class="glass-card basics-card">
+                    <p class="basics-p">香港麻雀採用 <strong>番數制</strong>，按牌型組合的稀有度和難度給予不同番數。番數愈高，牌型愈罕見。</p>
+                    <div class="basics-rule-box">
+                        <div class="basics-rule-label">最低食糊門檻</div>
+                        <div class="basics-rule-value">3 番起糊</div>
+                        <div class="basics-rule-desc">手牌計算後總番數不足 3 番即為「詐糊」，不能食糊。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>番數分級</div>
+                <div class="basics-level-grid">
+                    <div class="glass-card basics-level-card">
+                        <div class="basics-level-badge badge-common">1-3 番</div>
+                        <div class="basics-level-name">常見牌型</div>
+                        <div class="basics-level-desc">平糊、自摸、無花、正花、對對糊、混一色 等</div>
+                    </div>
+                    <div class="glass-card basics-level-card">
+                        <div class="basics-level-badge badge-mid">4-9 番</div>
+                        <div class="basics-level-name">中級大牌</div>
+                        <div class="basics-level-desc">小三元、小四喜、清一色、大三元、坎坎糊 等</div>
+                    </div>
+                    <div class="glass-card basics-level-card">
+                        <div class="basics-level-badge" style="background:rgba(239,68,68,0.1);color:#dc2626;">10+ 番</div>
+                        <div class="basics-level-name">爆棚例牌</div>
+                        <div class="basics-level-desc">大四喜、十三么、九子連環、十八羅漢、天糊 等</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>附加番種</div>
+                <div class="glass-card basics-card">
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="ic">back_hand</i></div>
+                        <div class="basics-action-text">
+                            <strong>自摸 (+1番)</strong>
+                            <span>自己摸到食糊的牌，不靠別人打出。</span>
+                        </div>
+                    </div>
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="ic">visibility_off</i></div>
+                        <div class="basics-action-text">
+                            <strong>門前清 (+1番)</strong>
+                            <span>食糊前完全沒有碰牌或明槓（暗槓可）。</span>
+                        </div>
+                    </div>
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(245,158,11,0.1);color:#d97706;"><i class="ic">local_florist</i></div>
+                        <div class="basics-action-text">
+                            <strong>花牌加分</strong>
+                            <span>無花 +1番、正花 +1番（每隻）、一台花 +2番、花糊 +3番、大花糊 +8番。</span>
+                        </div>
+                    </div>
+                    <div class="basics-action">
+                        <div class="basics-action-icon" style="background:rgba(168,85,247,0.1);color:#a855f7;"><i class="ic">casino</i></div>
+                        <div class="basics-action-text">
+                            <strong>特殊條件</strong>
+                            <span>天糊/地糊 +13番、海底撈月 +1番、搶槓 +1番、槓上自摸 +2番。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="basics-section">
+                <div class="basics-sec-title"><span class="wd-sec-dot"></span>計分範例</div>
+                <div class="glass-card basics-card">
+                    <div class="basics-example">
+                        <div class="basics-example-header">
+                            <span class="basics-example-name">混一色 + 自摸 + 正花</span>
+                            <span class="basics-example-faan">5 番</span>
+                        </div>
+                        <div class="basics-example-breakdown">
+                            <span>混一色 (3番)</span><span>+</span><span>自摸 (1番)</span><span>+</span><span>正花 (1番)</span><span>=</span><span>總計 5 番</span>
+                        </div>
+                    </div>
+                    <div class="basics-example">
+                        <div class="basics-example-header">
+                            <span class="basics-example-name">平糊 + 無花</span>
+                            <span class="basics-example-faan">2 番 → 詐糊</span>
+                        </div>
+                        <div class="basics-example-breakdown">
+                            <span>不足 3 番最低門檻，無法食糊。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spacer-md"></div>
+        </div>
+
         <div id="page-profile" class="page" role="tabpanel" aria-label="個人檔案">
             <div class="glass-card profile-hero">
                 <div class="prof-avatar-ring">
@@ -271,10 +567,7 @@
                     <div class="prof-name">雀神大師</div>
                     <div class="prof-level" id="profLevelText"><i class="ic">emoji_events</i> 雀壇新星 LV.1</div>
                 </div>
-                <div class="prof-actions">
-                    <button class="p-btn-primary" disabled><i class="ic">diamond</i> 升級尊貴版</button>
-                    <button class="p-btn-secondary" disabled><i class="ic">ios_share</i> 分享成就</button>
-                </div>
+                <div class="prof-coming-soon">更多功能即將推出 ✨</div>
             </div>
 
             <div class="prof-stats-grid">
@@ -296,18 +589,22 @@
                     <div class="medal-item" id="medal-win">
                         <div class="medal-icon glass-card medal-icon--red"><i class="ic">local_fire_department</i></div>
                         <div class="medal-name">胡牌開張</div>
+                        <div class="medal-progress" id="medal-win-prog"></div>
                     </div>
                     <div class="medal-item" id="medal-flower">
                         <div class="medal-icon glass-card medal-icon--pink"><i class="ic">local_florist</i></div>
                         <div class="medal-name">花胡達人</div>
+                        <div class="medal-progress" id="medal-flower-prog"></div>
                     </div>
                     <div class="medal-item" id="medal-limit">
                         <div class="medal-icon glass-card medal-icon--yellow"><i class="ic">star</i></div>
                         <div class="medal-name">爆棚大師</div>
+                        <div class="medal-progress" id="medal-limit-prog"></div>
                     </div>
                     <div class="medal-item" id="medal-legend">
                         <div class="medal-icon glass-card medal-icon--purple"><i class="ic">auto_fix_high</i></div>
                         <div class="medal-name">傳說降臨</div>
+                        <div class="medal-progress" id="medal-legend-prog"></div>
                     </div>
                 </div>
             </div>
@@ -357,7 +654,10 @@
     </main>
 
     <nav class="bottom-nav" role="tablist" aria-label="主要導航">
-        <div class="nav-item active" data-target="page-input" role="tab" aria-selected="true" aria-label="手牌">
+        <div class="nav-item active" data-target="page-home" role="tab" aria-selected="true" aria-label="首頁">
+            <div class="nav-icon"><i class="ic">home</i></div><span>首頁</span>
+        </div>
+        <div class="nav-item" data-target="page-input" role="tab" aria-selected="false" aria-label="手牌">
             <div class="nav-icon"><i class="ic">playing_cards</i></div><span>手牌</span>
         </div>
         <div class="nav-item" data-target="page-history" role="tab" aria-selected="false" aria-label="戰績">
@@ -370,6 +670,59 @@
             <div class="nav-icon"><i class="ic">person</i></div><span>我的</span>
         </div>
     </nav>
+
+    <div id="confirmModal" class="confirm-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="確認對話框">
+        <div class="confirm-card glass-card">
+            <div class="confirm-msg" id="confirmMsg"></div>
+            <div class="confirm-actions">
+                <button class="confirm-btn confirm-btn-cancel" id="confirmCancel">取消</button>
+                <button class="confirm-btn confirm-btn-ok" id="confirmOk">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="privacySheet" class="sheet-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="隱私權政策">
+        <div class="sheet-card glass-card">
+            <div class="sheet-header">
+                <h2 class="sheet-title">隱私權政策</h2>
+                <button class="sheet-close" id="privacyClose" aria-label="關閉"><i class="ic">close</i></button>
+            </div>
+            <div class="sheet-body">
+                <p class="privacy-updated">最後更新日期：2026 年 3 月 18 日</p>
+                <h3>概述</h3>
+                <p>「香港麻雀計番大腦」（以下簡稱「本應用程式」）是一款離線運作的漸進式網頁應用程式（PWA），用於計算香港麻雀手牌的番數。我們非常重視你的隱私。</p>
+                <h3>資料收集</h3>
+                <p>本應用程式<strong>不會收集、傳送或儲存任何個人資料</strong>。具體而言：</p>
+                <ul>
+                    <li>不收集姓名、電郵、電話或任何身份識別資訊</li>
+                    <li>不使用 Cookie 或追蹤技術</li>
+                    <li>不整合任何第三方分析或廣告服務</li>
+                    <li>不需要使用者註冊或登入</li>
+                </ul>
+                <h3>本機儲存</h3>
+                <p>本應用程式僅使用瀏覽器的 localStorage 在你的裝置上儲存以下資料：</p>
+                <ul>
+                    <li>計番歷史紀錄</li>
+                    <li>使用者偏好設定</li>
+                </ul>
+                <p>這些資料完全保存在你的裝置上，不會傳送至任何伺服器。你可隨時透過應用程式內的「清除系統暫存」功能或瀏覽器設定刪除這些資料。</p>
+                <h3>離線運作</h3>
+                <p>本應用程式透過 Service Worker 技術提供離線功能。所有應用程式資源（HTML、CSS、JavaScript、圖片）均快取在你的裝置上，安裝後無需網路連線即可使用。</p>
+                <h3>第三方服務</h3>
+                <p>本應用程式會載入以下外部資源：</p>
+                <ul>
+                    <li>Google Fonts（Noto Sans TC 字體與 Material Symbols 圖示）</li>
+                </ul>
+                <p>除上述字體服務外，本應用程式不會連線至任何外部伺服器。</p>
+                <h3>兒童隱私</h3>
+                <p>本應用程式不針對 13 歲以下兒童，亦不會刻意收集任何兒童的個人資訊。</p>
+                <h3>政策變更</h3>
+                <p>如本政策有所更新，我們會在此頁面公布修改內容並更新日期。</p>
+                <h3>聯絡方式</h3>
+                <p>如對本隱私權政策有任何疑問，請透過應用程式內的「關於我們」頁面聯絡開發者。</p>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="js/app.js"></script>
     <script>

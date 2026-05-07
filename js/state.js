@@ -15,4 +15,5 @@ export const state = {
     wikiDetailTransitioning: false,
     currentResultSnapshot: null,
     isClearing: false,
+    isPopState: false,
 };

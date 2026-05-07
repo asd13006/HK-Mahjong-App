@@ -212,7 +212,6 @@ export function renderHand() {
     const oldPos = {};
     grid.querySelectorAll('.tile[data-key]').forEach((el) => {
         oldPos[el.dataset.key] = el.getBoundingClientRect();
-        el.classList.remove('breathing');
     });
     const updateGridDOM = () => {
         const existingTiles = new Map();
@@ -289,12 +288,6 @@ export function renderHand() {
             }
         }
     });
-    setTimeout(() => {
-        grid.querySelectorAll('.tile[data-key]').forEach((el, index) => {
-            el.style.animationDelay = `${index * 0.15}s`;
-            el.classList.add('breathing');
-        });
-    }, 300);
     state.lastMax = currentMax;
     checkAndRunEngine();
     updateKeyboardState();
@@ -374,10 +367,12 @@ function checkAndRunEngine() {
     const actionText = document.getElementById('actionText');
     const calcBtn = document.getElementById('calcBtn');
     if (state.activeFlowers.size >= 7 || state.hand.length === currentMax) {
-        actionText.style.display = 'none';
+        actionText.style.opacity = '0';
+        actionText.style.pointerEvents = 'none';
         calcBtn.style.display = 'block';
     } else {
-        actionText.style.display = 'block';
+        actionText.style.opacity = '1';
+        actionText.style.pointerEvents = 'auto';
         calcBtn.style.display = 'none';
         actionText.innerText = `請選取 ${currentMax} 張牌`;
     }

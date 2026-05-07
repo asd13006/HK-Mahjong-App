@@ -4,7 +4,7 @@
 
 import { TOTAL_TILE_TYPES, STAGGER_LIST } from './constants.js';
 import { state } from './state.js';
-import { safeGetHistory, safeSaveHistory } from './utils.js';
+import { safeGetHistory, safeSaveHistory, animateCount } from './utils.js';
 import { getCurrentMax, validateHand, isThirteenOrphans, isNineGates, findAllMelds, evaluateStandardPatterns } from './engine.js';
 import { renderHistory } from './ui-history.js';
 import { updateProfileData } from './ui-profile.js';
@@ -15,7 +15,7 @@ export function resetResultCard() {
     document.getElementById('resultBadge').innerText = '等待中';
     document.body.className = '';
     document.getElementById('heroScoreValue').innerText = '--';
-    document.getElementById('heroScoreValue').classList.remove('baau-pang-text');
+    document.getElementById('heroScoreValue').classList.remove('baau-pang-text', 'animate-in');
     document.getElementById('heroScoreUnit').style.display = 'inline';
     document.getElementById('heroMainPatternName').innerText = '--';
     document.getElementById('heroMainPatternName').className = 'main-pattern-name text-success';
@@ -56,20 +56,26 @@ function displayResult(faan, tags, isWin) {
         mainPattern.className = 'main-pattern-name text-danger';
         if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
     } else {
-        scoreVal.innerText = faan;
         scoreUnit.style.display = 'inline';
         if (isBaauPang) {
             scoreVal.innerText = '爆棚';
             scoreUnit.style.display = 'none';
             scoreVal.classList.add('baau-pang-text');
+            scoreVal.classList.add('animate-in');
             badge.innerHTML = '<i class="ic">auto_awesome</i> 極限爆棚';
             badge.classList.add('legendary');
-        } else if (faan >= 7) {
-            badge.innerHTML = '<i class="ic">auto_fix_high</i> 史詩大牌';
-            badge.classList.add('epic');
         } else {
-            badge.innerHTML = '<i class="ic">check_circle</i> 結算成功';
-            badge.classList.add('common');
+            // 數字滾動動畫
+            if (faan >= 7) {
+                badge.innerHTML = '<i class="ic">auto_fix_high</i> 史詩大牌';
+                badge.classList.add('epic');
+            } else {
+                badge.innerHTML = '<i class="ic">check_circle</i> 結算成功';
+                badge.classList.add('common');
+            }
+            scoreVal.textContent = '0';
+            scoreVal.classList.add('animate-in');
+            animateCount(scoreVal, faan, 700);
         }
         let maxFaan = -1;
         tags.forEach((t) => {

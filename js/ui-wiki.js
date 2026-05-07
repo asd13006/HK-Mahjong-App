@@ -16,7 +16,7 @@ export function populateWiki(filterType = 'all', searchQuery = '') {
     const renderList = (title, types) => {
         const items = DICTIONARY.filter((item) => {
             const matchType = types.includes(item.type);
-            const matchQuery = query === '' || item.name.toLowerCase().includes(query);
+            const matchQuery = query === '' || item.name.toLowerCase().includes(query) || item.d.toLowerCase().includes(query) || (item.desc && item.desc.toLowerCase().includes(query));
             return matchType && matchQuery;
         });
         if (items.length === 0) return;
@@ -78,7 +78,7 @@ export function populateWiki(filterType = 'all', searchQuery = '') {
     const renderLimitGrid = () => {
         const items = DICTIONARY.filter((item) => {
             const matchType = item.type === 'limit';
-            const matchQuery = query === '' || item.name.toLowerCase().includes(query);
+            const matchQuery = query === '' || item.name.toLowerCase().includes(query) || item.d.toLowerCase().includes(query) || (item.desc && item.desc.toLowerCase().includes(query));
             return matchType && matchQuery;
         });
         if (items.length === 0) return;

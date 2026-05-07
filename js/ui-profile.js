@@ -54,6 +54,18 @@ export function updateProfileData() {
     if (medalFlower && hasFlowerWin) medalFlower.classList.add('unlocked');
     if (medalLimit && hasLimitWin) medalLimit.classList.add('unlocked');
     if (medalLegend && totalGames >= 10) medalLegend.classList.add('unlocked');
+
+    // 勳章進度提示
+    const mpWin = document.getElementById('medal-win-prog');
+    const mpFlower = document.getElementById('medal-flower-prog');
+    const mpLimit = document.getElementById('medal-limit-prog');
+    const mpLegend = document.getElementById('medal-legend-prog');
+
+    const setProg = (el, unlocked, text) => { if (el) el.textContent = unlocked ? '' : text; };
+    setProg(mpWin, winCount >= 1, '計番 1 次即可解鎖');
+    setProg(mpFlower, hasFlowerWin, '食出花糊即可解鎖');
+    setProg(mpLimit, hasLimitWin, '食出爆棚即可解鎖');
+    setProg(mpLegend, totalGames >= 10, `再計 ${10 - totalGames} 局解鎖`);
 }
 
 

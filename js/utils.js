@@ -114,6 +114,50 @@ export function attachFastClick(el, action, tapClass = '') {
     }, opts);
 }
 
+// 自訂確認對話框（取代原生 confirm）
+export function showConfirmModal(msg) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById('confirmModal');
+        document.getElementById('confirmMsg').textContent = msg;
+        overlay.style.display = 'flex';
+
+        function cleanup() {
+            overlay.style.display = 'none';
+            document.getElementById('confirmOk').removeEventListener('click', onOk);
+            document.getElementById('confirmCancel').removeEventListener('click', onCancel);
+        }
+
+        function onOk() { cleanup(); resolve(true); }
+        function onCancel() { cleanup(); resolve(false); }
+
+        document.getElementById('confirmOk').addEventListener('click', onOk);
+        document.getElementById('confirmCancel').addEventListener('click', onCancel);
+    });
+}
+
+// 數字滾動動畫（計數器效果）
+export function animateCount(el, target, duration = 600) {
+    if (!el) return;
+    const start = 0;
+    const startTime = performance.now();
+
+    function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // ease-out curve
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (target - start) * eased);
+        el.textContent = current;
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            el.textContent = target;
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
 // 清除元素上的 FastClick 事件監聽器，防止記憶體洩漏
 export function detachFastClick(el) {
     if (el._fastClickAC) {
